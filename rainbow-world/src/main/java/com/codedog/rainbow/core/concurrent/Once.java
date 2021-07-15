@@ -34,11 +34,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * }
  * </pre>
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class Once {
 
-    private AtomicBoolean done = new AtomicBoolean(false);
+    private final AtomicBoolean done = new AtomicBoolean(false);
+
+    public static void main(String[] args) {
+        Once once = new Once();
+        for (int i = 0; i < 10; i++) {
+            once.run(() -> System.out.println("hello"));
+        }
+    }
 
     public void run(Runnable task) {
         if (done.get()) {
@@ -50,13 +57,6 @@ public class Once {
             } catch (Exception e) {
                 done.set(false);
             }
-        }
-    }
-
-    public static void main(String[] args) {
-        Once once = new Once();
-        for (int i = 0; i < 10; i++) {
-            once.run(() -> System.out.println("hello"));
         }
     }
 

@@ -11,11 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
  * TODO 考虑是否需要使用Packet对象池方式返回对象，避免大量构建JsonPacket对象的消耗
  * TODO 消息派发器能不依赖具体类型吗?
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 @Component
@@ -30,7 +29,7 @@ public final class JsonPacketDispatcher extends AbstractMessageDispatcher<JsonPa
      * 如果业务线程池当前忙导致提交任务被拒绝，应降级处理
      *
      * @throws java.util.concurrent.RejectedExecutionException 如果业务线程池当前已经处理不过来
-     * @throws NullPointerException 如果msg或session为null
+     * @throws NullPointerException                            如果msg或session为null
      */
     @Override
     protected final void doDispatch(@NonNull JsonPacket request, @NonNull Session session) {

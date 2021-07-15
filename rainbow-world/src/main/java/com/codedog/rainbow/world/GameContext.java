@@ -9,9 +9,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Component
 public class GameContext {

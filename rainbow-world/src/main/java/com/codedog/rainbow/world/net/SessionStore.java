@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-18 18:32
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class SessionStore {
 

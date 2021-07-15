@@ -11,9 +11,7 @@ import com.google.protobuf.MessageLiteOrBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public class ProtoPackets {

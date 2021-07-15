@@ -26,7 +26,7 @@ import java.util.Arrays;
  * // TODO 添加服务器相关统计处理handler
  * // TODO 添加服务器流量整形handler
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 @SuppressWarnings("AlibabaServiceOrDaoClassShouldEndWithImpl")
@@ -35,7 +35,7 @@ public class TcpServer extends AbstractLifecycle implements Lifecycle, NetworkSe
     private final GameOptions opts;
     private final TcpServerHandler tcpServerHandler;
     private final MessageDispatcher dispatcher;
-    private ServerBootstrap bootstrap = new ServerBootstrap();
+    private final ServerBootstrap bootstrap = new ServerBootstrap();
     private int realPort = -1;
 
     public TcpServer(GameOptions opts, TcpServerHandler channelHandler, MessageDispatcher dispatcher) {
@@ -49,7 +49,7 @@ public class TcpServer extends AbstractLifecycle implements Lifecycle, NetworkSe
      * TODO 需仔细设计这里的异常及退出机制
      *
      * @throws IllegalStateException 如果已经启动
-     * @throws LifecycleException 如果被中断
+     * @throws LifecycleException    如果被中断
      */
     @Override
     public void start() {

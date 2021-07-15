@@ -5,9 +5,7 @@
 package com.codedog.rainbow.support;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-30 18:18
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public interface NetworkService extends Lifecycle {
 

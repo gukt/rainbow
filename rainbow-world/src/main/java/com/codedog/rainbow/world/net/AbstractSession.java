@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * AbstractSession
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public abstract class AbstractSession extends AbstractAttributeSupport implements Session {

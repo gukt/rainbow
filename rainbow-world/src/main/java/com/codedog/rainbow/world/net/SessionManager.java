@@ -14,9 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-09 11:23
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class SessionManager {
 
@@ -47,16 +45,6 @@ public class SessionManager {
     }
 
     /**
-     * 移除一个已经登陆进游戏的Session对象
-     *
-     * @param session 已经登陆进游戏的Session对象
-     */
-    public void removeSession(Session session) {
-        Serializable roleId = Sessions.safeGetRoleId(session);
-        SESSIONS_BY_ROLE_ID.remove(roleId);
-    }
-
-    /**
      * 获取当前所有连接(进游戏的 + 未进游戏的)
      *
      * @return return current active connections
@@ -72,6 +60,10 @@ public class SessionManager {
      */
     public static int getConnectionCount() {
         return CONNECTIONS.size();
+    }
+
+    public static int getAllRoleCount() {
+        return SESSIONS_BY_ROLE_ID.size();
     }
 
     // /**
@@ -90,16 +82,22 @@ public class SessionManager {
     //     }
     // }
 
-    public static int getAllRoleCount(){
-        return SESSIONS_BY_ROLE_ID.size();
-    }
-
-    public static int getOnlineRoleCount(){
+    public static int getOnlineRoleCount() {
         return (int) SESSIONS_BY_ROLE_ID.values().stream().filter(s -> !s.isClosed()).count();
     }
 
-    public static int getOfflineRoleCount(){
+    public static int getOfflineRoleCount() {
         return (int) SESSIONS_BY_ROLE_ID.values().stream().filter(Session::isClosed).count();
+    }
+
+    /**
+     * 移除一个已经登陆进游戏的Session对象
+     *
+     * @param session 已经登陆进游戏的Session对象
+     */
+    public void removeSession(Session session) {
+        Serializable roleId = Sessions.safeGetRoleId(session);
+        SESSIONS_BY_ROLE_ID.remove(roleId);
     }
 
     // public enum CountScopeEnum {

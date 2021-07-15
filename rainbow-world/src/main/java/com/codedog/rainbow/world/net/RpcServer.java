@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * RpcServer
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public final class RpcServer extends AbstractLifecycle implements NetworkService {
@@ -42,7 +42,7 @@ public final class RpcServer extends AbstractLifecycle implements NetworkService
      * 启动RpcServer,如果启动过程没有异常，则该方法会阻塞直到被中断
      *
      * @throws IllegalStateException if already started
-     * @throws LifecycleException if interrupted or unable to bind
+     * @throws LifecycleException    if interrupted or unable to bind
      */
     @Override
     public void start() {

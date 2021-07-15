@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
  * Json类型的数据交互格式
  * TODO sn不能设置为负数（使用lombok）
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Builder
 @Data

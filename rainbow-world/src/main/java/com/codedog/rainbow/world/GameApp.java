@@ -23,7 +23,7 @@ import java.util.concurrent.CountDownLatch;
  * // TODO Add RpcServer, 用以接受RPC请求
  * // TODO Add HttpServer
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 @Component

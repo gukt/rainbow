@@ -7,9 +7,7 @@ package com.codedog.rainbow.world.net;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-08-04 12:42
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class MessageResolver {
 

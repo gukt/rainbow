@@ -22,9 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public class TcpServerConfiguration {
@@ -34,7 +32,7 @@ public class TcpServerConfiguration {
     private final EventPublisher eventPublisher;
 
     public TcpServerConfiguration(ApplicationContext context, GameOptions options,
-            EventPublisher eventPublisher) {
+                                  EventPublisher eventPublisher) {
         this.context = context;
         this.options = options;
         this.eventPublisher = eventPublisher;

@@ -7,9 +7,7 @@ package com.codedog.rainbow.world.net.json;
 import lombok.Getter;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public enum MsgTypeEnum {
     /**
@@ -29,9 +27,9 @@ public enum MsgTypeEnum {
     ;
 
     @Getter
-    private int value;
+    private final int value;
     @Getter
-    private String text;
+    private final String text;
 
     MsgTypeEnum(int value, String text) {
         this.value = value;

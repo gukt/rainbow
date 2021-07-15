@@ -10,9 +10,7 @@ import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public interface Session extends AttributeSupport {
 
@@ -42,7 +40,7 @@ public interface Session extends AttributeSupport {
      * 发送指定的消息给对端
      *
      * @param message 要发送的消息
-     * @param flush 是否立即发送
+     * @param flush   是否立即发送
      * @return 返回WriteFuture对象，便于监听完成事件并处理回调逻辑
      */
     CompletableFuture<Void> write(Object message, boolean flush);

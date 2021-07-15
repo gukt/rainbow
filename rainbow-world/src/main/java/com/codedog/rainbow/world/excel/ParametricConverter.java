@@ -16,7 +16,7 @@ import java.util.*;
 /**
  * 泛型类型数据转换器
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public final class ParametricConverter<O> implements DataConverter<O> {

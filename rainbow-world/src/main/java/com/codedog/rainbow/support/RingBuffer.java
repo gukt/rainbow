@@ -13,14 +13,14 @@ import java.util.Iterator;
 /**
  * RingBuffer是一个大小固定的环形缓冲队列
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @SuppressWarnings("unused")
 public class RingBuffer<T> {
 
     private static final int DEFAULT_CAPACITY = 16;
     private final int capacity;
-    private Object[] data;
+    private final Object[] data;
     private int r = 0;
     private int w = 0;
 

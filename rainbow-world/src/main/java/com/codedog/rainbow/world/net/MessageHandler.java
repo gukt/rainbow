@@ -13,7 +13,7 @@ import java.io.Serializable;
 /**
  * 消息处理程序
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public interface MessageHandler<T> {
 

@@ -12,14 +12,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public class WaitGroupWrapper {
 
-    private Phaser phaser = new Phaser(0) {
+    private final Phaser phaser = new Phaser(0) {
         @Override
         protected boolean onAdvance(int phase, int registeredParties) {
             log.debug("phase: {}", phase);

@@ -13,7 +13,7 @@ import java.util.List;
  * AbstractLifeCycleAware
  * TODO 换成列表，可添加多个listener
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public abstract class AbstractLifecycle implements Lifecycle {
 

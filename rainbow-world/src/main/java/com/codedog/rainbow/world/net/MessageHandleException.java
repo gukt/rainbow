@@ -10,7 +10,7 @@ import lombok.NonNull;
 /**
  * 消息处理异常
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @SuppressWarnings("unused")
 public final class MessageHandleException extends RuntimeException {

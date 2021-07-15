@@ -11,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import static com.google.common.base.Objects.equal;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-09 12:59
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public class MessageHandlerAdapter<T> implements MessageHandler<T> {

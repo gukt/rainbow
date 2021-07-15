@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 /**
  * EnableTcpServer
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

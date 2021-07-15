@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
  * TOOD: Resolve the following case:
  * boolean : null
  * List: 1,2,,3
@@ -32,12 +31,11 @@ import java.util.Set;
  * [[1,2,3],[4,5,6]后面少一个空格的问题
  * [1,2,3],[4,5,6] 少了前后两个【】的格式问题
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @SuppressWarnings("unused")
 public class Jsons {
 
-    private static final ObjectMapper OBJECT_MAPPER;
     /**
      * TypeReference: List<Integer>
      */
@@ -72,6 +70,7 @@ public class Jsons {
      */
     public static final TypeReference<Map<String, String>> TYPE_REF_MAP_STR_STR =
             new TypeReference<Map<String, String>>() {};
+    private static final ObjectMapper OBJECT_MAPPER;
 
     static {
         OBJECT_MAPPER = new ObjectMapper();
@@ -93,7 +92,7 @@ public class Jsons {
     /**
      * 将指定的JSON格式的字符串解析成指定类型的对象
      *
-     * @param <V> 返回的对象类型
+     * @param <V>  返回的对象类型
      * @param json 要解析成对象的JSON格式字符串
      * @param type 指定要解析成对象的类型
      * @return 返回解析对象
@@ -119,8 +118,8 @@ public class Jsons {
     /**
      * 将指定的JSON格式的字符串解析成指定类型的对象
      *
-     * @param <T> 返回的对象类型
-     * @param json 要解析成对象的JSON格式字符串
+     * @param <T>     返回的对象类型
+     * @param json    要解析成对象的JSON格式字符串
      * @param typeRef 指定要解析成对象的类型
      * @return 返回解析对象
      */
@@ -131,7 +130,7 @@ public class Jsons {
             return null;
         }
         try {
-            return (T) OBJECT_MAPPER.readValue(json, typeRef);
+            return OBJECT_MAPPER.readValue(json, typeRef);
         } catch (IOException e) {
             throw new JsonConversionException(e);
         }
@@ -146,7 +145,7 @@ public class Jsons {
     /**
      * 将指定的JSON格式的字符串解析成指定类型的对象
      *
-     * @param <V> 返回的对象类型
+     * @param <V>  返回的对象类型
      * @param json 要解析成对象的JSON格式字符串
      * @param type 指定要解析成对象的类型
      * @return 返回解析对象
@@ -156,7 +155,7 @@ public class Jsons {
     public static <V> V toBean(@Nullable String json, JavaType type) {
         try {
             if (!StringUtils.isEmpty(json)) {
-                return (V) OBJECT_MAPPER.readValue(json, type);
+                return OBJECT_MAPPER.readValue(json, type);
             }
             return null;
         } catch (IOException e) {

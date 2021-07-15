@@ -32,9 +32,7 @@ import java.util.*;
 import java.util.function.Function;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-23 14:10
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Builder
 @SuppressWarnings("restriction") // TODO 移除这里
@@ -42,6 +40,7 @@ import java.util.function.Function;
 public class ExcelParser {
 
     private static final ObjectMapper OBJECT_MAPPER;
+    private static final String PATH_SEPERATOR = "/";
 
     static {
         OBJECT_MAPPER = new ObjectMapper();
@@ -51,8 +50,6 @@ public class ExcelParser {
     private final Map<Class<?>, Map<String, Integer>> propertyMappingByType = new HashMap<>();
     private final Kryo kryo = new Kryo();
     private final String baseDir;
-    private int namingRowIndex;
-    private int dataRowIndex;
     /**
      * 是否启动对被解析对象字段的primitive类型检查
      */
@@ -69,12 +66,13 @@ public class ExcelParser {
      * 是否将解析结果持久化到磁盘，以便下次在被解析对象类型没有改变的情况下从持久化的二进制文件中反序列化对象
      */
     private final boolean persist;
-    private static final String PATH_SEPERATOR = "/";
     private final String persistFileSuffix = ".dat";
     private final SimpleDateFormat[] DEFAULT_DATE_FORMATS = new SimpleDateFormat[]{
             new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"),
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     };
+    private final int namingRowIndex;
+    private final int dataRowIndex;
 
     @Nullable
     public <V> List<V> parse(Class<V> clazz) {
@@ -159,9 +157,9 @@ public class ExcelParser {
     /**
      * 根据指定的原始的字符串值进行相应的转换后，给指定对象的指定字段赋值
      *
-     * @param bean 被赋值字段所属的对象
+     * @param bean  被赋值字段所属的对象
      * @param field 被赋值字段
-     * @param v 原始的字符串值
+     * @param v     原始的字符串值
      * @throws ExcelParseException if file to parse
      */
     private void doAssignField(Object bean, Field field, String v) {
@@ -278,7 +276,7 @@ public class ExcelParser {
      * 将字符串转换为Field定义的类型值
      *
      * @param field field of object
-     * @param s raw string value
+     * @param s     raw string value
      * @return return converted value according to field type
      * @throws ExcelParseException if fail in any case.
      */
@@ -399,7 +397,7 @@ public class ExcelParser {
     /**
      * 查找指定列的索引位置
      *
-     * @param targetName 目标列名
+     * @param targetName  目标列名
      * @param columnNames 所有列名
      * @return 返回指定列的索引位置
      */
@@ -417,7 +415,7 @@ public class ExcelParser {
     /**
      * 从列命名行读取所有列，组织成"列名->列索引位置"的映射
      *
-     * @param clazz 类型
+     * @param clazz       类型
      * @param columnNames 命名行
      * @return 返回"列名->列索引位置"的映射
      * @throws ExcelParseException 如果excel文件中有缺失的列名
@@ -615,7 +613,7 @@ public class ExcelParser {
          * 返回被裁剪过的字符串，返回的字符串首尾不包含what参数指定的字符串，
          * 如果what为null或为空，则等同于s.trim()
          *
-         * @param s 被裁剪的字符串
+         * @param s    被裁剪的字符串
          * @param what 要裁剪什么
          * @return 返回被裁剪过的字符串，返回的字符串首尾不包含what参数指定的字符串
          */

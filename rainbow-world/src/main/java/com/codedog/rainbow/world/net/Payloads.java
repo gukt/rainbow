@@ -10,9 +10,7 @@ import com.codedog.rainbow.world.net.json.JsonPacket;
 import java.util.Map;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-08-04 20:59
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class Payloads {
 

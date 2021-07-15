@@ -7,9 +7,7 @@ package com.codedog.rainbow.world.excel;
 import java.util.function.Function;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-08-02 00:43
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class MyTransformer implements Function<String, String> {
 

@@ -8,15 +8,13 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-22 22:21
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @ToString
 public class SessionClosingEvent {
 
     @Getter
-    private Session session;
+    private final Session session;
 
     public SessionClosingEvent(Session session) {
         this.session = session;

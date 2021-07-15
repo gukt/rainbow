@@ -34,16 +34,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class TcpClient {
 
-    private String host;
-    private int port;
-    private EventLoopGroup group = new NioEventLoopGroup();
-    private ConcurrentHashMap<Integer, CompletableFuture<JsonPacket>> futuresBySyncId = new ConcurrentHashMap<>();
-    private AtomicInteger nextSeq = new AtomicInteger(0);
-    private ChannelHandler channelHandler = new ClientChannelHandler();
-    private Bootstrap b = new Bootstrap();
+    private final String host;
+    private final int port;
+    private final EventLoopGroup group = new NioEventLoopGroup();
+    private final ConcurrentHashMap<Integer, CompletableFuture<JsonPacket>> futuresBySyncId = new ConcurrentHashMap<>();
+    private final AtomicInteger nextSeq = new AtomicInteger(0);
+    private final ChannelHandler channelHandler = new ClientChannelHandler();
+    private final Bootstrap b = new Bootstrap();
     private Channel channel;
-    private AtomicInteger nextSync = new AtomicInteger(0);
-    private AtomicInteger nextAck = new AtomicInteger(1);
+    private final AtomicInteger nextSync = new AtomicInteger(0);
+    private final AtomicInteger nextAck = new AtomicInteger(1);
 
     public TcpClient(String host, int port) {
         this.host = host;

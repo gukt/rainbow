@@ -7,9 +7,7 @@ package com.codedog.rainbow.world.net;
 import io.netty.util.AttributeKey;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-21 23:37
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class NetConstants {
 

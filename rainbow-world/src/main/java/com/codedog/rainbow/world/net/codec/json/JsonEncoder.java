@@ -15,9 +15,7 @@ import java.util.List;
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class JsonEncoder extends MessageToMessageEncoder<JsonPacket> {
 

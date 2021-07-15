@@ -21,7 +21,7 @@ import java.util.Set;
  * 对每个连接发来的包做一些安全检查
  * 如果有gateway，则该安全检查可以放到gateway上，gateway后面的进程选择完全信任
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public final class SecurityInterceptor implements MessageInterceptor<JsonPacket> {

@@ -7,7 +7,7 @@ package com.codedog.rainbow.world.net;
 /**
  * 消息拦截器，拦截器会在消息被分发之前被处理
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public interface MessageInterceptor<T> {
 

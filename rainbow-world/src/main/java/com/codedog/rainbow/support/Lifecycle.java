@@ -7,7 +7,7 @@ package com.codedog.rainbow.support;
 /**
  * 生命周期接口
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public interface Lifecycle {
 
@@ -15,7 +15,7 @@ public interface Lifecycle {
      * 启动有生命周期的服务
      *
      * @throws IllegalStateException if already started
-     * @throws LifecycleException if interrupted or unable to bind
+     * @throws LifecycleException    if interrupted or unable to bind
      */
     void start();
 
@@ -72,8 +72,9 @@ public interface Lifecycle {
 
     /**
      * 添加生命周期监听器，可以连续添加多个
-     * @return this
+     *
      * @param listener 监听器
+     * @return this
      */
     Lifecycle addListener(Listener listener);
 
@@ -106,7 +107,7 @@ public interface Lifecycle {
         /**
          * 失败状态
          */
-        FAILED;
+        FAILED
     }
 
     class Listener {
@@ -114,12 +115,14 @@ public interface Lifecycle {
         /**
          * 当状态从NEW变成STARTING时调用
          */
-        public void starting() {}
+        public void starting() {
+        }
 
         /**
          * 当状态从STARTING变成RUNNING时调用
          */
-        public void running() {}
+        public void running() {
+        }
 
         /**
          * 当状态变成STOPPING时调用，变化之前的状态可能是STARTING、RUNNING
@@ -127,21 +130,24 @@ public interface Lifecycle {
          *
          * @param from 变化之前的状态
          */
-        public void stopping(State from) {}
+        public void stopping(State from) {
+        }
 
         /**
          * 当状态变成TERMINATED时调用，TERMINATED是什么周期的最终状态
          *
          * @param from 变化之前的状态
          */
-        public void terminated(State from) {}
+        public void terminated(State from) {
+        }
 
         /**
          * 当状态变化为FAILURE时调用，
          *
-         * @param from 变化之前的状态
+         * @param from    变化之前的状态
          * @param failure 导致失败的异常
          */
-        public void failed(State from, Throwable failure) {}
+        public void failed(State from, Throwable failure) {
+        }
     }
 }

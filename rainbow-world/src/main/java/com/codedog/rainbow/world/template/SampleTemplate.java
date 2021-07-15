@@ -9,10 +9,9 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-23 14:18
  * TODO 指定sheet
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @ExcelMapping(file = "sample.xlsx", sheet = "TODO")
 @Getter

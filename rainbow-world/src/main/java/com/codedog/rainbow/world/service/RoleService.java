@@ -33,9 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Service
 @RequiredArgsConstructor
@@ -48,7 +46,7 @@ public class RoleService extends RoleServiceImplBase {
     /**
      * Converter function: Role -> RoleInfo
      */
-    private Function<Role, @Nullable RoleInfo> role2RoleInfoConverter = r -> RoleInfo.newBuilder()
+    private final Function<Role, @Nullable RoleInfo> role2RoleInfoConverter = r -> RoleInfo.newBuilder()
             .setId(r.getId())
             .setNick(Strings.nullToEmpty(r.getNick()))
             .setGold(r.getGold())

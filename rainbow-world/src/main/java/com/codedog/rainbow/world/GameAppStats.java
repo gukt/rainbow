@@ -9,9 +9,7 @@ import lombok.Getter;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-18 18:32
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class GameAppStats {
 
@@ -59,7 +57,7 @@ public class GameAppStats {
         INSTANCE;
 
         @Getter
-        private GameAppStats gameAppStats;
+        private final GameAppStats gameAppStats;
 
         Singleton() {
             this.gameAppStats = new GameAppStats();

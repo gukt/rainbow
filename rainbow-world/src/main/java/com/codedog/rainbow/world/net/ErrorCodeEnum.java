@@ -9,7 +9,7 @@ import lombok.Getter;
 /**
  * 错误代码枚举
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public enum ErrorCodeEnum {
     /**
@@ -58,9 +58,9 @@ public enum ErrorCodeEnum {
     ;
 
     @Getter
-    private int value;
+    private final int value;
     @Getter
-    private String text;
+    private final String text;
 
     ErrorCodeEnum(int value, String text) {
         this.value = value;

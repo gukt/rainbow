@@ -4,10 +4,10 @@
 
 package com.codedog.rainbow.world.controller;
 
+import com.codedog.rainbow.util.Sessions;
 import com.codedog.rainbow.world.net.*;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import com.codedog.rainbow.world.net.json.MsgTypeEnum;
-import com.codedog.rainbow.util.Sessions;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.Optional;
 /**
  * RoleController
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Controller
 public class RoleController {

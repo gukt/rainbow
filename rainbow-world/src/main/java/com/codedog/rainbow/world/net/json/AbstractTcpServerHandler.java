@@ -29,22 +29,21 @@ import static com.codedog.rainbow.world.net.NetConstants.SESSION_KEY;
  * AbstractTcpServerHandler
  * 创建TcpServerHandler对象能不依赖具体类型吗
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHandler<T> {
 
     protected final GameOptions opts;
     private final EventPublisher eventPublisher;
-    @Getter
-    @Setter
-    protected volatile boolean active;
-
     /**
      * 消息拦截器列表,供外部调用，动态添加interceptors用的
      */
     @Getter
     private final List<MessageInterceptor<T>> interceptorList = new ArrayList<>();
+    @Getter
+    @Setter
+    protected volatile boolean active;
     /**
      * 消息拦截器列表，内部循环使用的
      */
@@ -141,7 +140,7 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
      * 应用拦截器链中的所有拦截器的preHandle方法
      *
      * @param session Session对象
-     * @param packet Packet对象
+     * @param packet  Packet对象
      * @return 拦截器链中的所有拦截器只要有一个拦截器返回false，则该方法返回false，所有拦截器全部成功则返回true
      */
     boolean applyPreHandle(Session session, T packet) {

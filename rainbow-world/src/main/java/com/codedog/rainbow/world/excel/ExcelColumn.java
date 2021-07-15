@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 /**
  * ExcelProperty
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

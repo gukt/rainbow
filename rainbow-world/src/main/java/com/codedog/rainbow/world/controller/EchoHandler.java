@@ -11,9 +11,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Controller;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-09 16:26
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Controller
 public final class EchoHandler implements MessageHandler<JsonPacket> {

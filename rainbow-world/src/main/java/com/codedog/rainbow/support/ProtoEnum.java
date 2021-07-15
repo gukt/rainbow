@@ -7,7 +7,7 @@ package com.codedog.rainbow.support;
 /**
  * 支持的协议类型枚举
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public enum ProtoEnum {
     // Json

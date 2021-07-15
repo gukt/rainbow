@@ -19,21 +19,19 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-18 19:18
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher {
 
     /**
-     * 进程上下文对象，用以访问进程相关配置及状态
-     */
-    private final GameOptions opts;
-    /**
      * 业务处理线程池
      */
     protected final ThreadPoolExecutor bizExec;
+    /**
+     * 进程上下文对象，用以访问进程相关配置及状态
+     */
+    private final GameOptions opts;
     /**
      * 消息泵，用以不间断遍历当前所有在线Session中收到的请求，然后分发任务给业务处理线程池中工作线程处理
      */
@@ -147,6 +145,22 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
         session.completeRequest();
     }
 
+    protected static class RequestTask<T> implements Runnable {
+
+        private final Session session;
+        private final T request;
+
+        protected RequestTask(Session session, T request) {
+            this.session = session;
+            this.request = request;
+        }
+
+        @Override
+        public void run() {
+            throw new NotImplementedException();
+        }
+    }
+
     /**
      * 消息泵，用于不断提供就绪的请求，
      * 内部运行一个无限循环，用于遍历当前所有在线连接上的backlog请求，如果某连接当前有请求未处理完，
@@ -167,7 +181,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
         /**
          * 如果小于此字段值就是用自旋代替等待，单位:毫秒
          */
-        private long spinForTimeoutThreshold = 1000L;
+        private final long spinForTimeoutThreshold = 1000L;
 
         MessagePumper() {
             // 初始化消息泵线程，只需要一个线程，内部运行一个可暂停可中断的无限循环任务
@@ -269,22 +283,6 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                 e.printStackTrace();
             }
             log.info("TCP: Message pumper terminated.");
-        }
-    }
-
-    protected static class RequestTask<T> implements Runnable {
-
-        private final Session session;
-        private final T request;
-
-        protected RequestTask(Session session, T request) {
-            this.session = session;
-            this.request = request;
-        }
-
-        @Override
-        public void run() {
-            throw new NotImplementedException();
         }
     }
 }

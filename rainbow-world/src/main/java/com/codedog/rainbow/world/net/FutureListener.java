@@ -8,9 +8,7 @@ import java.util.EventListener;
 import java.util.concurrent.Future;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-19 16:51
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public interface FutureListener<F extends Future<?>> extends EventListener {
 

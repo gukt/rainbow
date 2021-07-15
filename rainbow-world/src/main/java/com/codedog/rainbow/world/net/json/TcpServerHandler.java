@@ -19,7 +19,7 @@ import static com.codedog.rainbow.world.net.NetConstants.SESSION_KEY;
  * AbstractTcpServerHandler
  * 创建TcpServerHandler对象能不依赖具体类型吗
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 @Sharable

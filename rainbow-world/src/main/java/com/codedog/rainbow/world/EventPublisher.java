@@ -17,16 +17,15 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-22 22:32
  * TODO 需要进一步深入一下Guava的EventBus机制的实现
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @SuppressWarnings("UnstableApiUsage")
 @Slf4j
 public class EventPublisher {
 
-    private static SubscriberExceptionHandler exceptionHandler = new LoggingSubscriberExceptionHandler();
+    private static final SubscriberExceptionHandler exceptionHandler = new LoggingSubscriberExceptionHandler();
     private final EventBus eventBus;
     private final AsyncEventBus asyncEventBus;
     private final ThreadPoolExecutor eventExec;

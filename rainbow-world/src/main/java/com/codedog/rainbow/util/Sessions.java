@@ -14,9 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 @Slf4j
 public class Sessions {
@@ -37,7 +35,7 @@ public class Sessions {
     }
 
     public static void broadcast(Object message, boolean flush, Iterable<Session> sessions,
-            Iterable<Serializable> except) {
+                                 Iterable<Serializable> except) {
         Set<Serializable> exceptRoleIds = Sets.newHashSet(except);
         for (Session session : sessions) {
             Serializable roleId = safeGetRoleId(session);
@@ -53,7 +51,7 @@ public class Sessions {
     }
 
     public static void broadcast(Object message, boolean flush, Iterable<Serializable> roleIds,
-            Serializable... except) {
+                                 Serializable... except) {
         if (except == null) {
             roleIds.forEach(id -> SessionManager.getSessionById(id)
                     .ifPresent(value -> value.write(message, flush)));

@@ -77,7 +77,7 @@ public class ClassUtils {
     }
 
     public static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
-            final boolean recursive, Set<Class<?>> classes) {
+                                                        final boolean recursive, Set<Class<?>> classes) {
         File dir = new File(packagePath);
         if (!dir.exists() || !dir.isDirectory()) {
             log.warn("用户定义包名 " + packageName + " 下没有任何文件");

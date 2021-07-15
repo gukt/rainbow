@@ -5,9 +5,7 @@
 package com.codedog.rainbow.world;
 
 /**
- * Created by gukt <gukaitong@gmail.com> on 2019-08-04 17:13
- *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public class Encrypts {
 

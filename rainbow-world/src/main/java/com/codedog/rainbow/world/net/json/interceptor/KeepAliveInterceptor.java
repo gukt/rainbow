@@ -12,7 +12,7 @@ import com.codedog.rainbow.world.net.json.MsgTypeEnum;
 /**
  * 该拦截器用于拦截KeepAlive请求，对于KeepAlive消息，只接收不响应，保持读通道不空闲即可
  *
- * @author gukt <gukaitong@gmail.com>
+ * @author https://github.com/gukt
  */
 public final class KeepAliveInterceptor implements MessageInterceptor<JsonPacket> {
 
