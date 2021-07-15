@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 laogu.io, The rainbow Project
+ * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
 package com.codedog.rainbow.world.net.codec.json;
