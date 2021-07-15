@@ -8,12 +8,13 @@ import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-22 22:32

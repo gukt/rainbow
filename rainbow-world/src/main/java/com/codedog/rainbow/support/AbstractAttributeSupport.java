@@ -4,9 +4,10 @@
 
 package com.codedog.rainbow.support;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

@@ -4,10 +4,11 @@
 
 package com.codedog.rainbow.world.net;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

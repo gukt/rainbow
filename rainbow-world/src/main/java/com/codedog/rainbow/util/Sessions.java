@@ -2,15 +2,16 @@
  * Copyright 2018-2019 laogu.io, The rainbow Project
  */
 
-package com.codedog.rainbow.world.util;
+package com.codedog.rainbow.util;
 
 import com.codedog.rainbow.world.net.Session;
-import com.google.common.collect.Sets;
 import com.codedog.rainbow.world.net.SessionManager;
+import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

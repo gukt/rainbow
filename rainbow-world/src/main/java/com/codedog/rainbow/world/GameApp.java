@@ -6,15 +6,16 @@ package com.codedog.rainbow.world;
 
 import com.codedog.rainbow.core.concurrent.Once;
 import com.codedog.rainbow.core.concurrent.WaitGroupWrapper;
+import com.codedog.rainbow.support.AbstractLifecycle;
 import com.codedog.rainbow.support.Lifecycle;
 import com.codedog.rainbow.world.net.RpcServer;
 import com.codedog.rainbow.world.net.TcpServer;
-import com.codedog.rainbow.support.AbstractLifecycle;
-import java.util.concurrent.CountDownLatch;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * 表示一个GameServer进程

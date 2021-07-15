@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.net;
 
-import com.codedog.rainbow.world.util.Sessions;
+import com.codedog.rainbow.util.Sessions;
 
 import java.io.Serializable;
 import java.util.ArrayList;

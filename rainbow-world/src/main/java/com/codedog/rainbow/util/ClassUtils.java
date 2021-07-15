@@ -2,7 +2,9 @@
  * Copyright 2018-2019 laogu.io, The rainbow Project
  */
 
-package com.codedog.rainbow.world.util;
+package com.codedog.rainbow.util;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 抄来的，提供类查找相关工具方法

@@ -4,10 +4,11 @@
 
 package com.codedog.rainbow.support;
 
+import lombok.NonNull;
+
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Iterator;
-import javax.annotation.Nullable;
-import lombok.NonNull;
 
 /**
  * RingBuffer是一个大小固定的环形缓冲队列

@@ -4,9 +4,10 @@
 
 package com.codedog.rainbow.world.net;
 
+import lombok.NonNull;
+
 import java.util.HashMap;
 import java.util.Map;
-import lombok.NonNull;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

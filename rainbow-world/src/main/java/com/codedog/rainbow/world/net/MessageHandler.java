@@ -5,10 +5,10 @@
 package com.codedog.rainbow.world.net;
 
 import com.codedog.rainbow.support.NotImplementedException;
-
-import java.io.Serializable;
-import javax.annotation.Nullable;
 import lombok.NonNull;
+
+import javax.annotation.Nullable;
+import java.io.Serializable;
 
 /**
  * 消息处理程序

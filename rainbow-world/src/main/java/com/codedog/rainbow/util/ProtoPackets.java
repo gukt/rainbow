@@ -4,10 +4,10 @@
 
 package com.codedog.rainbow.util;
 
+import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
 import com.google.protobuf.MessageLiteOrBuilder;
-import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import lombok.extern.slf4j.Slf4j;
 
 /**

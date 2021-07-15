@@ -4,27 +4,16 @@
 
 package com.codedog.rainbow.world.service;
 
+import com.codedog.rainbow.util.IdGenerator;
+import com.codedog.rainbow.world.domain.Role;
 import com.codedog.rainbow.world.domain.RoleRepository;
+import com.codedog.rainbow.world.generated.Number;
+import com.codedog.rainbow.world.generated.*;
+import com.codedog.rainbow.world.generated.RoleInfo.Builder;
+import com.codedog.rainbow.world.generated.RoleServiceGrpc.RoleServiceImplBase;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.grpc.stub.StreamObserver;
-import com.codedog.rainbow.world.domain.Role;
-import com.codedog.rainbow.world.generated.BanRequest;
-import com.codedog.rainbow.world.generated.Number;
-import com.codedog.rainbow.world.generated.Result;
-import com.codedog.rainbow.world.generated.RoleInfo;
-import com.codedog.rainbow.world.generated.RoleInfo.Builder;
-import com.codedog.rainbow.world.generated.RoleListRequest;
-import com.codedog.rainbow.world.generated.RoleListResponse;
-import com.codedog.rainbow.world.generated.RoleServiceGrpc.RoleServiceImplBase;
-import com.codedog.rainbow.util.IdGenerator;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.persistence.criteria.Predicate;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +23,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

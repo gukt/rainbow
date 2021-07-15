@@ -4,11 +4,12 @@
 
 package com.codedog.rainbow.core.concurrent;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.Phaser;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

@@ -4,18 +4,18 @@
 
 package com.codedog.rainbow.world.net;
 
-import com.codedog.rainbow.world.GameOptions;
 import com.codedog.rainbow.support.AbstractLifecycle;
 import com.codedog.rainbow.support.LifecycleException;
 import com.codedog.rainbow.support.NetworkService;
+import com.codedog.rainbow.world.GameOptions;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * RpcServer

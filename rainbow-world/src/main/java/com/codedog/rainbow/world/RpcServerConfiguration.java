@@ -4,14 +4,15 @@
 
 package com.codedog.rainbow.world;
 
-import io.grpc.BindableService;
 import com.codedog.rainbow.world.net.RpcServer;
-import java.util.List;
-import java.util.stream.Collectors;
+import io.grpc.BindableService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

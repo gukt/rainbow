@@ -4,15 +4,16 @@
 
 package com.codedog.rainbow.world.net.codec.protobuf;
 
-import com.google.protobuf.MessageLiteOrBuilder;
-import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.codedog.rainbow.util.ProtoPackets;
+import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
+import com.google.protobuf.MessageLiteOrBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

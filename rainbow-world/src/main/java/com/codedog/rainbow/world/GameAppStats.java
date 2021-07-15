@@ -4,8 +4,9 @@
 
 package com.codedog.rainbow.world;
 
-import java.util.concurrent.atomic.LongAdder;
 import lombok.Getter;
+
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-18 18:32

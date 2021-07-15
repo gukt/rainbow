@@ -8,13 +8,9 @@ import com.codedog.rainbow.util.MoreStrings;
 import com.codedog.rainbow.world.net.ErrorCodeEnum;
 import com.codedog.rainbow.world.net.Payload;
 import com.codedog.rainbow.world.net.Session;
+import lombok.*;
+
 import java.util.concurrent.CompletableFuture;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.ToString;
 
 /**
  * Json类型的数据交互格式

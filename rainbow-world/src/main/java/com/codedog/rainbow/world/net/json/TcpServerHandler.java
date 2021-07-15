@@ -4,8 +4,6 @@
 
 package com.codedog.rainbow.world.net.json;
 
-import static com.codedog.rainbow.world.net.NetConstants.SESSION_KEY;
-
 import com.codedog.rainbow.world.EventPublisher;
 import com.codedog.rainbow.world.GameOptions;
 import com.codedog.rainbow.world.net.ErrorCodeEnum;
@@ -14,6 +12,8 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import static com.codedog.rainbow.world.net.NetConstants.SESSION_KEY;
 
 /**
  * AbstractTcpServerHandler

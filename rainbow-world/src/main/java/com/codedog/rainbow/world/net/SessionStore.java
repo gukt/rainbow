@@ -5,11 +5,11 @@
 package com.codedog.rainbow.world.net;
 
 import com.codedog.rainbow.support.RingBuffer;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import lombok.Getter;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-18 18:32

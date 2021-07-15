@@ -5,17 +5,12 @@
 package com.codedog.rainbow.world.domain;
 
 import com.codedog.rainbow.support.AbstractAttributeSupport;
+import lombok.*;
 
-import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.Date;
 
 /**
  * Created by gukt <gukaitong@gmail.com> on 2019-07-05 02:41

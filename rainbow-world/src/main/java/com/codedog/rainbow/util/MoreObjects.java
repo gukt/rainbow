@@ -1,7 +1,6 @@
 package com.codedog.rainbow.util;
 
 import javax.annotation.Nullable;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;

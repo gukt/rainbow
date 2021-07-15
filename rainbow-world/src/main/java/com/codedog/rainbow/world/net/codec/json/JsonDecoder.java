@@ -4,11 +4,12 @@
 
 package com.codedog.rainbow.world.net.codec.json;
 
-import com.codedog.rainbow.world.net.json.JsonPacket;
 import com.codedog.rainbow.util.Jsons;
+import com.codedog.rainbow.world.net.json.JsonPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+
 import java.util.List;
 
 /**
