@@ -3,19 +3,9 @@
  */
 package com.codedog.rainbow.world;
 
-import com.codedog.rainbow.list.LinkedList;
-
-import static com.codedog.rainbow.utilities.StringUtils.join;
-import static com.codedog.rainbow.utilities.StringUtils.split;
-import static com.codedog.rainbow.world.MessageUtils.getMessage;
-
-import org.apache.commons.text.WordUtils;
-
 public class App {
+
     public static void main(String[] args) {
-        LinkedList tokens;
-        tokens = split(getMessage());
-        String result = join(tokens);
-        System.out.println(WordUtils.capitalize(result));
+        System.out.println("hello world");
     }
 }

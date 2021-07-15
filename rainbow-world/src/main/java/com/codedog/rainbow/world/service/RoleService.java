@@ -6,7 +6,7 @@ package com.codedog.rainbow.world.service;
 
 import com.codedog.rainbow.util.IdGenerator;
 import com.codedog.rainbow.world.domain.Role;
-import com.codedog.rainbow.world.domain.RoleRepository;
+import com.codedog.rainbow.world.repository.RoleRepository;
 import com.codedog.rainbow.world.generated.Number;
 import com.codedog.rainbow.world.generated.*;
 import com.codedog.rainbow.world.generated.RoleInfo.Builder;
@@ -17,7 +17,6 @@ import io.grpc.stub.StreamObserver;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -46,20 +45,17 @@ public class RoleService extends RoleServiceImplBase {
     /**
      * Converter function: Role -> RoleInfo
      */
-    private final Function<Role, @Nullable RoleInfo> role2RoleInfoConverter = r -> RoleInfo.newBuilder()
+    private final Function<Role, RoleInfo> role2RoleInfoConverter = r -> RoleInfo.newBuilder()
             .setId(r.getId())
-            .setNick(Strings.nullToEmpty(r.getNick()))
-            .setGold(r.getGold())
-            .setBanTime(r.getBanTime().getTime())
-            .setCreateTime(r.getCreatedTime().getTime())
+            .setCreateTime(r.getCreatedAt().getTime())
             .build();
 
     public Role save(Role entity) {
         if (entity.getId() == null) {
             entity.setId(IdGenerator.nextId());
         }
-        if (entity.getCreatedTime() == null) {
-            entity.setCreatedTime(new Date());
+        if (entity.getCreatedAt() == null) {
+            entity.setCreatedAt(new Date());
         }
         roleRepository.save(entity);
         return entity;
@@ -128,10 +124,7 @@ public class RoleService extends RoleServiceImplBase {
         if (role.isPresent()) {
             Role r = role.get();
             response.setId(r.getId());
-            response.setNick(r.getNick());
-            response.setAvatar(r.getAvatar());
-            response.setBanTime(r.getBanTime().getTime());
-            response.setCreateTime(r.getCreatedTime().getTime());
+            response.setCreateTime(r.getCreatedAt().getTime());
         }
 
         responseObserver.onNext(response.build());
@@ -140,13 +133,13 @@ public class RoleService extends RoleServiceImplBase {
 
     @Override
     public void ban(BanRequest request, StreamObserver<Result> responseObserver) {
-        Role r = roleRepository.getOne(request.getRoleId());
-        if (request.getBanTime() == -1 && r.getBanTime() != null) {
+        Role r = roleRepository.getById(request.getRoleId());
+        if (request.getBanTime() == -1 && r.getBlockedUntil() != null) {
             // 取消封禁
-            r.setBanTime(null);
+            r.setBlockedUntil(null);
         } else {
             // 封禁
-            r.setBanTime(new Date(request.getBanTime()));
+            r.setBlockedUntil(new Date(request.getBanTime()));
         }
         roleRepository.save(r);
 
@@ -154,7 +147,5 @@ public class RoleService extends RoleServiceImplBase {
         responseObserver.onCompleted();
     }
 
-    /**
-     * =============== - RPC implements ===============
-     */
+//    RPC implements
 }

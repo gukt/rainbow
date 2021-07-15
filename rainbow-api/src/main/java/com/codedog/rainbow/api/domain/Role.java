@@ -2,12 +2,9 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.world.domain;
+package com.codedog.rainbow.api.domain;
 
-import com.codedog.rainbow.support.AbstractAttributeSupport;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Entity;
@@ -23,8 +20,7 @@ import java.util.Date;
 @Table(name = "t_roles")
 @RequiredArgsConstructor
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class Role extends AbstractAttributeSupport {
+public class Role {
 
     /**
      * ID，主键，由程序提供，需保证是全局唯一 ID

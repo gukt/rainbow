@@ -12,20 +12,28 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @EnableConfigurationProperties
 @EnableTcpServer
 @EnableRpcServer
+@RestController
 public class RainbowWorldApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(RainbowWorldApplication.class, args);
 
-        GameApp app = context.getBean(GameApp.class);
-        TcpServer tcpServer = context.getBean(TcpServer.class);
-        app.setTcpServer(tcpServer);
-        app.start();
+//        GameApp app = context.getBean(GameApp.class);
+//        TcpServer tcpServer = context.getBean(TcpServer.class);
+//        app.setTcpServer(tcpServer);
+//        app.start();
+    }
+
+    @GetMapping("hello")
+    public void hello() {
+        System.out.println("hello");
     }
 
 }

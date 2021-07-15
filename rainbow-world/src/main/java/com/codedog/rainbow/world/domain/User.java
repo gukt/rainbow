@@ -5,10 +5,7 @@
 package com.codedog.rainbow.world.domain;
 
 import com.codedog.rainbow.support.AbstractAttributeSupport;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,19 +17,20 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "t_roles")
-@RequiredArgsConstructor
+@Table(name = "t_users")
+@NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Role extends AbstractAttributeSupport {
+public class User extends AbstractAttributeSupport {
 
     /**
      * ID，主键，由程序提供，需保证是全局唯一 ID
      */
     @Id
+    @NonNull
     private Long id;
-    private Long uid;
-    private Date blockedUntil;
+    private String nick;
+    private String avatar;
     private Date createdAt;
     private Date updatedAt;
 }

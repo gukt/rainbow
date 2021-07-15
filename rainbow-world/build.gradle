@@ -1,4 +1,5 @@
 plugins {
+    id 'com.codedog.rainbow.java-application-conventions'
     id 'org.springframework.boot' version '2.5.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
@@ -56,18 +57,12 @@ protobuf {
 }
 
 dependencies {
+    implementation project(':rainbow-core')
     implementation 'org.springframework.boot:spring-boot-starter'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'mysql:mysql-connector-java'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
     implementation 'io.netty:netty-all:4.1.65.Final'
-    implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'com.esotericsoftware:kryo:5.1.1'
     implementation 'com.esotericsoftware:reflectasm:1.11.9'
     implementation 'com.google.protobuf:protobuf-java:3.17.3'
@@ -79,6 +74,11 @@ dependencies {
     implementation 'io.grpc:grpc-protobuf:1.39.0'
     implementation 'io.grpc:grpc-stub:1.39.0'
 
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'mysql:mysql-connector-java'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {

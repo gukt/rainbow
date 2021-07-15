@@ -4,6 +4,8 @@
 
 package com.codedog.rainbow.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -17,7 +19,10 @@ import java.util.Set;
  * @version 1.0
  * @date 2020/2/2 17:26
  */
+@Deprecated
 public class Beans {
+
+    private static final Logger logger = LoggerFactory.getLogger(Beans.class);
 
     private static String[] getNullProperties(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
