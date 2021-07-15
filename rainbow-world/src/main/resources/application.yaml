@@ -1,0 +1,70 @@
+debug: false
+
+# SpringBoot configurations
+#
+spring:
+  profiles:
+    active: dev
+    include: hsqldb
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
+    password: ${app.db-password}
+    url: jdbc:mysql://${app.db-host}:${app.db-port}/${app.db-catalog}?createDatabaseIfNotExist=true&useSSL=false&characterEncoding=utf-8
+    username: ${app.db-username}
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: false
+        hbm2ddl:
+          auto: update
+    show-sql: false
+  main:
+    web-application-type: none
+logging:
+  level:
+    io:
+      laogu: debug
+    root: info
+    web: debug
+
+# Application configurations
+#
+app:
+  debug: true
+
+  #biz executor
+  biz-exec:
+    core-pool-size: 5
+    max-pool-size: 50
+    keep-alive-timeout-seconds: 60000
+    queue-capacity: 100
+    thread-pattern: biz-%d
+    wait-termination-timeout-millis: 5000
+  # databases
+  db-catalog: rainbow
+  db-host: localhost
+  db-password: P@s$w0rd#!!32
+  db-port: 3306
+  db-username: root
+  # tcp
+  tcp-server-enabled: true
+  tcp-port: 5000
+  tcp-server-bootstrap-thread-pattern: tcp-server-bootstrap
+  tcp-boss-group-thread-pattern: tcp-boss
+  tcp-worker-group-thread-pattern: tcp-%d
+  tcp-continuous-bad-packet-threshold: 100
+  tcp-keep-alive-timeout: 30000
+  tcp-max-connections: 30000
+  tcp-packet-seq-check-enabled: false
+  # misc
+  session-max-pending-request-size: 10
+  session-max-cache-response-size: 100
+  slow-processing-threshold: 1000
+  pumper-exec-thread-pattern: message-pumper
+  pumper-wait-millis-on-idle: 300
+  pumper-wait-millis-on-rejected: 300
+  protocol: json

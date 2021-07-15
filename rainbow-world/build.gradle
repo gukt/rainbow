@@ -2,6 +2,8 @@ plugins {
     id 'org.springframework.boot' version '2.5.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    // https://github.com/google/protobuf-gradle-plugin
+    id "com.google.protobuf" version "0.8.17"
 }
 
 group = 'com.codedog.rainbow'
@@ -12,9 +14,71 @@ repositories {
     mavenCentral()
 }
 
+// 将 protobuf、grpc 默认生成的代码路径添加进去
+// 如果想更改 protobuf、grpc 默认生成的代码路径，请在 protobuf 中定义 generatedFilesBaseDir（https://github.com/google/protobuf-gradle-plugin）
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
+// The 'protobuf-gradle-plugin' adds the following 'protobuf' block to the project.
+// It provides all the configuration knobs.
+protobuf {
+    // Configure the protoc executable
+    protoc {
+        // Download from repositories
+        artifact = "com.google.protobuf:protoc:3.7.0"
+
+        // You may also specify a local path. (commented the following out if need)
+        // path = '/usr/local/bin/protoc'
+
+        // Multiple assignments are allowed here. The last one wins.
+    }
+    // Locate the codegen plugins
+    plugins {
+        // Locate a plugin with name 'grpc'. This step is optional.
+        // If you don't locate it, protoc will try to use "protoc-gen-grpc" from
+        // system search path.
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.7.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'mysql:mysql-connector-java'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'io.netty:netty-all:4.1.65.Final'
+    implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'com.esotericsoftware:kryo:5.1.1'
+    implementation 'com.esotericsoftware:reflectasm:1.11.9'
+    implementation 'com.google.protobuf:protobuf-java:3.17.3'
+    implementation 'com.google.protobuf:protobuf-java-util:3.17.3'
+    implementation 'com.googlecode.protobuf-java-format:protobuf-java-format:1.4'
+    implementation 'com.alibaba:easyexcel:2.2.10'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.12.4'
+    implementation 'net.jcip:jcip-annotations:1.0'
+    implementation 'io.grpc:grpc-protobuf:1.39.0'
+    implementation 'io.grpc:grpc-stub:1.39.0'
+
 }
 
 test {

@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.codedog.rainbow.world.generated";
+option java_outer_classname = "RoleProto";
+option objc_class_prefix = "HLW";
+option optimize_for = SPEED;
+
+package service;
+
+service RoleService {
+  //  请求玩家列表
+  rpc findAll (RoleListRequest) returns (RoleListResponse) {
+  }
+
+  // 封禁/解禁
+  rpc ban (BanRequest) returns (Result) {
+  }
+
+  // 获得角色信息
+  rpc findOne (Number) returns (RoleInfo) {
+  }
+}
+
+message RoleListRequest {
+  int32 type = 1; // 0:所有，1：在线玩家，3：充值列表
+  int64 role_id = 2; // 根据roleId查询
+  string keyword = 3; // 查询关键字
+  int32 page = 4;
+  int32 page_size = 5;
+}
+
+message RoleListResponse {
+  repeated RoleInfo role = 1;
+  int32 total_page = 2;
+}
+
+message Result {
+  int32 ret = 1;
+  string msg = 2;
+  map<string, string> payload = 3;
+}
+
+message BanRequest {
+  int64 role_id = 1;
+  int64 ban_time = 2; // 设为0表示解禁
+}
+
+message Number {
+  int32 int_value = 1;
+  int64 long_value = 2;
+}
+
+message RoleInfo {
+  int64 id = 1;
+  string nick = 2;
+  string avatar = 3;
+  int64 gold = 4;
+  int64 create_time = 5;
+  int64 ban_time = 6;
+}

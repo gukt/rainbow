@@ -1,0 +1,52 @@
+syntax = "proto3";
+option java_package = "com.codedog.rainbow.world.generated";
+option java_outer_classname = "CommonProto";
+option optimize_for = SPEED;
+
+/**
+关于协议制定的一些说明：
+1. 对于数值类型不要适用如uint32;uint64等无符号类型，而应适用int32，int64。
+2. 字段命名遵循单词全部用小写，每个单词之间用下划线（_)连接，尽量不要用简写，若适用简写也要是耳熟能详的简写
+3. 每添加了一个Request或Response时，需要同步在MessageType中加一条与之对应的枚举值，大小写不敏感，单词之间可以加多个下划线
+4. 老协议中表示玩家的ID由uid改变为role_id
+5. 新协议中的流水Id命名规则为：xxx_sid，而xxx_id表示模板Id，如：hero_id(表示模板中定义的hero);hero_sid(表示数据的纪录ID）
+*/
+
+message ProtoPacket {
+  // 序号，每个包序号递增且唯一
+  uint64 sn = 1;
+  // 消息类型
+  MsgTypeEnum type = 2;
+  // 消息具体内容
+  bytes payload = 3;
+  // 透传的扩展信息，服务器会原封不动传回该字段信息，及时是返回Error
+  string ext = 4;
+  // 创建包实例的时间戳，单位：毫秒
+  uint64 time = 5;
+  // 校验和
+  bytes checksum = 6;
+}
+
+/** 消息类型 */
+enum MsgTypeEnum {
+  Unknown = 0;
+  KeepAlive = 10001;
+  Ping = 10002;
+  Pong = 10003;
+  Notification = 10004;
+  Error = 10005;
+}
+
+//message KeepAlive {
+//}
+//
+//message Ping {
+//}
+//
+//message Pong {
+//}
+//
+//message Notification {
+//  string text = 1;
+//}
+
