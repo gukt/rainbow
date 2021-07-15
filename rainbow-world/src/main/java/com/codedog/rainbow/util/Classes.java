@@ -23,7 +23,7 @@ import java.util.jar.JarFile;
  * TODO 找一个更优秀的ClassUtils实现类
  */
 @Slf4j
-public class ClassUtils {
+public class Classes {
 
     public static Set<Class<?>> getClasses(String packageScan) {
         Set<Class<?>> classes = new LinkedHashSet<>();

@@ -87,7 +87,7 @@ public class JsonPacket {
     }
 
     public static JsonPacket ofError(@NonNull ErrorCodeEnum errCode, String text) {
-        return ofError(errCode.getValue(), MoreStrings.ifNull(text, errCode.getText()));
+        return ofError(errCode.getValue(), MoreStrings.nullToDefault(text, errCode.getText()));
     }
 
     public static JsonPacket ofError(int code, String msg) {

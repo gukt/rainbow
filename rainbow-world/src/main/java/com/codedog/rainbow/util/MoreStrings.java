@@ -13,7 +13,7 @@ public class MoreStrings {
         return s == null || s.isEmpty();
     }
 
-    public static String ifNull(String s, String defaultValue) {
+    public static String nullToDefault(String s, String defaultValue) {
         return s == null ? defaultValue : s;
     }
 }

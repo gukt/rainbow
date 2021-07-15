@@ -10,10 +10,10 @@ import java.util.Objects;
  *
  * @author https://github.com/gukt
  */
-public final class Maps {
+public final class MoreCollections {
 
     /** Prevents to construct an instance. */
-    private Maps() {
+    private MoreCollections() {
     }
 
     public static boolean isNullOrEmpty(@Nullable Map<?, ?> map) {
