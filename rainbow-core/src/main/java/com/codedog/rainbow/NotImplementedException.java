@@ -2,7 +2,7 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.support;
+package com.codedog.rainbow;
 
 /**
  * @author https://github.com/gukt

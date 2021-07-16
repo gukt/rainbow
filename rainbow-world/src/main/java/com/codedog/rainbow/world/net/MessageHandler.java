@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.net;
 
-import com.codedog.rainbow.support.NotImplementedException;
+import com.codedog.rainbow.NotImplementedException;
 import lombok.NonNull;
 
 import javax.annotation.Nullable;

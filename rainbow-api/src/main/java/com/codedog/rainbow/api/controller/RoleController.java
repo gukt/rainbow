@@ -12,8 +12,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.beans.Beans;
-
 import static com.codedog.rainbow.api.common.ApiResult.OK;
 
 /**

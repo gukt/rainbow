@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.net;
 
-import com.codedog.rainbow.support.NotImplementedException;
+import com.codedog.rainbow.NotImplementedException;
 import com.codedog.rainbow.world.GameOptions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.NonNull;
