@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.net;
 
-import com.codedog.rainbow.world.TcpServerConfiguration;
+import com.codedog.rainbow.world.TcpServerAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(TcpServerConfiguration.class)
+@Import(TcpServerAutoConfiguration.class)
 public @interface EnableTcpServer {
 
 }

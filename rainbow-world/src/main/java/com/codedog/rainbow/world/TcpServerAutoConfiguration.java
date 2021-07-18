@@ -9,11 +9,18 @@ import com.codedog.rainbow.world.net.json.JsonPacket;
 import com.codedog.rainbow.world.net.json.JsonPacketDispatcher;
 import com.codedog.rainbow.world.net.json.TcpServerHandler;
 import com.codedog.rainbow.world.net.json.interceptor.KeepAliveInterceptor;
-import com.codedog.rainbow.world.net.json.interceptor.SecurityInterceptor;
+import com.codedog.rainbow.world.net.json.interceptor.TcpSecurityInterceptor;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.stereotype.Controller;
 
 import java.io.Serializable;
@@ -22,35 +29,40 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Auto configuration for {@link TcpServer} support
+ *
  * @author https://github.com/gukt
  */
+@Configuration
+@ConditionalOnClass(TcpServer.class)
+@EnableConfigurationProperties(TcpProperties.class)
 @Slf4j
-public class TcpServerConfiguration {
+public class TcpServerAutoConfiguration {
 
     private final ApplicationContext context;
-    private final GameOptions options;
     private final EventPublisher eventPublisher;
 
-    public TcpServerConfiguration(ApplicationContext context, GameOptions options,
-                                  EventPublisher eventPublisher) {
+    public TcpServerAutoConfiguration(ApplicationContext context,
+                                      EventPublisher eventPublisher) {
         this.context = context;
-        this.options = options;
         this.eventPublisher = eventPublisher;
     }
 
     @Bean
-    public TcpServer tcpServer() {
-        // 创建MessageDispatcher对象，此处是支持json格式的消息派发器
-        MessageDispatcher dispatcher = new JsonPacketDispatcher(options);
+    @ConditionalOnMissingBean(TcpServer.class)
+    @ConditionalOnSingleCandidate(TcpProperties.class)
+    public TcpServer tcpServer(TcpProperties tcpProperties) {
+        // 创建 MessageDispatcher 对象，默认支持 JSON 格式协议
+        MessageDispatcher dispatcher = new JsonPacketDispatcher(tcpProperties);
         messageHandlers().forEach(dispatcher::registerHandler);
 
-        TcpServerHandler tcpServerHandler = new TcpServerHandler(options, eventPublisher);
+        TcpServerHandler tcpServerHandler = new TcpServerHandler(tcpProperties, eventPublisher);
         // 创建TcpServerHandler对象
-        tcpServerHandler.getInterceptorList().addAll(messageInterceptors(options));
-        return new TcpServer(options, tcpServerHandler, dispatcher);
+        tcpServerHandler.getInterceptorList().addAll(messageInterceptors(tcpProperties));
+        return new TcpServer(tcpProperties, tcpServerHandler, dispatcher);
     }
 
-    @Bean
+//    @Bean
     public List<MessageHandler<?>> messageHandlers() {
         log.debug("TCP: 正在查找所有可用的TCP消息处理器");
         List<MessageHandler<?>> handlers = new ArrayList<>();
@@ -78,10 +90,10 @@ public class TcpServerConfiguration {
         return handlers;
     }
 
-    @Bean
-    public List<MessageInterceptor<JsonPacket>> messageInterceptors(GameOptions opts) {
+//    @Bean
+    public List<MessageInterceptor<JsonPacket>> messageInterceptors(TcpProperties tcpProperties) {
         List<MessageInterceptor<JsonPacket>> interceptors = new ArrayList<>();
-        interceptors.add(new SecurityInterceptor(opts));
+        interceptors.add(new TcpSecurityInterceptor(tcpProperties));
         interceptors.add(new KeepAliveInterceptor());
         return interceptors;
     }

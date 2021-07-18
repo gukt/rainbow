@@ -5,7 +5,8 @@
 package com.codedog.rainbow.world.net.json;
 
 import com.codedog.rainbow.world.EventPublisher;
-import com.codedog.rainbow.world.GameOptions;
+import com.codedog.rainbow.world.AppProperties;
+import com.codedog.rainbow.world.TcpProperties;
 import com.codedog.rainbow.world.net.ErrorCodeEnum;
 import com.codedog.rainbow.world.net.Session;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -26,7 +27,7 @@ import static com.codedog.rainbow.world.net.NetConstants.SESSION_KEY;
 @Component
 public final class TcpServerHandler extends AbstractTcpServerHandler<JsonPacket> {
 
-    public TcpServerHandler(GameOptions opts, EventPublisher eventPublisher) {
+    public TcpServerHandler(TcpProperties opts, EventPublisher eventPublisher) {
         super(opts, eventPublisher);
     }
 

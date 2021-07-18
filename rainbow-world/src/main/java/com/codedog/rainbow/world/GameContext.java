@@ -16,10 +16,11 @@ public class GameContext {
 
     @Getter
     @Setter
-    private GameApp app;
+    private GameWorld app;
     @Getter
     @Setter
-    private GameOptions options;
+    @Deprecated
+    private AppProperties options;
     @Getter
     @Setter
     private EventPublisher eventPublisher;

@@ -41,12 +41,12 @@ public class SessionStore {
      * "连续接收到的无效包个数"计数器，一旦消息被接受该字段会被清零
      */
     @Getter
-    private int continuousBadRequestCount = 0;
+    private int badPacketCount = 0;
     /**
      * 总计"连续接收到的无效包个数"
      */
     @Getter
-    private int totalBadRequestCount = 0;
+    private int badPacketAmount = 0;
 
     SessionStore(int maxPendingRequestSize, int maxCacheResponseSize) {
         this.pendingRequests = new RingBuffer<>(maxPendingRequestSize);
@@ -55,18 +55,18 @@ public class SessionStore {
 
     public int incrementSeq() {
         // 一旦某个包被接受了，就重置"连续接收无效包计数器"为0
-        continuousBadRequestCount = 0;
+        badPacketCount = 0;
         return nextSeq.incrementAndGet();
     }
 
     /**
      * 递增"持续非法请求数"，该方法一般在单线程中调用，因此不用同步
      */
-    public void incrementContinuousBadRequestCount() {
+    public void incrBadPacketCount() {
         // 递增持续非法请求
-        continuousBadRequestCount++;
+        badPacketCount++;
         // 递增累计非法请求数
-        totalBadRequestCount++;
+        badPacketAmount++;
     }
 
     /**

@@ -5,7 +5,7 @@
 package com.codedog.rainbow.world.net;
 
 import com.codedog.rainbow.NotImplementedException;
-import com.codedog.rainbow.world.GameOptions;
+import com.codedog.rainbow.world.TcpProperties;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -24,26 +24,23 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher {
 
+    private final TcpProperties tcpProperties;
     /**
      * 业务处理线程池
      */
-    protected final ThreadPoolExecutor bizExec;
+    protected final ThreadPoolExecutor bizExecutor;
     /**
-     * 进程上下文对象，用以访问进程相关配置及状态
-     */
-    private final GameOptions opts;
-    /**
-     * 消息泵，用以不间断遍历当前所有在线Session中收到的请求，然后分发任务给业务处理线程池中工作线程处理
+     * 用以遍历当前所有在线 Session 中待处理请求，分发给业务处理线程池处理。
      */
     private final MessagePumper pumper;
 
     /**
-     * 消息类型->MessageHandler映射
+     * 消息类型 -> MessageHandler 的映射关系
      */
     private final Map<Serializable, MessageHandler<?>> handlersMap = new HashMap<>(16);
 
-    public AbstractMessageDispatcher(GameOptions opts) {
-        this.opts = opts;
+    public AbstractMessageDispatcher(TcpProperties tcpProperties) {
+        this.tcpProperties = tcpProperties;
         this.pumper = new MessagePumper();
 
         // TODO 将bizExec通过外部传入？
@@ -58,23 +55,23 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
         // 此时，客户端由于一只没有等待到请求的响应，可以继续等待或做超时处理，
         // 如果等待期间，服务器的业务处理线程池迅速处理了请求，则满足预期，只是客户端看到的表现是响应比较慢，但合理（因为服务器忙）
         // 如果等待超时，客户端可尝试自动重试机制，继续发送刚刚处理超时的请求（注意：
-        GameOptions.BizExec bizExecOpts = opts.getBizExec();
-        this.bizExec = new ThreadPoolExecutor(
-                bizExecOpts.getCorePoolSize(),
-                bizExecOpts.getMaxPoolSize(),
-                bizExecOpts.getKeepAliveTimeoutSeconds(), TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(bizExecOpts.getQueueCapacity()),
+        TcpProperties.BizExecutor bizExecutorOpts = tcpProperties.getBizExecutor();
+        this.bizExecutor = new ThreadPoolExecutor(
+                bizExecutorOpts.getCorePoolSize(),
+                bizExecutorOpts.getMaxPoolSize(),
+                bizExecutorOpts.getKeepAliveTimeoutSeconds(), TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(bizExecutorOpts.getQueueCapacity()),
                 // new SynchronousQueue<>(),
-                new ThreadFactoryBuilder().setNameFormat(bizExecOpts.getThreadPattern()).build(),
+                new ThreadFactoryBuilder().setNameFormat(bizExecutorOpts.getThreadPattern()).build(),
                 (r, executor) -> pumper.onRequestRejected(r)
         );
     }
 
     @Override
     public void start() {
-        log.info("TCP: Starting message dispatcher");
+        log.info("TCP: Starting the message dispatcher");
         pumper.start();
-        log.info("TCP: Started message dispatcher.");
+        log.info("TCP: Started the message dispatcher.");
     }
 
     @Override
@@ -87,14 +84,14 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
 
         // 关闭业务线程池
         log.info("TCP: Shutting down biz-exec");
-        bizExec.shutdown();
+        bizExecutor.shutdown();
         try {
-            if (!bizExec.awaitTermination(opts.getBizExec().getWaitTerminationTimeoutMillis(), TimeUnit.MILLISECONDS)) {
+            if (!bizExecutor.awaitTermination(tcpProperties.getBizExecutor().getWaitTerminationTimeoutMillis(), TimeUnit.MILLISECONDS)) {
                 log.info("TCP: 等待业务处理线程池关闭超时，将强制关闭！");
-                bizExec.shutdownNow();
+                bizExecutor.shutdownNow();
             }
         } catch (InterruptedException e) {
-            bizExec.shutdownNow();
+            bizExecutor.shutdownNow();
         }
         log.info("TCP: 业务处理线程池已关闭.");
     }
@@ -125,7 +122,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
             return;
         }
         long duration = System.currentTimeMillis() - startTime;
-        if (duration > opts.getSlowProcessingThreshold()) {
+        if (duration > tcpProperties.getSlowProcessingThreshold()) {
             log.warn("TCP: slow process: {} millis, {}", duration, message);
         }
     }
@@ -187,14 +184,14 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
             // 初始化消息泵线程，只需要一个线程，内部运行一个可暂停可中断的无限循环任务
             this.pumpExec = new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS,
                     new ArrayBlockingQueue<>(1),
-                    r -> new Thread(r, opts.getPumperExecThreadPattern())
+                    r -> new Thread(r, tcpProperties.getPumperExecThreadPattern())
             );
         }
 
         void onRequestRejected(Runnable r) {
             try {
                 // pause message pumper for a while
-                pumper.pause(opts.getPumperWaitMillisOnRejected());
+                pumper.pause(tcpProperties.getPumperWaitMillisOnRejected());
 
                 // 更新processing状态，以便下一轮循环可以被调度
                 RequestTask task = (RequestTask) r;

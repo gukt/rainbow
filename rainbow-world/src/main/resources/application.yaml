@@ -35,6 +35,8 @@ logging:
 #
 app:
   debug: true
+  excel:
+    path: /data/excel
   # Database
   db:
     host: codemonkey.top
@@ -42,31 +44,35 @@ app:
     username: root
     password: 1234+aaaa
     catalog: rainbow_game
-  # Socket Server
-  socket:
+  # TCP Server properties
+  tcp:
     enabled: false
     protocol: json
     port: 5000
-    keep-alive-timeout: 30000
+    keep-alive-timeout: 30
     max-connections: 30000
     seq-check-enabled: false
     bad-packet-threshold: 100
-    executor:
-      boss-thread-name: tcp-boss
-      boot-thread-name: tcp-bootstrap
-      worker-thread-pattern: tcp-%d
+    boss-thread-name: tcp-boss
+    bootstrap-thread-name: tcp-bootstrap
+    worker-thread-pattern: tcp-%d
+  # RPC Server properties
+  rpc:
+    enabled: false
+    port: 15000
+    bootstrap-thread-name: rpc-bootstrap
   # 以下待整理
   #biz executor
-  biz-exec:
+  biz-executor:
     core-pool-size: 5
     max-pool-size: 50
     keep-alive-timeout-seconds: 60000
     queue-capacity: 100
     thread-pattern: biz-%d
     wait-termination-timeout-millis: 5000
-  session-max-pending-request-size: 10
-  session-max-cache-response-size: 100
-  slow-processing-threshold: 1000
-  pumper-exec-thread-pattern: message-pumper
-  pumper-wait-millis-on-idle: 300
-  pumper-wait-millis-on-rejected: 300
+    session-max-pending-request-size: 10
+    session-max-cache-response-size: 100
+    slow-processing-threshold: 1000
+    pumper-exec-thread-pattern: message-pumper
+    pumper-wait-millis-on-idle: 300
+    pumper-wait-millis-on-rejected: 300

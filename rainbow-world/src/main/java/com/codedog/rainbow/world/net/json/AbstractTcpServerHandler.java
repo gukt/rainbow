@@ -6,7 +6,8 @@ package com.codedog.rainbow.world.net.json;
 
 import com.codedog.rainbow.world.Encrypts;
 import com.codedog.rainbow.world.EventPublisher;
-import com.codedog.rainbow.world.GameOptions;
+import com.codedog.rainbow.world.AppProperties;
+import com.codedog.rainbow.world.TcpProperties;
 import com.codedog.rainbow.world.net.*;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -34,7 +35,7 @@ import static com.codedog.rainbow.world.net.NetConstants.SESSION_KEY;
 @Slf4j
 public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHandler<T> {
 
-    protected final GameOptions opts;
+    protected final TcpProperties tcpProperties;
     private final EventPublisher eventPublisher;
     /**
      * 消息拦截器列表,供外部调用，动态添加interceptors用的
@@ -49,8 +50,8 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
      */
     private MessageInterceptor<T>[] interceptors;
 
-    AbstractTcpServerHandler(GameOptions opts, EventPublisher eventPublisher) {
-        this.opts = opts;
+    AbstractTcpServerHandler(TcpProperties tcpProperties, EventPublisher eventPublisher) {
+        this.tcpProperties = tcpProperties;
         this.eventPublisher = eventPublisher;
     }
 
@@ -59,8 +60,8 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
         Channel channel = ctx.channel();
         log.debug("TCP: New client connected: {}", channel);
         // 实例化Session放到ctx的自定义属性中
-        channel.attr(SESSION_KEY).setIfAbsent(new DefaultSession(ctx, opts.getSessionMaxPendingRequestSize(),
-                opts.getSessionMaxCacheResponseSize()) {
+        channel.attr(SESSION_KEY).setIfAbsent(new DefaultSession(ctx, tcpProperties.getSessionMaxPendingRequestSize(),
+                tcpProperties.getSessionMaxCacheResponseSize()) {
             @Override
             public boolean beforeWrite(@NonNull Object message) {
                 JsonPacket msg = (JsonPacket) message;
@@ -88,7 +89,7 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
     boolean isMaxConnectionsExceeded() {
         // 获取当前所有的连接总数(包括暂时离线的）
         int connCount = SessionManager.getConnectionCount() + SessionManager.getOfflineRoleCount();
-        return connCount >= opts.getTcpMaxConnections();
+        return connCount >= tcpProperties.getMaxConnections();
     }
 
     @Override

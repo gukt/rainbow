@@ -19,14 +19,14 @@ import java.util.Map;
 /**
  * @author https://github.com/gukt
  */
-@Slf4j
 @Configuration
+@Slf4j
 public class GameAppConfiguration {
 
     private final ApplicationContext context;
-    private final GameOptions options;
+    private final AppProperties options;
 
-    public GameAppConfiguration(ApplicationContext context, GameOptions options) {
+    public GameAppConfiguration(ApplicationContext context, AppProperties options) {
         this.context = context;
         this.options = options;
     }
@@ -45,7 +45,7 @@ public class GameAppConfiguration {
     }
 
     @Bean
-    public ExcelParser excelParser(GameOptions opts) {
+    public ExcelParser excelParser(AppProperties opts) {
         return ExcelParser.builder().baseDir(opts.getExcelPath())
                 .mutableCheck(true)
                 .nullable(true)

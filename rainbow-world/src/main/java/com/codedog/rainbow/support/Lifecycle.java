@@ -12,7 +12,7 @@ package com.codedog.rainbow.support;
 public interface Lifecycle {
 
     /**
-     * 启动有生命周期的服务
+     * 启动服务
      *
      * @throws IllegalStateException if already started
      * @throws LifecycleException    if interrupted or unable to bind
@@ -20,21 +20,21 @@ public interface Lifecycle {
     void start();
 
     /**
-     * 停止有生命周期的服务
+     * 停止服务
      *
      * @throws LifecycleException if failure
      */
     void stop();
 
     /**
-     * 获取服务器启动的时间
+     * 获取服务的启动时间
      */
     long getStartTime();
 
     /**
-     * 检查当前是否处于RUNNING状态
+     * 当前是否处于 RUNNING 状态
      *
-     * @return 如果当前状态为RUNNING返回true，反之false
+     * @return true if running，otherwise false.
      */
     default boolean isRunning() {
         return getState() == State.RUNNING;
@@ -53,18 +53,22 @@ public interface Lifecycle {
     Throwable getFailureCause();
 
     /**
-     * 判断当前状态如果不是{@linkplain State#NEW}则抛出{@link IllegalStateException}
+     * 检查服务的当前状态是不是 {@link State#NEW}
+     *
+     * @throws IllegalStateException if {@link #getState()} is not {@link State#NEW}
      */
-    default void requireNew() {
+    default void requireStateNew() {
         if (getState() != State.NEW) {
             throw new IllegalStateException("Already started");
         }
     }
 
     /**
-     * 判断如果当前状态不是{@linkplain State#RUNNING}则抛出{@link IllegalStateException}
+     * 检查服务的当前状态是不是 {@link State#RUNNING}
+     *
+     * @throws IllegalStateException if {@link #getState()} is not {@link State#RUNNING}
      */
-    default void requireRunning() {
+    default void requireStateRunning() {
         if (getState() != State.RUNNING) {
             throw new IllegalStateException("Not running");
         }
@@ -74,38 +78,38 @@ public interface Lifecycle {
      * 添加生命周期监听器，可以连续添加多个
      *
      * @param listener 监听器
-     * @return this
+     * @return {@linkplain Lifecycle this}
      */
     Lifecycle addListener(Listener listener);
 
     enum State {
         /**
-         * 未启动状态
+         * 未启动
          */
         NEW,
 
         /**
-         * 正在启动中状态
+         * 正在启动中
          */
         STARTING,
 
         /**
-         * 运行中状态
+         * 运行中
          */
         RUNNING,
 
         /**
-         * 正在停止中状态
+         * 正在停止中
          */
         STOPPING,
 
         /**
-         * 已终止状态
+         * 已终止
          */
         TERMINATED,
 
         /**
-         * 失败状态
+         * 失败
          */
         FAILED
     }
@@ -113,20 +117,20 @@ public interface Lifecycle {
     class Listener {
 
         /**
-         * 当状态从NEW变成STARTING时调用
+         * 当状态从 NEW 变成 STARTING 时调用
          */
         public void starting() {
         }
 
         /**
-         * 当状态从STARTING变成RUNNING时调用
+         * 当状态从 STARTING 变成 RUNNING 时调用
          */
         public void running() {
         }
 
         /**
-         * 当状态变成STOPPING时调用，变化之前的状态可能是STARTING、RUNNING
-         * from参数表示变化之前的状态
+         * 当状态变成 STOPPING 时调用，变化之前的状态可能是 STARTING、RUNNING
+         * from 参数表示变化之前的状态
          *
          * @param from 变化之前的状态
          */
@@ -134,7 +138,7 @@ public interface Lifecycle {
         }
 
         /**
-         * 当状态变成TERMINATED时调用，TERMINATED是什么周期的最终状态
+         * 当状态变成 TERMINATED 时调用，TERMINATED 是最终状态
          *
          * @param from 变化之前的状态
          */
@@ -142,7 +146,7 @@ public interface Lifecycle {
         }
 
         /**
-         * 当状态变化为FAILURE时调用，
+         * 当状态变化为 FAILURE 时调用，
          *
          * @param from    变化之前的状态
          * @param failure 导致失败的异常

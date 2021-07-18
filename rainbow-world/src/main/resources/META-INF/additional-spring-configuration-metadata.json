@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "app.db.host",
+      "type": "java.lang.String",
+      "description": "Description for app.db.host."
+    },
+    {
+      "name": "app.db.port",
+      "type": "java.lang.String",
+      "description": "Description for app.db.port."
+    },
+    {
+      "name": "app.db.username",
+      "type": "java.lang.String",
+      "description": "Description for app.db.username."
+    },
+    {
+      "name": "app.db.password",
+      "type": "java.lang.String",
+      "description": "Description for app.db.password."
+    },
+    {
+      "name": "app.db.catalog",
+      "type": "java.lang.String",
+      "description": "Description for app.db.catalog."
+    }
+  ] }

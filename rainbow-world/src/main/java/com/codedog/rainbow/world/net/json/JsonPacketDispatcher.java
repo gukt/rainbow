@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.net.json;
 
-import com.codedog.rainbow.world.GameOptions;
+import com.codedog.rainbow.world.TcpProperties;
 import com.codedog.rainbow.world.net.*;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Component;
  *
  * @author https://github.com/gukt
  */
-@Slf4j
 @Component
+@Slf4j
 public final class JsonPacketDispatcher extends AbstractMessageDispatcher<JsonPacket> {
 
-    public JsonPacketDispatcher(GameOptions opts) {
-        super(opts);
+    public JsonPacketDispatcher(TcpProperties tcpProperties) {
+        super(tcpProperties);
     }
 
     /**
@@ -49,7 +49,7 @@ public final class JsonPacketDispatcher extends AbstractMessageDispatcher<JsonPa
 
         log.debug("TCP: Dispatching: {}", request.toCompatString());
         // 执行任务
-        bizExec.execute(new RequestTask<JsonPacket>(session, request) {
+        bizExecutor.execute(new RequestTask<JsonPacket>(session, request) {
             @Override
             public void run() {
                 // 记录开始处理请求的时间
