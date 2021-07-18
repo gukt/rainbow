@@ -2,9 +2,9 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.api.repository;
+package com.codedog.rainbow.repository;
 
-import com.codedog.rainbow.api.domain.Server;
+import com.codedog.rainbow.domain.Server;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

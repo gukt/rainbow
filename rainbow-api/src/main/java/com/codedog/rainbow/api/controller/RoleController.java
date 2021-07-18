@@ -4,8 +4,8 @@
 
 package com.codedog.rainbow.api.controller;
 
-import com.codedog.rainbow.api.domain.Role;
-import com.codedog.rainbow.api.repository.RoleRepository;
+import com.codedog.rainbow.domain.Role;
+import com.codedog.rainbow.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

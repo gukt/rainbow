@@ -5,8 +5,8 @@
 package com.codedog.rainbow.world.service;
 
 import com.codedog.rainbow.util.IdGenerator;
-import com.codedog.rainbow.world.domain.Role;
-import com.codedog.rainbow.world.repository.RoleRepository;
+import com.codedog.rainbow.domain.Role;
+import com.codedog.rainbow.repository.RoleRepository;
 import com.codedog.rainbow.world.generated.Number;
 import com.codedog.rainbow.world.generated.*;
 import com.codedog.rainbow.world.generated.RoleInfo.Builder;

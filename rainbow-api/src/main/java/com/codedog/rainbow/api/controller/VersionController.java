@@ -5,9 +5,9 @@
 package com.codedog.rainbow.api.controller;
 
 import com.codedog.rainbow.api.common.ServerSearchCriteria;
-import com.codedog.rainbow.api.domain.Role;
-import com.codedog.rainbow.api.domain.Server;
-import com.codedog.rainbow.api.repository.RoleRepository;
+import com.codedog.rainbow.domain.Role;
+import com.codedog.rainbow.domain.Server;
+import com.codedog.rainbow.repository.RoleRepository;
 import com.codedog.rainbow.api.service.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

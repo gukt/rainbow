@@ -6,10 +6,9 @@ package com.codedog.rainbow.api.service;
 
 import com.codedog.rainbow.NotImplementedException;
 import com.codedog.rainbow.api.common.ServerSearchCriteria;
-import com.codedog.rainbow.api.domain.Server;
-import com.codedog.rainbow.api.repository.ServerRepository;
+import com.codedog.rainbow.domain.Server;
+import com.codedog.rainbow.repository.ServerRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,8 +25,11 @@ import java.util.Set;
 @Slf4j
 public class ServerService {
 
-    @Autowired
-    private ServerRepository serverRepository;
+    private final ServerRepository serverRepository;
+
+    public ServerService(ServerRepository serverRepository) {
+        this.serverRepository = serverRepository;
+    }
 
     /**
      * 搜索满足条件的 Server(s), 分页参数必须指定。
