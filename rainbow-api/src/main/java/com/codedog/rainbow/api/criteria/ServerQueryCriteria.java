@@ -2,19 +2,19 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.api.common;
+package com.codedog.rainbow.api.criteria;
 
 import lombok.Data;
 
 import java.util.Set;
 
 /**
- * ServerSearchCriterial class
+ * ServerQueryCriteria class
  *
  * @author https://github.com/gukt
  */
 @Data
-public class ServerSearchCriteria {
+public class ServerQueryCriteria {
 
     private Long uid;
     private String q;

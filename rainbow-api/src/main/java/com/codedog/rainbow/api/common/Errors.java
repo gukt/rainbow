@@ -1,7 +1,9 @@
 package com.codedog.rainbow.api.common;
 
 
-import static com.codedog.rainbow.api.common.ApiResult.failed;
+import com.codedog.rainbow.core.rest.ApiResult;
+
+import static com.codedog.rainbow.core.rest.ApiResult.failed;
 
 /**
  * @author https://github.com/gukt

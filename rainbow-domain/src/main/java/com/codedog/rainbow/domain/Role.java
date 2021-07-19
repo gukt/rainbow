@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Role {
 
     /**
@@ -50,6 +52,7 @@ public class Role {
     private String platform;
     /** Blocked Until */
     private Date blockedUntil;
+    private Integer state;
     /**
      * 创建时间
      */

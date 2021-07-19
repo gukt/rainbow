@@ -4,12 +4,11 @@
 
 package com.codedog.rainbow.api.controller;
 
-import com.codedog.rainbow.api.common.ServerSearchCriteria;
+import com.codedog.rainbow.api.criteria.ServerQueryCriteria;
 import com.codedog.rainbow.domain.Role;
 import com.codedog.rainbow.domain.Server;
 import com.codedog.rainbow.repository.RoleRepository;
 import com.codedog.rainbow.api.service.ServerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -17,20 +16,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-import static com.codedog.rainbow.api.common.ApiResult.OK;
+import static com.codedog.rainbow.core.rest.ApiResult.OK;
 
 /**
- * 服务器相关
+ * 服务器相关 API
  *
  * @author https://github.com/gukt
  */
 @RestController
 public class ServerController {
 
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private ServerService serverService;
+    private final RoleRepository roleRepository;
+    private final ServerService serverService;
+
+    public ServerController(RoleRepository roleRepository, ServerService serverService) {
+        this.roleRepository = roleRepository;
+        this.serverService = serverService;
+    }
 
     /**
      * 获取或查询满足条件的服务器，当指定 uid 时，会携带该用户所有创建过的角色（在分区分服服务器上，角色意味着和某个服务器是绑定的）
@@ -40,7 +42,7 @@ public class ServerController {
      * @return 满足条件的服务器列表，如果搜索条件中给定了 uid，则同时返回玩家创建的所有角色所在的服务器
      */
     @GetMapping("servers")
-    public Object search(ServerSearchCriteria criteria, @PageableDefault Pageable page) {
+    public Object search(ServerQueryCriteria criteria, @PageableDefault Pageable page) {
         Map<String, Object> retMap = new HashMap<>();
         Page<Server> servers = serverService.search(criteria, page);
         retMap.put("servers", servers);
@@ -65,7 +67,7 @@ public class ServerController {
 
     // 获得所有的服务器信息，包括统计信息，状态信息等。
     @GetMapping("servers/info")
-    public Object multiServerInfo(ServerSearchCriteria criteria, @PageableDefault Pageable page) {
+    public Object multiServerInfo(ServerQueryCriteria criteria, @PageableDefault Pageable page) {
         Page<Server> servers = serverService.search(criteria, page);
         // TODO 获取每个服务器的信息
         servers.forEach(server -> {
@@ -82,7 +84,7 @@ public class ServerController {
     }
 
     @GetMapping("servers/{id}/health")
-    public Object serverHealth(@PathVariable int id) {
+    public Object health(@PathVariable int id) {
         Server server = serverService.getById(id);
         // TODO 获取单个服务器信息
         return OK;

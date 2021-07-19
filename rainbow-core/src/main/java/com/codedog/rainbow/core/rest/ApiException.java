@@ -1,16 +1,18 @@
-package com.codedog.rainbow.api.common;
+/*
+ * Copyright 2018-2021 codedog996.com, The rainbow Project.
+ */
+
+package com.codedog.rainbow.core.rest;
 
 import lombok.Getter;
 
 /**
  * @author https://github.com/gukt
- * @version 1.0
- * @date 2020/2/15 03:36
  */
 public class ApiException extends RuntimeException {
 
     @Getter
-    private int code;
+    private final int code;
 
     private ApiException(int code, String error, Throwable cause) {
         super(error, cause);

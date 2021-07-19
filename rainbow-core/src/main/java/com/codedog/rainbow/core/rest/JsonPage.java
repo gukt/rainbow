@@ -1,4 +1,8 @@
-package com.codedog.rainbow.api.common;
+/*
+ * Copyright 2018-2021 codedog996.com, The rainbow Project.
+ */
+
+package com.codedog.rainbow.core.rest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -10,8 +14,6 @@ import java.util.List;
 
 /**
  * @author https://github.com/gukt
- * @date 2020/1/26 00:31
- * @version 1.0
  */
 @JsonIgnoreProperties({"pageable", "sort"})
 public class JsonPage<T> extends PageImpl<T> {

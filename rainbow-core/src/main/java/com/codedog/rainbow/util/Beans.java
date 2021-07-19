@@ -19,7 +19,7 @@ import java.util.Set;
  * @version 1.0
  * @date 2020/2/2 17:26
  */
-@Deprecated
+//@Deprecated
 public class Beans {
 
     private static final Logger logger = LoggerFactory.getLogger(Beans.class);

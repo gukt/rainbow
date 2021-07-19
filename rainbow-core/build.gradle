@@ -9,8 +9,19 @@ plugins {
 dependencies {
     api project(':list')
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.12.4'
-    implementation 'com.google.guava:guava:30.1.1-jre'
-    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+//    implementation 'com.google.guava:guava:30.1.1-jre'
+//    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
+
+    implementation 'org.springframework.boot:spring-boot-autoconfigurer:2.5.2'
+    implementation 'org.springframework.data:spring-data-commons:2.5.3'
+//    implementation 'org.springframework:spring-core:5.3.9'
+//    implementation 'org.springframework:spring-web:5.3.9'
+    implementation 'org.springframework:spring-webmvc:5.3.9'
+    implementation 'org.jetbrains:annotations:20.1.0'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 }

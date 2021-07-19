@@ -4,113 +4,132 @@
 
 package com.codedog.rainbow.api.controller;
 
-import com.codedog.rainbow.api.common.ServerSearchCriteria;
-import com.codedog.rainbow.domain.Role;
-import com.codedog.rainbow.domain.Server;
-import com.codedog.rainbow.repository.RoleRepository;
+import com.codedog.rainbow.core.rest.ApiResult;
+import com.codedog.rainbow.api.common.Errors;
+import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.api.service.ServerService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import com.codedog.rainbow.api.service.UserService;
+import com.codedog.rainbow.domain.User;
+import com.codedog.rainbow.repository.RoleRepository;
+import com.codedog.rainbow.repository.UserRepository;
+import com.google.common.base.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import javax.servlet.http.HttpSession;
 
-import static com.codedog.rainbow.api.common.ApiResult.OK;
+import static com.codedog.rainbow.core.rest.ApiResult.OK;
 
 /**
- * 用户相关
+ * 用户相关 API
  *
  * @author https://github.com/gukt
  */
 @RestController
+@RequestMapping("api")
+@Slf4j
 public class UserController {
 
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private ServerService serverService;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
-    /**
-     * 获取或查询满足条件的服务器，当指定 uid 时，会携带该用户所有创建过的角色（在分区分服服务器上，角色意味着和某个服务器是绑定的）
-     *
-     * @param criteria 搜索条件，可以为 null。
-     * @param page     分页条件，不可以为 null。
-     * @return 满足条件的服务器列表，如果搜索条件中给定了 uid，则同时返回玩家创建的所有角色所在的服务器
-     */
-    @GetMapping("servers")
-    public Object search(ServerSearchCriteria criteria, @PageableDefault Pageable page) {
-        Map<String, Object> retMap = new HashMap<>();
-        Page<Server> servers = serverService.search(criteria, page);
-        retMap.put("servers", servers);
-        if (criteria.getUid() != null) {
-            // TODO 获取用户在哪些服务器上创建过角色并按 updatedAt 排序（表示最后登陆时间）
-            List<Object> roleServers = new ArrayList<>();
-            retMap.put("roleServers", roleServers);
-        }
-        return retMap;
-    }
-
-    @GetMapping("servers/{id}")
-    public Object getById(@PathVariable long id) {
-        return roleRepository.getById(id);
-    }
-
-    @DeleteMapping("servers/{id}")
-    public Object removeById(@PathVariable long id) {
-        roleRepository.deleteById(id);
-        return OK;
-    }
-
-    // 获得所有的服务器信息，包括统计信息，状态信息等。
-    @GetMapping("servers/info")
-    public Object multiServerInfo(ServerSearchCriteria criteria, @PageableDefault Pageable page) {
-        Page<Server> servers = serverService.search(criteria, page);
-        // TODO 获取每个服务器的信息
-        servers.forEach(server -> {
-            // TODO 获取每个服务器的信息
-        });
-        return OK;
-    }
-
-    @GetMapping("servers/{id}/info")
-    public Object singleServerInfo(@PathVariable int id) {
-        Server server = serverService.getById(id);
-        // TODO 获取单个服务器信息
-        return OK;
-    }
-
-    @GetMapping("servers/{id}/health")
-    public Object serverHealth(@PathVariable int id) {
-        Server server = serverService.getById(id);
-        // TODO 获取单个服务器信息
-        return OK;
+    public UserController(RoleRepository roleRepository, ServerService serverService, UserRepository userRepository, UserService userService) {
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     /**
-     * 批量操作，比如：删除、更新、新增
-     * 删除: { delete: [1, 2, 3] }
-     * 更新：{ update: { 1: { state = 1}, 2: { state = 1} }}
-     * 新增：{ add: [ {id: 1, name: 'xxx' }, {id: 2, name: 'xxx' } ]
+     * 用户注册，仅限内部测试使用
      *
-     * @param ids
-     * @param body
+     * @param user
      * @return
      */
-    @PostMapping("servers/batch")
-    public Object batch(Set<Long> ids, @RequestBody Map<String, Object> body) {
-        // TODO servers/batch
+    @PostMapping("user/register")
+    public Object register(@RequestBody User user) {
+        if (user == null) {
+            return Errors.ERR_BAD_PARAMETER;
+        }
+        return userService.save(user, true);
+    }
+
+    /**
+     * 用户登陆
+     * NOTE: 偶尔使用一些快捷方式命名比完全按 Restful 规范命名更简单直观
+     *
+     * @param name     用户名，可以是用户名、手机号或邮箱地址
+     * @param password 密码，必须是加密过的
+     */
+    @PostMapping("user/login")
+    public Object login(String name, String password) {
+        User user = userService.getByName(name);
+        if (user == null) {
+            return Errors.ERR_ENTITY_NOT_FOUND;
+        }
+        if (!Objects.equal(user.getPassword(), password)) {
+            return Errors.ERR_INVALID_NAME_OR_PASSWORD;
+        }
+        return user;
+    }
+
+    /**
+     * 用户登出
+     *
+     * @param session
+     * @return
+     */
+    @PostMapping("user/logout")
+    public Object logout(HttpSession session) {
         return OK;
     }
 
-    @PatchMapping("servers/{id}")
-    public Object update(@PathVariable long id, @RequestBody Role entity) {
-        Role updating = roleRepository.getById(id);
-        // TODO 实现一个不依赖 Spring 的 copyProperties 方法
-//        Beans.copyProperties(entity, updating, true);
-
-        return roleRepository.save(updating);
+    // 根据条件查询
+    @GetMapping("users")
+    public Object search(UserQueryCriteria criteria, @PageableDefault Pageable page) {
+        return userService.search(criteria, page);
     }
 
+    @GetMapping("users/{id}")
+    public Object search(@PathVariable long id) {
+        return userService.getById(id);
+    }
+
+    @PatchMapping("users/{id}")
+    public Object update(@PathVariable long id, @RequestBody User entity) {
+        User updating = userRepository.getById(id);
+        // TODO 拷贝属性
+        return userService.save(updating, false);
+    }
+
+    @DeleteMapping("users/{id}")
+    public Object removeById(@PathVariable long id) {
+        int rows = userService.removeById(id, false);
+        return ApiResult.success(rows);
+    }
+
+    @GetMapping("users/exists")
+    public Object exists(String name) {
+        return false; // TODO
+    }
+
+    // 获得一个随机的名称，现代游戏中大多有这种功能需求
+    @GetMapping("users/random-name")
+    public Object randomName(String name) {
+        // TODO 判断用户名是否存在
+        return OK;
+    }
+
+    // 修改密码
+    // 后台和玩家都需要使用该功能
+    @PostMapping("users/{id}")
+    public Object changePassword(String old, @RequestParam(name = "new") String newPwd) {
+        return OK;
+    }
+
+    // 批量更新或删除
+    @PostMapping("users/batch")
+    public Object batch() {
+        return OK;
+    }
 }

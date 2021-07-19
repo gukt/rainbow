@@ -5,7 +5,7 @@
 package com.codedog.rainbow.api.service;
 
 import com.codedog.rainbow.NotImplementedException;
-import com.codedog.rainbow.api.common.ServerSearchCriteria;
+import com.codedog.rainbow.api.criteria.ServerQueryCriteria;
 import com.codedog.rainbow.domain.Server;
 import com.codedog.rainbow.repository.ServerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class ServerService {
      * @param page     分页条件，不可以为 null
      * @return 分页的 Server(s)，结果不会为 null。
      */
-    public Page<Server> search(ServerSearchCriteria criteria, Pageable page) {
+    public Page<Server> search(ServerQueryCriteria criteria, Pageable page) {
         throw new NotImplementedException();
     }
 

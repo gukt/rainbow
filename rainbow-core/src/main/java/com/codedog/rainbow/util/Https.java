@@ -2,9 +2,10 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.api.common;
+package com.codedog.rainbow.util;
 
 import org.springframework.http.server.ServerHttpRequest;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 

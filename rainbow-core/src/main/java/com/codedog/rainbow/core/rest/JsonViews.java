@@ -1,24 +1,20 @@
-package com.codedog.rainbow.api.common;
+/*
+ * Copyright 2018-2021 codedog996.com, The rainbow Project.
+ */
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation;
-import lombok.Getter;
+package com.codedog.rainbow.core.rest;
+
 import org.springframework.http.converter.json.MappingJacksonValue;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author https://github.com/gukt
- * @date 2020/1/26 00:31
- * @version 1.0
  */
 public class JsonViews {
 
-  private static Map<String, Class<? extends ApiResultView>> viewClassesByName = new HashMap<>();
+  private static final Map<String, Class<? extends ApiResultView>> viewClassesByName = new HashMap<>();
 
   static {
     for (Class<?> clazz : JsonViews.class.getClasses()) {
@@ -96,24 +92,9 @@ public class JsonViews {
         }
         viewClassesByName.put(viewName, viewClass);
       } catch (ClassNotFoundException e) {
-        throw new UnsupportedJsonView(viewName);
+        throw new BadJsonViewException(viewName);
       }
     }
     return viewClass;
-  }
-
-  static class UnsupportedJsonView extends RuntimeException {
-    @Getter private String view;
-
-    UnsupportedJsonView(String view) {
-      super("Unsupported view: " + view);
-    }
-  }
-
-  @Target(ElementType.TYPE)
-  @Retention(RetentionPolicy.RUNTIME)
-  @JacksonAnnotation
-  public @interface JsonViewNameAlias {
-    String[] value() default {};
   }
 }

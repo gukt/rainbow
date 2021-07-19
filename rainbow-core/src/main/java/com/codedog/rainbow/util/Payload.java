@@ -2,7 +2,7 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.api.common;
+package com.codedog.rainbow.util;
 
 import java.util.HashMap;
 import java.util.Objects;

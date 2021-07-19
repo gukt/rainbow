@@ -1,11 +1,10 @@
 debug: true
 
-# SpringBoot configurations
+# Spring Boot Configurations
 #
 spring:
   profiles:
     active: dev
-    include: hsqldb
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${app.db.username}
@@ -18,22 +17,19 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-        format_sql: false
+        format_sql: true
         hbm2ddl:
           auto: update
-    show-sql: false
-  main:
-    web-application-type: none
+    show-sql: true
 logging:
   level:
-    io:
-      laogu: debug
     root: info
     web: debug
+    com:
+      laogu: debug
 # Application Configurations
 #
 app:
-  debug: true
   # Database
   db:
     host: codemonkey.top

@@ -1,4 +1,8 @@
-package com.codedog.rainbow.api.common;
+/*
+ * Copyright 2018-2021 codedog996.com, The rainbow Project.
+ */
+
+package com.codedog.rainbow.core.rest;
 
 import com.google.common.io.CharStreams;
 import lombok.extern.slf4j.Slf4j;

@@ -4,8 +4,8 @@
 
 package com.codedog.rainbow.domain;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,7 +19,10 @@ import java.util.Date;
 @Entity
 @Table(name = "t_servers")
 @RequiredArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Server {
 
     /**
@@ -36,13 +39,13 @@ public class Server {
      */
     private String name;
     /**
-     * 状态，-1: deleted, 0: offline, 1: online, 2: trouble
-     */
-    private Integer state;
-    /**
      * 上线服务时间
      */
     private Date servedAt;
+    /**
+     * 状态，-1: deleted, 0: offline, 1: online, 2: trouble
+     */
+    private Integer state;
     /**
      * 创建时间
      */

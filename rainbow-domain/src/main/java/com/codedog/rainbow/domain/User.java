@@ -4,7 +4,11 @@
 
 package com.codedog.rainbow.domain;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.Entity;
@@ -23,6 +27,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     /**
@@ -38,6 +43,7 @@ public class User {
      * 密码，仅用于内部账号登陆
      */
     private String password;
+    private Integer state;
     /**
      * 创建时间
      */
@@ -46,4 +52,5 @@ public class User {
      * 更新时间
      */
     private Date updatedAt;
+
 }

@@ -6,24 +6,27 @@ package com.codedog.rainbow.api.controller;
 
 import com.codedog.rainbow.domain.Role;
 import com.codedog.rainbow.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import static com.codedog.rainbow.api.common.ApiResult.OK;
+import static com.codedog.rainbow.core.rest.ApiResult.OK;
 
 /**
- * RoleController class
+ * 用户角色相关 API
  *
  * @author https://github.com/gukt
  */
-@Controller
+@RestController
+@Slf4j
 public class RoleController {
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+
+    public RoleController(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     @GetMapping("roles")
     public Object search(@PageableDefault Pageable page) {
