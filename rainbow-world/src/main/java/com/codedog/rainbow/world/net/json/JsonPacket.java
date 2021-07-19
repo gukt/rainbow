@@ -5,6 +5,7 @@
 package com.codedog.rainbow.world.net.json;
 
 import com.codedog.rainbow.util.MoreStrings;
+import com.codedog.rainbow.util.ObjectUtils;
 import com.codedog.rainbow.world.net.ErrorCodeEnum;
 import com.codedog.rainbow.world.net.Payload;
 import com.codedog.rainbow.world.net.Session;
@@ -87,7 +88,7 @@ public class JsonPacket {
     }
 
     public static JsonPacket ofError(@NonNull ErrorCodeEnum errCode, String text) {
-        return ofError(errCode.getValue(), MoreStrings.nullToDefault(text, errCode.getText()));
+        return ofError(errCode.getValue(), ObjectUtils.nullToDefault(text, errCode.getText()));
     }
 
     public static JsonPacket ofError(int code, String msg) {

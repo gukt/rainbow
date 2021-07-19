@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.api.criteria;
 
-import com.codedog.rainbow.util.MoreObjects;
+import com.codedog.rainbow.util.ObjectUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
@@ -31,7 +31,7 @@ public class Predicates {
             }
             // id in (?)
             Set<?> ids = ((FieldIdAwareQueryCriteria<?>) queryCriteria).getIds();
-            if (!MoreObjects.isNullOrEmpty(ids)) {
+            if (!ObjectUtils.isNullOrEmpty(ids)) {
                 predicates.add(root.get("id").in(ids));
             }
         }
@@ -43,7 +43,7 @@ public class Predicates {
             }
             // state in (?)
             Set<Integer> states = ((FieldStateAwareQueryCriteria) queryCriteria).getStates();
-            if (!MoreObjects.isNullOrEmpty(states)) {
+            if (!ObjectUtils.isNullOrEmpty(states)) {
                 predicates.add(root.get("state").in(states));
             }
         }

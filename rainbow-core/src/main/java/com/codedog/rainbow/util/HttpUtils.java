@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Https class
+ * Http Utils
  *
  * @author https://github.com/gukt
  */

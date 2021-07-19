@@ -21,12 +21,12 @@ import static java.util.Objects.requireNonNull;
  *
  * @author https://github.com/gukt
  */
-public class MoreObjects {
+public class ObjectUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(MoreObjects.class);
+    private static final Logger logger = LoggerFactory.getLogger(ObjectUtils.class);
 
     /** Prevents to construct an instance. */
-    private MoreObjects() {
+    private ObjectUtils() {
         throw new AssertionError("No MoreObjects instances for you!");
     }
 

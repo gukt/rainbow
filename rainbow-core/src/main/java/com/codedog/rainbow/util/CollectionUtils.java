@@ -8,25 +8,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
- * Maps class
+ * Collection Utils
  *
  * @author https://github.com/gukt
  */
-public final class MoreCollections {
+public final class CollectionUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(MoreCollections.class);
+    private static final Logger logger = LoggerFactory.getLogger(CollectionUtils.class);
 
     /** Prevents to construct an instance. */
-    private MoreCollections() {
+    private CollectionUtils() {
     }
 
     public static boolean isNullOrEmpty(@Nullable Map<?, ?> map) {
-        return MoreObjects.isNullOrEmpty(map);
+        return ObjectUtils.isNullOrEmpty(map);
     }
 
     //  public static Map<String, Object> of(@Nullable Object... pairs) {

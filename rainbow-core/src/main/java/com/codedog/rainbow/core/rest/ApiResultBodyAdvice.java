@@ -7,7 +7,7 @@ package com.codedog.rainbow.core.rest;
 import com.codedog.rainbow.core.Tag;
 import com.codedog.rainbow.util.HttpUtils;
 import com.codedog.rainbow.util.JsonUtils;
-import com.codedog.rainbow.util.MoreObjects;
+import com.codedog.rainbow.util.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
@@ -83,7 +83,7 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
         // 从查询字符串中读取 view 参数值
         String viewName = HttpUtils.getParam(request, "view");
         // 使用指定的 view 过滤返回结果
-        if (!MoreObjects.isNullOrEmpty(viewName)) {
+        if (!ObjectUtils.isNullOrEmpty(viewName)) {
             body = setSerializationView(body, viewName);
             writeResponseLog(request, body);
             return body;

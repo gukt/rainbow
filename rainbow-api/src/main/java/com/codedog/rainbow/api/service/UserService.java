@@ -8,7 +8,7 @@ import com.codedog.rainbow.api.criteria.Predicates;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.UserRepository;
-import com.codedog.rainbow.util.MoreObjects;
+import com.codedog.rainbow.util.ObjectUtils;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -93,7 +93,7 @@ public class UserService {
                 (root, query, cb) -> {
                     List<Predicate> predicates = Predicates.from(criteria, root, cb);
                     // And name like '...'
-                    if (!MoreObjects.isNullOrEmpty(criteria.getQ())) {
+                    if (!ObjectUtils.isNullOrEmpty(criteria.getQ())) {
                         String kw = "%" + criteria.getQ() + "%";
                         predicates.add(cb.like(root.get("name"), kw));
                     }
@@ -116,19 +116,19 @@ public class UserService {
     }
 
     public Page<User> getByIds(Set<Long> ids, Pageable page) {
-        MoreObjects.requireNonEmpty(ids, "ids");
+        ObjectUtils.requireNonEmpty(ids, "ids");
         UserQueryCriteria criteria = new UserQueryCriteria();
         criteria.setIds(ids);
         return (Page<User>) search(criteria, page);
     }
 
     public int removeById(long id, boolean force) {
-        MoreObjects.requirePositive(id, "id");
+        ObjectUtils.requirePositive(id, "id");
         return removeByIds(Sets.newHashSet(id), force);
     }
 
     public int removeByIds(Set<Long> ids, boolean force) {
-        MoreObjects.requireNonEmpty(ids, "ids");
+        ObjectUtils.requireNonEmpty(ids, "ids");
         if (force) {
             // 物理删除
             return userRepository.deleteAllByIdIn(ids);

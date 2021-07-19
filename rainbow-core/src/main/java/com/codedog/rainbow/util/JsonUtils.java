@@ -35,7 +35,6 @@ import java.util.Set;
  *
  * @author https://github.com/gukt
  */
-@SuppressWarnings("unused")
 public class JsonUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
@@ -122,14 +121,13 @@ public class JsonUtils {
     /**
      * 将指定的JSON格式的字符串解析成指定类型的对象
      *
-     * @param <T>     返回的对象类型
+     * @param <V>     返回的对象类型
      * @param json    要解析成对象的JSON格式字符串
      * @param typeRef 指定要解析成对象的类型
      * @return 返回解析对象
      */
-    @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> T toBean(@Nullable String json, TypeReference<T> typeRef) {
+    public static <V> V toBean(@Nullable String json, TypeReference<V> typeRef) {
         if (json == null || json.isEmpty()) {
             return null;
         }
@@ -140,7 +138,6 @@ public class JsonUtils {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <V> V toBeanOrDefault(@Nullable String json, TypeReference<V> typeRef, V defaultValue) {
         V bean = toBean(json, typeRef);
         return bean == null ? defaultValue : bean;
@@ -154,7 +151,6 @@ public class JsonUtils {
      * @param type 指定要解析成对象的类型
      * @return 返回解析对象
      */
-    @SuppressWarnings("unchecked")
     @Nullable
     public static <V> V toBean(@Nullable String json, JavaType type) {
         try {

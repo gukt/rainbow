@@ -5,7 +5,6 @@
 package com.codedog.rainbow.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -19,7 +18,7 @@ import java.util.Set;
  * @date 2020/2/2 17:26
  */
 @Slf4j
-public class Beans {
+public class BeanUtils {
 
     private static String[] getNullProperties(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
@@ -41,9 +40,9 @@ public class Beans {
 
     public static void copyProperties(Object source, Object target, boolean ignoreNullProperties) {
         if (ignoreNullProperties) {
-            BeanUtils.copyProperties(source, target, getNullProperties(source));
+            org.springframework.beans.BeanUtils.copyProperties(source, target, getNullProperties(source));
         } else {
-            BeanUtils.copyProperties(source, target);
+            org.springframework.beans.BeanUtils.copyProperties(source, target);
         }
     }
 }
