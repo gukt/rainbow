@@ -36,9 +36,9 @@ import java.util.Set;
  * @author https://github.com/gukt
  */
 @SuppressWarnings("unused")
-public class Jsons {
+public class JsonUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(Jsons.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
 
     /**
      * TypeReference: List<Integer>

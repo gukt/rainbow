@@ -5,8 +5,8 @@
 package com.codedog.rainbow.core.rest;
 
 import com.codedog.rainbow.core.Tag;
-import com.codedog.rainbow.util.Https;
-import com.codedog.rainbow.util.Jsons;
+import com.codedog.rainbow.util.HttpUtils;
+import com.codedog.rainbow.util.JsonUtils;
 import com.codedog.rainbow.util.MoreObjects;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +81,7 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
             body = JsonPage.of((Page<?>) body);
         }
         // 从查询字符串中读取 view 参数值
-        String viewName = Https.getParam(request, "view");
+        String viewName = HttpUtils.getParam(request, "view");
         // 使用指定的 view 过滤返回结果
         if (!MoreObjects.isNullOrEmpty(viewName)) {
             body = setSerializationView(body, viewName);
@@ -155,9 +155,9 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
     }
 
     private void writeResponseLog(ServerHttpRequest request, Object result) {
-        log.debug("{} - {} {} - {}", Https.getRemoteAddress(request),
+        log.debug("{} - {} {} - {}", HttpUtils.getRemoteAddress(request),
                 request.getMethodValue(),
                 request.getURI().getPath(),
-                Jsons.toJson(result));
+                JsonUtils.toJson(result));
     }
 }

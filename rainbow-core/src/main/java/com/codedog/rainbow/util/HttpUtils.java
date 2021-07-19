@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  *
  * @author https://github.com/gukt
  */
-public class Https {
+public class HttpUtils {
 
     public static String getRemoteAddress(HttpServletRequest request) {
         String realIp = request.getHeader("X-Real-IP");

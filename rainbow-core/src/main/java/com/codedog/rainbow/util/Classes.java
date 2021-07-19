@@ -4,8 +4,7 @@
 
 package com.codedog.rainbow.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +23,8 @@ import java.util.jar.JarFile;
  * TODO 优化
  * TODO 找一个更优秀的ClassUtils实现类
  */
+@Slf4j
 public class Classes {
-
-    private static final Logger logger = LoggerFactory.getLogger(Classes.class);
 
     public static Set<Class<?>> getClasses(String packageScan) {
         Set<Class<?>> classes = new LinkedHashSet<>();
@@ -46,7 +44,7 @@ public class Classes {
                 }
             }
         } catch (IOException e) {
-            logger.error("An error occurred: ", e);
+            log.error("An error occurred: ", e);
         }
 
         return classes;
@@ -71,7 +69,7 @@ public class Classes {
                     try {
                         classes.add(Class.forName(packageScan + '.' + className));
                     } catch (ClassNotFoundException e) {
-                        logger.error("Cannot find class: {}", e.getMessage());
+                        log.error("Cannot find class: {}", e.getMessage());
                     }
                 }
             }
@@ -83,7 +81,7 @@ public class Classes {
                                                         final boolean recursive, Set<Class<?>> classes) {
         File dir = new File(packagePath);
         if (!dir.exists() || !dir.isDirectory()) {
-            logger.warn("用户定义包名 " + packageName + " 下没有任何文件");
+            log.warn("用户定义包名 " + packageName + " 下没有任何文件");
             return;
         }
         // 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
@@ -107,7 +105,7 @@ public class Classes {
                                 .loadClass(packageName + '.' + className));
                     } catch (ClassNotFoundException e) {
                         // log.error("添加用户自定义视图类错误 找不到此类的.class文件");
-                        logger.error("Exception：", e);
+                        log.error("Exception：", e);
                     }
                 }
             }

@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.net.codec.json;
 
-import com.codedog.rainbow.util.Jsons;
+import com.codedog.rainbow.util.JsonUtils;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,7 +23,7 @@ public class JsonDecoder extends ByteToMessageDecoder {
         in.readBytes(bytes);
         String json = new String(bytes);
         // TODO 如果JSON解析异常这里会怎么表现
-        JsonPacket packet = Jsons.toBean(json, JsonPacket.class);
+        JsonPacket packet = JsonUtils.toBean(json, JsonPacket.class);
         out.add(packet);
     }
 }

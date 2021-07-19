@@ -2,7 +2,7 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.core.rest;
+package com.codedog.rainbow.core.servlet;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

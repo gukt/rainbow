@@ -44,26 +44,26 @@ public class ApiResult {
     @JsonView(ApiResultView.class)
     private Object data;
 
-    /**
-     * TODO 解决 Errors 里静态变量append 一直被改变的问题
-     * "请求参数有问题:id:id:id:id:id"
-     */
-    public ApiResult error(String s, boolean append, String delimiter) {
-        if (append) {
-            this.error += delimiter + s;
-        } else {
-            this.error = s;
-        }
-        return this;
-    }
-
-    public ApiResult error(String s, boolean append) {
-        return error(s, append, ":");
-    }
-
-    public ApiResult error(String s) {
-        return error(s, true, ":");
-    }
+//    /**
+//     * TODO 解决 Errors 里静态变量append 一直被改变的问题
+//     * "请求参数有问题:id:id:id:id:id"
+//     */
+//    public ApiResult error(String s, boolean append, String delimiter) {
+//        if (append) {
+//            this.error += delimiter + s;
+//        } else {
+//            this.error = s;
+//        }
+//        return this;
+//    }
+//
+//    public ApiResult error(String s, boolean append) {
+//        return error(s, append, ":");
+//    }
+//
+//    public ApiResult error(String s) {
+//        return error(s, true, ":");
+//    }
 
     /**
      * 成功

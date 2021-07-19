@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.net.codec.json;
 
-import com.codedog.rainbow.util.Jsons;
+import com.codedog.rainbow.util.JsonUtils;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,7 +21,7 @@ public class JsonEncoder extends MessageToMessageEncoder<JsonPacket> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, JsonPacket msg, List<Object> out) {
-        String response = Jsons.toJson(msg);
+        String response = JsonUtils.toJson(msg);
         ByteBuf buf = wrappedBuffer(response.getBytes());
         out.add(buf);
     }

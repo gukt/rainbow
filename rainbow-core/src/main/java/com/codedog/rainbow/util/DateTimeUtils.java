@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author https://github.com/gukt
  */
-public class DateTimes {
+public class DateTimeUtils {
 
     /**
      * 返回给定的两个时间是否是同一天，以零点为分界
