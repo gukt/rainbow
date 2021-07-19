@@ -38,6 +38,8 @@ import java.util.Map;
 @Slf4j
 public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
 
+    private final Map<String, Class<?>> viewTypesByName = new HashMap<>();
+
     /**
      * 前置检查，以决定是否要执行 {@link #beforeBodyWrite} 方法。
      *
@@ -94,9 +96,7 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
         return result;
     }
 
-    private final Map<String, Class<?>> viewTypesByName = new HashMap<>();
-
-    public void addViewClasses(Class<?>[] classes) {
+    public void addApiResultViewClasses(Class<?>[] classes) {
         if (classes == null || classes.length == 0) {
             return;
         }
@@ -113,51 +113,9 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
                 });
     }
 
-    private MappingJacksonValue setSerializationView(Object body, String viewName) {
-//        if (!(body instanceof ApiResult)) {
-//            body = ApiResult.success(body);
-//        }
-        MappingJacksonValue bodyContainer = new MappingJacksonValue(body);
-        Class<?> viewClass = viewTypesByName.get(viewName);
-        if (viewClass != null) {
-            bodyContainer.setSerializationView(viewClass);
-        }
-        return bodyContainer;
-    }
-
-//    /** 捕捉全局处理异常，将异常包装成统一的错误返回给客户端 */
-//    @ExceptionHandler(Throwable.class)
-//    public Object handleException(Exception e) {
-////        // 业务系统中显式检测的逻辑错误会以ApiException抛出
-////        if (e instanceof ApiException) {
-////            return ((ApiException) e).toApiResult();
-////        }
-////        if (e instanceof BadJsonViewException) {
-////            return ApiResult.failed(400, e.getMessage(), HttpStatus.BAD_REQUEST.value());
-////        }
-//        // TODO 解决一下这里，紧急
-////        // 如果请求的地址没有找到，则会抛出NoHandlerFoundException
-////        // NOTE: 必须在配置文件中设置throw-exception-if-no-handler-found=true，才会抛出NoHandlerFoundException
-////        // 否则，会返回SpringBoot自己包装的json数据返回，包含: timestamp, status, error, message, path
-////        else if (e instanceof NoHandlerFoundException) {
-////            return ApiResult.failed(404, e.getMessage(), HttpStatus.NOT_FOUND.value());
-////        } else {
-////            log.error("处理请求时发生异常", e);
-////            ApiResult error = ApiResult.failed(10000, "处理请求异常");
-////            error.status(HttpStatus.INTERNAL_SERVER_ERROR.value());
-////            error.error("处理请求异常");
-////            return error;
-////        }
-//        log.error("处理请求时发生异常", e);
-//        ApiResult error = ApiResult.failed(10000, "处理请求异常");
-//        error.status(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//        error.error("处理请求异常");
-//        return error;
-//    }
-
     /**
-     * 处理 {link NoHandlerFoundException}
-     * NOTE: 只有配置了 throw-exception-if-no-handler-found=true，才会抛出 {@link NoHandlerFoundException}
+     * Handles {@link NoHandlerFoundException no-handle-found exceptions}
+     * NOTE: 只有配置了 throw-exception-if-no-handler-found=true 才会抛出 {@link NoHandlerFoundException}
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     public Object handleException(NoHandlerFoundException ex) {
@@ -165,51 +123,36 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
         return ApiResult.failed(status, ex.getMessage(), status);
     }
 
-    @ExceptionHandler(ViewNotFoundException.class)
-    public Object handleException(ViewNotFoundException ex) {
-        int status = HttpStatus.BAD_REQUEST.value(); // 400
-        return ApiResult.failed(status, ex.getMessage(), status);
-    }
-
     /**
-     * 处理 {@link ApiException}，业务系统中显式检测的逻辑错误会以 {@link ApiException} 抛出。
+     * Handles {@link ApiException api exceptions}
+     *
+     * @param ex an {@link ApiException api exceptions}
      */
     @ExceptionHandler(ApiException.class)
     public Object handleException(ApiException ex) {
         return ex.toApiResult();
     }
 
+    /**
+     * Handles any unknown exceptions
+     */
     @ExceptionHandler(Throwable.class)
-    public Object handleException(Throwable e) {
-        log.error("处理请求时发生了未知异常", e);
+    public Object handleException(Throwable ex) {
+        log.error("处理请求时发生了未知异常", ex);
         int status = HttpStatus.INTERNAL_SERVER_ERROR.value(); // 500
-        return ApiResult.failed(status, "处理请求时发生了未知异常", status);
+        return ApiResult.failed(status, ex.getMessage(), status);
     }
 
-//    private static final Map<String, Class<? extends ApiResultView>> viewClassesByName = new HashMap<>();
-//    private static Class<? extends ApiResultView> getJsonViewClass(String viewName) {
-//        if (viewName == null) {
-//            return null;
-//        }
-//        Class<? extends ApiResultView> viewClass = viewClassesByName.get(viewName);
-//        if (viewClass == null) {
-//            String packageName = JsonViews.class.getName();
-//            String className = packageName + "$" + viewName;
-//            try {
-//                viewClass = (Class<ApiResultView>) Class.forName(className);
-//                JsonViewNameAlias alias = viewClass.getAnnotation(JsonViewNameAlias.class);
-//                if (alias != null) {
-//                    for (String v : alias.value()) {
-//                        viewClassesByName.put(v, viewClass);
-//                    }
-//                }
-//                viewClassesByName.put(viewName, viewClass);
-//            } catch (ClassNotFoundException e) {
-//                throw new BadJsonViewException(viewName);
-//            }
-//        }
-//        return viewClass;
-//    }
+    // Private Methods
+
+    private MappingJacksonValue setSerializationView(Object body, String viewName) {
+        MappingJacksonValue jsonBody = new MappingJacksonValue(body);
+        Class<?> viewClass = viewTypesByName.get(viewName);
+        if (viewClass != null) {
+            jsonBody.setSerializationView(viewClass);
+        }
+        return jsonBody;
+    }
 
     private void writeResponseLog(ServerHttpRequest request, Object result) {
         log.debug("{} - {} {} - {}", Https.getRemoteAddress(request),

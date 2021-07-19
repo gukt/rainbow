@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import static com.codedog.rainbow.core.rest.ApiResult.OK;
+import static com.codedog.rainbow.core.rest.ApiResult.SUCCESS;
 
 /**
  * 用户角色相关 API
@@ -41,7 +41,7 @@ public class RoleController {
     @DeleteMapping("roles/{id}")
     public Object removeById(@PathVariable long id) {
         roleRepository.deleteById(id);
-        return OK;
+        return SUCCESS;
     }
 
     @PatchMapping("roles/{id}")

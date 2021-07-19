@@ -5,18 +5,15 @@
 package com.codedog.rainbow;
 
 import com.codedog.rainbow.core.Tag;
-import com.codedog.rainbow.core.rest.ApiResultView;
+import com.codedog.rainbow.core.rest.ApiResultView.IdOnly;
 
 /**
  * JsonViews class
  *
  * @author https://github.com/gukt
  */
-public class JsonViews {
+public final class JsonViews {
 
     @Tag({"user-basic", "user-simple"})
-    public interface UserBasicView extends ApiResultView {}
-
-    @Tag({"user-detailed", "user-detail"})
-    public interface UserDetailView extends ApiResultView {}
+    public interface UserBasicView extends IdOnly {}
 }

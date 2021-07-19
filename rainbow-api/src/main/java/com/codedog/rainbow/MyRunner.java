@@ -26,6 +26,6 @@ public class MyRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         ApiResultBodyAdvice advice = context.getBean(ApiResultBodyAdvice.class);
-        advice.addViewClasses(JsonViews.class.getClasses());
+        advice.addApiResultViewClasses(JsonViews.class.getClasses());
     }
 }

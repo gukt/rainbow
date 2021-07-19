@@ -4,11 +4,11 @@
 
 package com.codedog.rainbow.api.controller;
 
+import com.codedog.rainbow.JsonViews.UserBasicView;
 import com.codedog.rainbow.api.common.Errors;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.api.service.ServerService;
 import com.codedog.rainbow.api.service.UserService;
-import com.codedog.rainbow.core.rest.ApiResultView;
 import com.codedog.rainbow.core.rest.ApiResult;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.RoleRepository;
@@ -22,7 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
-import static com.codedog.rainbow.core.rest.ApiResult.OK;
+import static com.codedog.rainbow.api.common.Errors.ERR_BAD_PARAMETER;
+import static com.codedog.rainbow.core.rest.ApiResult.SUCCESS;
 
 /**
  * 用户相关 API
@@ -51,7 +52,7 @@ public class UserController {
     @PostMapping("user/register")
     public Object register(@RequestBody User user) {
         if (user == null) {
-            return Errors.ERR_BAD_PARAMETER;
+            return ERR_BAD_PARAMETER;
         }
         return userService.save(user, true);
     }
@@ -83,7 +84,7 @@ public class UserController {
      */
     @PostMapping("user/logout")
     public Object logout(HttpSession session) {
-        return OK;
+        return SUCCESS;
     }
 
     // 根据条件查询
@@ -93,8 +94,14 @@ public class UserController {
     }
 
     @GetMapping("users/{id}")
-    @JsonView(ApiResultView.class)
+    @JsonView(UserBasicView.class)
     public Object findById(@PathVariable long id) {
+        if(true) {
+//            throw new RuntimeException("发生了一个运行时异常");
+//            throw new ApiException(100, "这是一个 API 处理异常");
+//            throw ERR_BAD_PARAMETER.error("id", true).toException();
+//            return ERR_BAD_PARAMETER.error("id", true);
+        }
         return userService.getById(id);
     }
 
@@ -120,19 +127,19 @@ public class UserController {
     @GetMapping("users/random-name")
     public Object randomName(String name) {
         // TODO 判断用户名是否存在
-        return OK;
+        return SUCCESS;
     }
 
     // 修改密码
     // 后台和玩家都需要使用该功能
     @PostMapping("users/{id}")
     public Object changePassword(String old, @RequestParam(name = "new") String newPwd) {
-        return OK;
+        return SUCCESS;
     }
 
     // 批量更新或删除
     @PostMapping("users/batch")
     public Object batch() {
-        return OK;
+        return SUCCESS;
     }
 }
