@@ -4,10 +4,10 @@
 
 plugins {
     id 'com.codedog.rainbow.java-library-conventions'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
 dependencies {
-    api project(':list')
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.12.4'
@@ -16,7 +16,7 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
 
-    implementation 'org.springframework.boot:spring-boot-autoconfigurer:2.5.2'
+//    implementation 'org.springframework.boot:spring-boot-autoconfigurer:2.5.2'
     implementation 'org.springframework.data:spring-data-commons:2.5.3'
 //    implementation 'org.springframework:spring-core:5.3.9'
 //    implementation 'org.springframework:spring-web:5.3.9'

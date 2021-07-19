@@ -1,8 +1,7 @@
 plugins {
-    id 'com.codedog.rainbow.java-application-conventions'
+    id 'com.codedog.rainbow.java-library-conventions'
     id 'org.springframework.boot' version '2.5.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
 }
 
 group = 'com.codedog.rainbow'
