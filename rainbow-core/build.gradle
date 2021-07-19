@@ -23,5 +23,6 @@ dependencies {
     implementation 'org.springframework:spring-webmvc:5.3.9'
     implementation 'org.jetbrains:annotations:20.1.0'
     compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 }

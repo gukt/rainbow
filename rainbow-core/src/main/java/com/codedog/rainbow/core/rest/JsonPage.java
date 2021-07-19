@@ -18,50 +18,46 @@ import java.util.List;
 @JsonIgnoreProperties({"pageable", "sort"})
 public class JsonPage<T> extends PageImpl<T> {
 
-  private JsonPage(final List<T> content, final Pageable page, final long total) {
-    super(content, page, total);
-  }
+    private JsonPage(final List<T> content, final Pageable page, final long total) {
+        super(content, page, total);
+    }
 
-//  public static <T> JsonPage<T> of(final List<T> content, final Pageable page) {
-//    return new JsonPage<>(content, page, content.size());
-//  }
+    public static JsonPage<?> of(final Page<?> page) {
+        return new JsonPage<>(page.getContent(), page.getPageable(), page.getTotalElements());
+    }
 
-  public static <T> JsonPage<T> of(final Page<T> page) {
-    return new JsonPage<>(page.getContent(), page.getPageable(), page.getTotalElements());
-  }
+    @JsonView(ApiResultView.class)
+    public int getPage() {
+        return super.getPageable().getPageNumber();
+    }
 
-  @JsonView(ApiResultView.class)
-  public int getPage() {
-    return super.getPageable().getPageNumber();
-  }
+    @Override
+    @JsonView(ApiResultView.class)
+    public int getTotalPages() {
+        return super.getTotalPages();
+    }
 
-  @Override
-  @JsonView(ApiResultView.class)
-  public int getTotalPages() {
-    return super.getTotalPages();
-  }
+    @Override
+    @JsonView(ApiResultView.class)
+    public long getTotalElements() {
+        return super.getTotalElements();
+    }
 
-  @Override
-  @JsonView(ApiResultView.class)
-  public long getTotalElements() {
-    return super.getTotalElements();
-  }
+    @Override
+    @JsonView(ApiResultView.class)
+    public boolean hasNext() {
+        return super.hasNext();
+    }
 
-  @Override
-  @JsonView(ApiResultView.class)
-  public boolean hasNext() {
-    return super.hasNext();
-  }
+    @Override
+    @JsonView(ApiResultView.class)
+    public boolean hasContent() {
+        return super.hasContent();
+    }
 
-  @Override
-  @JsonView(ApiResultView.class)
-  public boolean hasContent() {
-    return super.hasContent();
-  }
-
-  @Override
-  @JsonView(ApiResultView.class)
-  public List<T> getContent() {
-    return super.getContent();
-  }
+    @Override
+    @JsonView(ApiResultView.class)
+    public List<T> getContent() {
+        return super.getContent();
+    }
 }

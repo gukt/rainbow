@@ -4,9 +4,15 @@
 
 package com.codedog.rainbow.core.rest;
 
+import com.codedog.rainbow.core.Tag;
+
 /**
- * ApiResultView class
+ * ApiBasicView class
  *
  * @author https://github.com/gukt
  */
-interface ApiResultView {}
+public interface ApiResultView {
+
+    @Tag("id-only")
+    interface IdOnly extends ApiResultView {}
+}

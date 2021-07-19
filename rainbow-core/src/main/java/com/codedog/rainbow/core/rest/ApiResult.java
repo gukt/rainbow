@@ -15,22 +15,16 @@ import lombok.experimental.Accessors;
  * @version 1.0
  * @date 2020/1/26 00:31
  */
-@JsonInclude(Include.NON_NULL)
 @Data
 @Accessors(fluent = true)
+@JsonView(ApiResultView.class)
+@JsonInclude(Include.NON_NULL)
 public class ApiResult {
 
-    @JsonView(ApiResultView.class)
-    private int code;
-
-    @JsonView(ApiResultView.class)
-    private int status = 200;
-
-    @JsonView(ApiResultView.class)
-    private String error;
-
-    @JsonView(ApiResultView.class)
-    private Object data;
+    @JsonView(ApiResultView.class) private int code;
+    @JsonView(ApiResultView.class) private int status = 200;
+    @JsonView(ApiResultView.class) private String error;
+    @JsonView(ApiResultView.class) private Object data;
 
     /** 默认成功 */
     public static final ApiResult OK = success("ok");
@@ -62,7 +56,7 @@ public class ApiResult {
         result.status = status;
         return result;
     }
-  
+
     public ApiException toException() {
         return new ApiException(code, error);
     }

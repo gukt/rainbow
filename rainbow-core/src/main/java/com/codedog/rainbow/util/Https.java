@@ -5,9 +5,12 @@
 package com.codedog.rainbow.util;
 
 import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.lang.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Https class
@@ -33,5 +36,31 @@ public class Https {
             realIp = request.getRemoteAddress().getHostName();
         }
         return realIp;
+    }
+
+    /**
+     * 从查询字符串（Query String）中查找指定名称参数的值
+     * TODO 移到 Https 里
+     *
+     * @param qs    query string, can be null.
+     * @param param parameter name, can be null.
+     * @return parameter value, can be null.
+     */
+    @Nullable
+    public static String getParam(String qs, String param) {
+        if (qs == null || param == null) {
+            return null;
+        }
+        Pattern regex = Pattern.compile(".*" + param + "=([^&]+)&?.*");
+        Matcher m = regex.matcher(qs);
+        return m.find() ? m.group(1) : null;
+    }
+
+    @Nullable
+    public static String getParam(ServerHttpRequest request, String param) {
+        if (request == null || param == null) {
+            return null;
+        }
+        return getParam(request.getURI().getQuery(), param);
     }
 }

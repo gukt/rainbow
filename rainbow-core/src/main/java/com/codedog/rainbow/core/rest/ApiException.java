@@ -11,8 +11,7 @@ import lombok.Getter;
  */
 public class ApiException extends RuntimeException {
 
-    @Getter
-    private final int code;
+    @Getter private final int code;
 
     private ApiException(int code, String error, Throwable cause) {
         super(error, cause);

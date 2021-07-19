@@ -4,14 +4,16 @@
 
 package com.codedog.rainbow.api.controller;
 
-import com.codedog.rainbow.core.rest.ApiResult;
 import com.codedog.rainbow.api.common.Errors;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.api.service.ServerService;
 import com.codedog.rainbow.api.service.UserService;
+import com.codedog.rainbow.core.rest.ApiResultView;
+import com.codedog.rainbow.core.rest.ApiResult;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.RoleRepository;
 import com.codedog.rainbow.repository.UserRepository;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -91,7 +93,8 @@ public class UserController {
     }
 
     @GetMapping("users/{id}")
-    public Object search(@PathVariable long id) {
+    @JsonView(ApiResultView.class)
+    public Object findById(@PathVariable long id) {
         return userService.getById(id);
     }
 

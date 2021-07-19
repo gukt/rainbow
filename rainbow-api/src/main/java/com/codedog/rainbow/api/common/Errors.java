@@ -25,4 +25,8 @@ public class Errors {
   public static final ApiResult ERR_ALREADY_LOGIN = failed(20003, "已经登陆了");
   public static final ApiResult ERR_INVALID_CAPTCHA = failed(20004, "验证码不正确");
   public static final ApiResult ERR_INVALID_OLD_PASSWORD = failed(20005, "旧密码不正确");
+
+  public static ApiResult of(int code, String error) {
+    return ApiResult.failed(code, error);
+  }
 }
