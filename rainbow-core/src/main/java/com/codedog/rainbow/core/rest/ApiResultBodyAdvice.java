@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,11 @@ import java.util.Map;
 public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
 
     private final Map<String, Class<?>> viewTypesByName = new HashMap<>();
+
+    @PostConstruct
+    void init() {
+        viewTypesByName.put("id-only", ApiResultView.IdOnly.class);
+    }
 
     /**
      * 前置检查，以决定是否要执行 {@link #beforeBodyWrite} 方法。
@@ -146,7 +152,9 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
     // Private Methods
 
     private MappingJacksonValue setSerializationView(Object body, String viewName) {
-        MappingJacksonValue jsonBody = new MappingJacksonValue(body);
+        MappingJacksonValue jsonBody = !(body instanceof MappingJacksonValue)
+                ? new MappingJacksonValue(body)
+                : (MappingJacksonValue) body;
         Class<?> viewClass = viewTypesByName.get(viewName);
         if (viewClass != null) {
             jsonBody.setSerializationView(viewClass);
