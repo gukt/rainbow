@@ -15,6 +15,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author https://github.com/gukt
@@ -43,25 +45,27 @@ public class Role {
     @Column(nullable = false)
     private Long sid;
 
-    @Column(nullable = false, columnDefinition = "default ''")
+    @Column(nullable = false, length = 50, columnDefinition = "default ''")
     private String nick;
 
+    /** Channel */
     @Column(length = 25)
     private String channel;
 
+    /** Sub channel */
     @Column(length = 25)
     private String subChannel;
 
-    /** ios/android */
+    /** Platform: ios/android */
     @Column(length = 25)
     private String platform;
 
     private Date blockedUntil;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "default 1")
     private Boolean active = false;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "default 0")
     private Integer state;
 
     @Column(nullable = false)
