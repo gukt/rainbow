@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'rainbow'
-include('rainbow-core', 'rainbow-world', 'rainbow-api', 'rainbow-domain')
+include('rainbow-core', 'rainbow-gm', 'rainbow-world', 'rainbow-api', 'rainbow-domain')

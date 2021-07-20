@@ -31,30 +31,22 @@ import java.util.Date;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
-    /**
-     * 主键，由程序提供，需保证全局唯一
-     */
+    /** 主键，由程序提供，需保证全局唯一 */
     @Id
     @JsonView(IdOnly.class)
     private Long id;
-    /**
-     * 用户名，仅用于内部账号登陆
-     */
+    /** 用户名，仅用于内部账号登陆 */
     @JsonView(UserBasicView.class)
     private String name;
-    /**
-     * 密码，仅用于内部账号登陆
-     */
+    /** 密码，仅用于内部账号系统 */
     private String password;
+    /** 用户类型 */
+    @JsonView(UserBasicView.class)
+    private Integer type;
+    private Boolean active;
     private Integer state;
-    /**
-     * 创建时间
-     */
     @JsonView(UserBasicView.class)
     private Date createdAt;
-    /**
-     * 更新时间
-     */
     private Date updatedAt;
 
 }

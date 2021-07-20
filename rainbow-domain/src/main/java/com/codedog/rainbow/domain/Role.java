@@ -38,27 +38,13 @@ public class Role {
     /** Server Id */
     private Long sid;
     private String nick;
-    /**
-     * 渠道
-     */
     private String channel;
-    /**
-     * 子渠道
-     */
     private String subChannel;
-    /**
-     * 平台：ios/android
-     */
+    /** ios/android */
     private String platform;
-    /** Blocked Until */
     private Date blockedUntil;
+    private Boolean active;
     private Integer state;
-    /**
-     * 创建时间
-     */
     private Date createdAt;
-    /**
-     * 更新时间
-     */
     private Date updatedAt;
 }

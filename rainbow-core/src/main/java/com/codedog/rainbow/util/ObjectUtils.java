@@ -4,10 +4,10 @@
 
 package com.codedog.rainbow.util;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -286,10 +286,7 @@ public class ObjectUtils {
         checkArgument(
                 i.compareTo(start) >= 0 && i.compareTo(end) <= 0,
                 "%s: %s (expected: in [%s, %s])",
-                name,
-                i,
-                start,
-                end);
+                name, i, start, end);
         return i;
     }
 
@@ -468,5 +465,5 @@ public class ObjectUtils {
         return sb.toString().replace(", }", "}");
     }
 
-    // Internal helper methods
+    // Internal Helper Methods
 }
