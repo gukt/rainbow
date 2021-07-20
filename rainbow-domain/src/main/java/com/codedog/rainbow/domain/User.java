@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -35,18 +36,30 @@ public class User {
     @Id
     @JsonView(IdOnly.class)
     private Long id;
+
     /** 用户名，仅用于内部账号登陆 */
+    @Column(nullable = false, length = 50)
     @JsonView(UserBasicView.class)
     private String name;
+
     /** 密码，仅用于内部账号系统 */
+    @Column(nullable = false, length = 100)
     private String password;
+
     /** 用户类型 */
+    @Column(nullable = false, columnDefinition = "int default 0")
     @JsonView(UserBasicView.class)
     private Integer type;
-    private Boolean active;
+
+    @Column(nullable = false, columnDefinition = "bit default 1") private
+    Boolean active = false;
+
+    @Column(nullable = false, columnDefinition = "int default 1")
     private Integer state;
+
+    @Column(nullable = false)
     @JsonView(UserBasicView.class)
     private Date createdAt;
-    private Date updatedAt;
 
+    private Date updatedAt;
 }

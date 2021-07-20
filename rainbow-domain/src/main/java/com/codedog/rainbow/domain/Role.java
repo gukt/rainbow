@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -33,18 +34,38 @@ public class Role {
      */
     @Id
     private Long id;
+
     /** User Id */
+    @Column(nullable = false)
     private Long uid;
+
     /** Server Id */
+    @Column(nullable = false)
     private Long sid;
+
+    @Column(nullable = false, columnDefinition = "default ''")
     private String nick;
+
+    @Column(length = 25)
     private String channel;
+
+    @Column(length = 25)
     private String subChannel;
+
     /** ios/android */
+    @Column(length = 25)
     private String platform;
+
     private Date blockedUntil;
-    private Boolean active;
+
+    @Column(nullable = false)
+    private Boolean active = false;
+
+    @Column(nullable = false)
     private Integer state;
+
+    @Column(nullable = false)
     private Date createdAt;
+
     private Date updatedAt;
 }
