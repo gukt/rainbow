@@ -84,7 +84,7 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
         }
         // 转换为自定义的分页（JsonPage），否则在应用 @JsonView 时，分页内容不能正常输出
         if (body instanceof Page<?>) {
-            body = JsonPage.of((Page<?>) body);
+            body = ApiResultViewAwarePage.of((Page<?>) body);
         }
         // 从查询字符串中读取 view 参数值
         String viewName = HttpUtils.getParam(request, "view");

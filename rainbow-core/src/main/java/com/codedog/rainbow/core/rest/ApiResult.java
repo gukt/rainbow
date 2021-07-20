@@ -13,22 +13,23 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 标准的 API 响应结构。
+ *
+ * NOTE: 由于该对象启用了链式访问（见: {@link Accessors#fluent()}）,所以 lombok 生成的属性方法是没有 get 和 set 前缀的。
+ * 然而，Jackson 默认的序列化/反序列化机制是使用带 get 和 set 前缀的方法，所以这里要加上 {@link JsonProperty} 注解。
+ * 或者将 {@link @JsonView(ApiResultView.class)} 写在每一个需要序列化的字段上。
+ *
  * @author https://github.com/gukt
- * @version 1.0
- * @date 2020/1/26 00:31
  */
-@Data
-@Accessors(fluent = true)
 @JsonView(ApiResultView.class)
 @JsonInclude(Include.NON_NULL)
+@Accessors(fluent = true)
+@Data
 @Slf4j
 public class ApiResult {
 
     /**
      * 错误代码，0 表示成功，非零表示失败。错误码不建议使用负数。
-     *
-     * 由于该对象启用了链式访问（见: {@link Accessors#fluent()}）,所以属性方法是没有 get 和 set 前缀的。
-     * 然而，Jackson 默认的序列化/反序列化机制是使用带 get 和 set 前缀的方法，所以这里要加上 {@link JsonProperty} 注解。
      */
     @JsonProperty private final int code;
     /**
