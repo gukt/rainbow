@@ -66,11 +66,8 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
             return false;
         }
         Method method = (Method) returnType.getExecutable();
-        if (Objects.equals("error", method.getName())
-                || method.getDeclaringClass().getSimpleName().contains("BasicErrorController")) {
-            return false;
-        }
-        return true;
+        return !Objects.equals("error", method.getName())
+                && !method.getDeclaringClass().getSimpleName().contains("BasicErrorController");
     }
 
     @Override
