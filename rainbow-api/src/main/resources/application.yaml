@@ -30,7 +30,7 @@ logging:
     root: info
     web: debug
     com:
-      laogu: debug
+      codedog: debug
 # Application Configurations
 #
 app:

@@ -27,7 +27,7 @@ spring:
 logging:
   level:
     io:
-      laogu: debug
+      codedog: debug
     root: info
     web: debug
 
