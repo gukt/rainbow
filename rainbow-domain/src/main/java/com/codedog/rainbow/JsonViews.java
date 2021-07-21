@@ -15,5 +15,8 @@ import com.codedog.rainbow.core.rest.ApiResultView.IdOnly;
 public final class JsonViews {
 
     @Tag({"user-basic", "user-simple"})
-    public interface UserBasicView extends IdOnly {}
+    public interface UserBasicView extends UserLoginView {}
+
+    @Tag("user-login")
+    public interface UserLoginView extends IdOnly {}
 }

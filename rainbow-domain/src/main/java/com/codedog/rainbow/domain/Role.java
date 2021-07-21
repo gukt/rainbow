@@ -10,13 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author https://github.com/gukt
@@ -37,35 +32,36 @@ public class Role {
     @Id
     private Long id;
 
-    /** User Id */
+    /** User id */
     @Column(nullable = false)
     private Long uid;
 
-    /** Server Id */
-    @Column(nullable = false)
-    private Long sid;
+    /** Server id, max value: 3 bytes */
+    @Column(nullable = false, columnDefinition = "mediumint default 0")
+    private Integer sid;
 
-    @Column(nullable = false, length = 50, columnDefinition = "default ''")
+    @Column(nullable = false, columnDefinition = "varchar(50) default ''")
     private String nick;
 
     /** Channel */
-    @Column(length = 25)
+    @Column(nullable = false, columnDefinition = "varchar(25) default ''")
     private String channel;
 
     /** Sub channel */
-    @Column(length = 25)
+    @Column(nullable = false, columnDefinition = "varchar(25) default ''")
     private String subChannel;
 
     /** Platform: ios/android */
-    @Column(length = 25)
+    @Column(nullable = false, columnDefinition = "varchar(25) default ''")
     private String platform;
 
+    @Temporal(TemporalType.TIMESTAMP)
     private Date blockedUntil;
 
-    @Column(nullable = false, columnDefinition = "default 1")
-    private Boolean active = false;
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean inactive = false;
 
-    @Column(nullable = false, columnDefinition = "default 0")
+    @Column(nullable = false, columnDefinition = "tinyint default 0")
     private Integer state;
 
     @Column(nullable = false)

@@ -4,13 +4,105 @@
 
 package com.codedog.rainbow.util;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
+ * 全局 ID 生成组件
+ * <p></p>
+ * Long (64 bits) = [timestampBits] + [workerBits] + [sequenceBits]
+ *
  * @author https://github.com/gukt
+ * @see <a href="https://github.com/twitter/snowflake">Snow flake</a>
  */
+@Component
+@Slf4j
 public class IdGenerator {
 
+    /** Worker id, also called server id. */
+    private long workerId = 1;
+    private static long sequence = 0L;
+    private static final long workerIdBits = 14L;
+    private static final long sequenceBits = 10L;
+    private static final long workerIdShift = sequenceBits;
+    private static final long timestampShift = sequenceBits + workerIdBits;
+    private static final long sequenceMask = ~(-1L << sequenceBits);
+    private static final long epoch = 1625068800000L; // 2021-07-01 00:00:00
+    private static long lastTimestamp = -1L;
+
+    private IdGenerator() {
+        long timeToLive = this.testUntil();
+        log.info("timestampShift={}, workerIdBits={}, sequenceBits={}, workerId={}, deadline={}",
+                timestampShift, workerIdBits, sequenceBits, workerId,
+                new SimpleDateFormat("yyyy-MM-dd").format(timeToLive));
+    }
+
+    @Value("${app.server.id:${server.id:1}}")
+    private void setWorkerId(long workerId) {
+        long maxWorkerId = ~(-1L << workerIdBits);
+        if (workerId > maxWorkerId) {
+            log.error("The workerId exceed: {} (expected: <={})", workerId, maxWorkerId);
+            System.exit(1);
+        }
+        this.workerId = workerId;
+    }
+
     public static long nextId() {
-        // TODO 使用 snowflake 算法代替
+        return IdGeneratorHolder.INSTANCE.nextId0();
+    }
+
+    private synchronized long nextId0() {
+        long now = now();
+        if (now < lastTimestamp) {
+            log.error("Clock is moving backwards. Rejecting requests until {}.", lastTimestamp);
+            throw new RuntimeException(String.format("Clock moved backwards. Refusing to generate id for %d milliseconds",
+                    lastTimestamp - now));
+        }
+        if (lastTimestamp == now) {
+            sequence = (sequence + 1) & sequenceMask;
+            if (sequence == 0) {
+                now = waitNextMillis(lastTimestamp);
+            }
+        } else {
+            sequence = now() % 2;
+        }
+        lastTimestamp = now;
+        return ((now - epoch) << timestampShift) | (workerId << workerIdShift) | sequence;
+    }
+
+    private long waitNextMillis(long lastTimestamp) {
+        long timestamp = now();
+        while (timestamp <= lastTimestamp) {
+            timestamp = now();
+        }
+        return timestamp;
+    }
+
+    private long now() {
         return System.currentTimeMillis();
+    }
+
+    private long testUntil() {
+        for (long i = 0; true; i = i + 60_000) {
+            long id = (i << timestampShift) | (workerId << workerIdShift) | sequence;
+            if (id < 0) {
+                return epoch + i;
+            }
+        }
+    }
+
+    private static class IdGeneratorHolder {
+
+        private static final IdGenerator INSTANCE = new IdGenerator();
+    }
+
+    public static void main(String[] args) {
+        long timestamp = IdGeneratorHolder.INSTANCE.testUntil();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("Id will run out util about: " + sdf.format(new Date(timestamp)));
     }
 }

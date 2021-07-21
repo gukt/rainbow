@@ -1,1 +1,4 @@
 debug: false
+app:
+  server:
+    id: 16383
