@@ -8,7 +8,7 @@ export var listMixin = {
       // 分页设置
       pagination: {
         // 页大小下拉选项
-        pageSizes: [5, 10, 20, 50, 100],
+        pageSizes: [5, 10, 15, 20, 50, 100],
         // 分页布局
         layout: 'total, sizes, prev, pager, next',
         // 总记录条数
@@ -25,7 +25,7 @@ export var listMixin = {
         // 当前页页码
         page: 0,
         // 页大小
-        size: 10,
+        size: 15,
         // 排序规则
         sort: 'id,desc'
       },

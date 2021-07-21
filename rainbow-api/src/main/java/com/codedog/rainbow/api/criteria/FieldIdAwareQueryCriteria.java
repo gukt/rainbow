@@ -16,10 +16,6 @@ import java.util.Set;
  */
 public interface FieldIdAwareQueryCriteria<T extends Serializable> {
 
-    T getId();
-
-    void setId(T id);
-
     Set<T> getIds();
 
     void setIds(Set<T> ids);

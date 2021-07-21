@@ -16,13 +16,19 @@ import java.util.Set;
  * @author https://github.com/gukt
  */
 @Data
-public class UserQueryCriteria implements EntityQueryCriteria, FieldIdAwareQueryCriteria<Long>, FieldStateAwareQueryCriteria {
+public class UserQueryCriteria implements
+        EntityQueryCriteria, FieldIdAwareQueryCriteria<Long>,
+        FieldStateAwareQueryCriteria, FieldCreatedAtAwareQueryCriteria {
 
-    private String q;
-    private Long id;
-    private Integer state;
     private Set<Long> ids;
+    private String q;
+    private Integer inactive;
     private Set<Integer> states;
+    private Integer type;
     private Date createdStart;
     private Date createdEnd;
+    private Date loginStart;
+    private Date loginEnd;
+    private Date blockStart;
+    private Date blockEnd;
 }

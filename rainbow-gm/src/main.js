@@ -49,12 +49,14 @@ Vue.filter('ceil', function(num) {
   if (!num) return num
   return Math.ceil(num)
 })
-Vue.filter('toStateTag', function(state) {
-  switch (state) {
-    case -1:
-      return '已删除'
+Vue.filter('toUserTypeString', function(type) {
+  switch (type) {
+    case 0:
+      return '普通'
+    case 1:
+      return '高级'
     default:
-      return '正常'
+      return '未知'
   }
 })
 Vue.filter('houseTitle', function(entity) {

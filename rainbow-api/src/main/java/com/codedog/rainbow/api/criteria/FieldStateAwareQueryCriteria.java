@@ -14,10 +14,6 @@ import java.util.Set;
  */
 public interface FieldStateAwareQueryCriteria {
 
-    Integer getState();
-
-    void setState(Integer state);
-
     Set<Integer> getStates();
 
     void setStates(Set<Integer> states);

@@ -93,14 +93,7 @@ public class UserController {
 
     // 根据条件查询
     @GetMapping("users")
-    @JsonView(UserLoginView.class)
     public Object search(UserQueryCriteria criteria, @PageableDefault Pageable page) {
-        if(true) {
-//            throw new RuntimeException("发生了一个运行时异常");
-//            throw new ApiException(100, "这是一个 API 处理异常");
-//            throw ERR_BAD_PARAMETER.error("id", true).toException();
-//            return ERR_BAD_PARAMETER;
-        }
         return userService.search(criteria, page);
     }
 

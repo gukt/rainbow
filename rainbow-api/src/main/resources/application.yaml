@@ -7,11 +7,24 @@ spring:
     active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${app.db.username}
-    password: ${app.db.password}
-    url: jdbc:mysql://${app.db.host}:${app.db.port}/${app.db.catalog}?createDatabaseIfNotExist=true&useSSL=false&characterEncoding=utf-8
+    username: ${app.db.username:${db.username}}
+    password: ${app.db.password:${db.password}}
+    url: jdbc:mysql://${app.db.host:${db.host}}:${app.db.port:${db.port}}/${app.db.catalog:${db.catalog}}?createDatabaseIfNotExist=true&useSSL=false&characterEncoding=utf-8
     hikari:
       connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
+      # 控制池中最小空闲连接数，即:控制池中最小连接数，多余的将会被移除
+      minimum-idle: 5
+      # 连接池最大连接个数
+      maximum-pool-size: 50
+      # 设定连接在池中的最大生命时间，单位：毫秒，默认30分钟
+      # 不管这个连接是不是刚刚才用过，只要过了这个时间都会被从池中移除
+      # NOTE: 如果一个连接正在使用则不会立即移除它，而是等到他 idle 的时候才会被移除
+      # 由于 MariaDB 容器默认的 wait_timeout = 600(10分钟）而默认的 max-lifetime 为30分钟
+      # 所以要将此值调整为小于 10 分钟，否则可能会导致 db 已经关闭了连接，而连接池缺判断该连接还有效的情况
+      # 此处设置为 8 分钟，单位：毫秒
+      max-lifetime: 480000
+      # 用于测试连接有效性时执行的语句
+      connection-test-query: SELECT 1
   jpa:
     database: mysql
     properties:
@@ -24,7 +37,13 @@ spring:
   mvc:
     throw-exception-if-no-handler-found: false
   jackson:
+    # 包含非空，比 non_null 限制更严格
+    # 比如对于空集合，non_null 会返回空集合，而 non_empty 会过滤掉空集合
     default-property-inclusion: non_empty
+    # 北京时间为东八区
+    time-zone: GMT+8
+    # 暂且设置成常用格式（建议一律返回时间戳，由消费者格式化）
+    date-format: yyyy-MM-dd HH:mm:ss
 logging:
   level:
     root: info

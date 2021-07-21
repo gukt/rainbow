@@ -13,10 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -57,6 +54,15 @@ public class User {
 
     @Column(nullable = false, columnDefinition = "tinyint default 1")
     private Integer state;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date blockedUntil;
+
+    @Column(nullable = false)
+    private Date loginTime;
+
+    @Column(nullable = false, columnDefinition = "varchar(50) default ''")
+    private String loginIp;
 
     /**
      * 创建时间, NOTE: MYSQL 的日期类型中，只有 timestamp 支持设置默认值，其他如: datetime, date, time, year 都不支持。

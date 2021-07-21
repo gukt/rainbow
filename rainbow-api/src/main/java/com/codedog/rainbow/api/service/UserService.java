@@ -95,15 +95,26 @@ public class UserService {
                     // And name like '...'
                     if (!ObjectUtils.isNullOrEmpty(criteria.getQ())) {
                         String kw = "%" + criteria.getQ() + "%";
-                        predicates.add(cb.like(root.get("name"), kw));
+                        predicates.add(cb.or(
+                                cb.like(root.get("id"), kw),
+                                cb.like(root.get("name"), kw))
+                        );
                     }
-                    // And createdAt >= ...
-                    if (criteria.getCreatedStart() != null) {
-                        predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), criteria.getCreatedStart()));
+                    // And loginTime >= ...
+                    if (criteria.getLoginStart() != null) {
+                        predicates.add(cb.greaterThanOrEqualTo(root.get("loginTime"), criteria.getLoginStart()));
                     }
-                    // And createdAt <= ...
-                    if (criteria.getCreatedEnd() != null) {
-                        predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), criteria.getCreatedEnd()));
+                    // And loginTime <= ...
+                    if (criteria.getLoginEnd() != null) {
+                        predicates.add(cb.lessThanOrEqualTo(root.get("loginTime"), criteria.getLoginEnd()));
+                    }
+                    // And blockUntil >= ...
+                    if (criteria.getBlockStart() != null) {
+                        predicates.add(cb.greaterThanOrEqualTo(root.get("blockUntil"), criteria.getBlockStart()));
+                    }
+                    // And blockUntil <= ...
+                    if (criteria.getBlockEnd() != null) {
+                        predicates.add(cb.lessThanOrEqualTo(root.get("blockUntil"), criteria.getBlockEnd()));
                     }
                     Predicate[] arr = new Predicate[predicates.size()];
                     return cb.and(predicates.toArray(arr));
@@ -111,17 +122,31 @@ public class UserService {
         return userRepository.findAll(spec, page);
     }
 
+    /**
+     * 根据 ID 查询指定的用户
+     * @param id 用户 ID
+     * @return 和 Id 关联的用户
+     */
     public User getById(long id) {
         return userRepository.getById(id);
     }
 
+    /**
+     * 根据 IDs 查询指定的多个用户，其实内部是通过 {@link #search(UserQueryCriteria, Pageable)} 方法查询的。
+     * TODO 好像可以省略,没必要提供这个快捷方法
+     *
+     * @param ids 用户 IDs
+     * @param page 分页参数
+     * @return 和 Ids 关联的用户
+     */
     public Page<User> getByIds(Set<Long> ids, Pageable page) {
         ObjectUtils.requireNonEmpty(ids, "ids");
         UserQueryCriteria criteria = new UserQueryCriteria();
         criteria.setIds(ids);
-        return (Page<User>) search(criteria, page);
+        return search(criteria, page);
     }
 
+    // TODO 好像也可以省略
     public int removeById(long id, boolean force) {
         ObjectUtils.requirePositive(id, "id");
         return removeByIds(Sets.newHashSet(id), force);
