@@ -4,7 +4,9 @@
 
 package com.codedog.rainbow.api.controller;
 
+import com.codedog.rainbow.JsonViews;
 import com.codedog.rainbow.JsonViews.UserBasicView;
+import com.codedog.rainbow.JsonViews.UserLoginView;
 import com.codedog.rainbow.api.common.Errors;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.api.service.ServerService;
@@ -50,6 +52,7 @@ public class UserController {
      * @return
      */
     @PostMapping("user/register")
+    @JsonView(UserLoginView.class)
     public Object register(@RequestBody User user) {
         if (user == null) {
             return ERR_BAD_PARAMETER;
@@ -65,6 +68,7 @@ public class UserController {
      * @param password 密码，必须是加密过的
      */
     @PostMapping("user/login")
+    @JsonView(UserLoginView.class)
     public Object login(String name, String password) {
         User user = userService.getByName(name);
         if (user == null) {
@@ -89,19 +93,19 @@ public class UserController {
 
     // 根据条件查询
     @GetMapping("users")
+    @JsonView(UserLoginView.class)
     public Object search(UserQueryCriteria criteria, @PageableDefault Pageable page) {
-        return userService.search(criteria, page);
-    }
-
-    @GetMapping("users/{id}")
-    @JsonView(UserBasicView.class)
-    public Object findById(@PathVariable long id) {
         if(true) {
 //            throw new RuntimeException("发生了一个运行时异常");
 //            throw new ApiException(100, "这是一个 API 处理异常");
 //            throw ERR_BAD_PARAMETER.error("id", true).toException();
-//            return ERR_BAD_PARAMETER.error("id", true);
+//            return ERR_BAD_PARAMETER;
         }
+        return userService.search(criteria, page);
+    }
+
+    @GetMapping("users/{id}")
+    public Object findById(@PathVariable long id) {
         return userService.getById(id);
     }
 

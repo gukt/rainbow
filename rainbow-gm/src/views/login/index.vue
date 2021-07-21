@@ -1,8 +1,8 @@
 <template>
   <div class="login-container">
+    <div class="title">游戏管理</div>
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" autoComplete="on"
              class="login-form" label-position="left">
-      <el-form-item label="请登录！"></el-form-item>
       <el-form-item prop="username" label="">
         <el-input prefix-icon="el-icon-user"
                   v-model="loginForm.username" autoComplete="on" name="username" placeholder="请输入用户名"
@@ -85,11 +85,16 @@ export default {
 <style>
 .login-container {
   width: 80%;
+  max-width: 300px;
   margin: 200px auto 0;
 }
 
 .title {
-  margin: 36px auto;
+  margin: 24px auto;
+  text-align: center;
+  font-size: 23px;
+  font-weight: 500;
+  color: #666;
 }
 
 .show-pwd {

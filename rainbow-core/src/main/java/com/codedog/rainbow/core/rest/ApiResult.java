@@ -17,11 +17,10 @@ import lombok.extern.slf4j.Slf4j;
  *
  * NOTE: 由于该对象启用了链式访问（见: {@link Accessors#fluent()}）,所以 lombok 生成的属性方法是没有 get 和 set 前缀的。
  * 然而，Jackson 默认的序列化/反序列化机制是使用带 get 和 set 前缀的方法，所以这里要加上 {@link JsonProperty} 注解。
- * 或者将 {@link @JsonView(ApiResultView.class)} 写在每一个需要序列化的字段上。
+ * 或者将 {@link JsonView @JsonView} 写在每一个需要序列化的字段上。
  *
  * @author https://github.com/gukt
  */
-@JsonView(ApiResultView.class)
 @JsonInclude(Include.NON_NULL)
 @Accessors(fluent = true)
 @Data
@@ -31,40 +30,41 @@ public class ApiResult {
     /**
      * 错误代码，0 表示成功，非零表示失败。错误码不建议使用负数。
      */
-    @JsonProperty private final int code;
-    /**
-     * HTTP 状态码
-     */
-    @JsonProperty private int status = 200;
+    @JsonView(ApiResultView.class) private final int code;
     /**
      * 详细的错误描述
      */
-    @JsonProperty private String error;
+    @JsonView(ApiResultView.class) private String error;
     /**
      * 响应数据
      */
-    @JsonProperty private Object data;
-
+    @JsonView(ApiResultView.class) private Object data;
     /**
-     * TODO 解决 Errors 里静态变量append 一直被改变的问题
-     * "请求参数有问题:id:id:id:id:id"
+     * HTTP 状态码
      */
-    public ApiResult error(String s, boolean append, String delimiter) {
-        if (append) {
-            this.error += delimiter + s;
-        } else {
-            this.error = s;
-        }
-        return this;
-    }
+    private int status = 200;
 
-    public ApiResult error(String s, boolean append) {
-        return error(s, append, ":");
-    }
-
-    public ApiResult error(String s) {
-        return error(s, true, ":");
-    }
+//    /**
+//     * TODO 解决 Errors 里静态变量append 一直被改变的问题
+//     * "请求参数有问题:id:id:id:id:id"
+//     */
+//    public ApiResult error(String s, boolean append, String delimiter) {
+//        if (append) {
+//            this.error += delimiter + s;
+//        } else {
+//            this.error = s;
+//        }
+//        return this;
+//    }
+//
+//    public ApiResult error(String s, boolean append) {
+//        return error(s, append, ":");
+//    }
+//
+//      TODO 这个会覆盖默认的 error，会导致 null: xxx 的结果
+//    public ApiResult error(String s) {
+//        return error(s, true, ":");
+//    }
 
     /**
      * 成功

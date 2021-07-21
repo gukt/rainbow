@@ -4,16 +4,15 @@
 
 package com.codedog.rainbow.api.controller;
 
+import com.codedog.rainbow.core.rest.ApiResult;
 import com.codedog.rainbow.util.CommonUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -43,11 +42,9 @@ public class AdminController {
         return ResponseEntity.ok().body(indexHtml);
     }
 
-    // TODO 看看去掉 produces 是不是返回统一的 JSON 格式?
-    // 如果是，说明上面的也可以被整合到这里
-    @GetMapping(value = "", produces = "text/plain;charset=utf-8")
+    @GetMapping
     public Object apiHome() {
-        return "Hey man, what's up?";
+        return "It works.";
     }
 
     // For GM System
@@ -71,7 +68,8 @@ public class AdminController {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("roles", roles);
         resultMap.put("name", "admin");
-        resultMap.put("avatar", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+//        resultMap.put("avatar", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+        resultMap.put("avatar", "http://localhost:8080/images/rainbow.jpeg");
         return success(resultMap);
     }
 

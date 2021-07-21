@@ -14,18 +14,21 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 /**
- * 序列化时，忽略掉 {@link PageImpl} 对象的一些属性，比如：
+ * 这是 {@link PageImpl} 对象的装饰者。
+ * <p></p>
+ * 指定序列化时，忽略掉 {@link PageImpl} 对象的一些属性，比如：
  * <ul>
  *     <li>pageable - 多了一层，访问麻烦，常用的通过方法提取到外层，比如: {@link #getPage()}</li>
  *     <li>sort - 一般情况下用不到</li>
  *     <li>number - 为保持和传参名称统一，去掉 {@link PageImpl#getNumber()}，使用 {@link #getPage()} 表示当前页码</li>
  *     <li>pageable - 将常用的写个方法提取到外层，因为多了一层会给 API 调用者造成麻烦</li>
+ *     <li>empty - 和 {@link #hasContent()} 语义上相同，但 hasContent 语义理解更直观，所以去掉 empty</li>
  * </ul>
  *
  * @author https://github.com/gukt
  */
 @JsonView(ApiResultView.class)
-@JsonIgnoreProperties({"pageable", "sort", "number"})
+@JsonIgnoreProperties({"pageable", "sort", "number", "empty"})
 public class ApiResultViewAwarePage<T> extends PageImpl<T> {
 
     private ApiResultViewAwarePage(final List<T> content, final Pageable page, final long total) {

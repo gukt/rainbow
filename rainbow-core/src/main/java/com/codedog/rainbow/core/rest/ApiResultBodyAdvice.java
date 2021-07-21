@@ -8,6 +8,7 @@ import com.codedog.rainbow.core.Tag;
 import com.codedog.rainbow.util.HttpUtils;
 import com.codedog.rainbow.util.JsonUtils;
 import com.codedog.rainbow.util.ObjectUtils;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
@@ -26,9 +27,11 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * ApiResultBodyAdvice class
@@ -62,11 +65,11 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
         if (isSwaggerUiResponse) {
             return false;
         }
-        // TODO 解决一下这里，用一个错误来测试
-//        Method method = (Method) returnType.getExecutable();
-//        boolean isBasisErrorHandler = "error".equals(method.getName())
-//                && method.getDeclaringClass().equals(BasicErrorController.class);
-//        return !isBasisErrorHandler;
+        Method method = (Method) returnType.getExecutable();
+        if (Objects.equals("error", method.getName())
+                || method.getDeclaringClass().getSimpleName().contains("BasicErrorController")) {
+            return false;
+        }
         return true;
     }
 
@@ -82,24 +85,38 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
                 || body instanceof Resource) {
             return body;
         }
-        // 转换为自定义的分页（JsonPage），否则在应用 @JsonView 时，分页内容不能正常输出
+        // 装饰成 ApiResultViewAwarePage 对象，否则在应用 @JsonView 时，分页内容不能正常输出，
+        // 且该对象对分页内容的序列化格式做了优化。
         if (body instanceof Page<?>) {
             body = ApiResultViewAwarePage.of((Page<?>) body);
         }
-        // 从查询字符串中读取 view 参数值
-        String viewName = HttpUtils.getParam(request, "view");
-        // 使用指定的 view 过滤返回结果
-        if (!ObjectUtils.isNullOrEmpty(viewName)) {
-            body = setSerializationView(body, viewName);
-            writeResponseLog(request, body);
-            return body;
+        boolean isError = false;
+        int status = 200;
+        if (body instanceof ApiResult) {
+            ApiResult result = (ApiResult) body;
+            isError = result.code() != 0;
+            status = result.status();
+        } else {
+            body = ApiResult.success(body);
         }
-        ApiResult result = body instanceof ApiResult
-                ? (ApiResult) body
-                : ApiResult.success(body);
-        response.setStatusCode(HttpStatus.valueOf(result.status()));
-        writeResponseLog(request, result);
-        return result;
+        // Set the HTTP status code of the response.
+        response.setStatusCode(HttpStatus.valueOf(status));
+        // 只有在成功的情况下才尝试应用请求参数中指定的 view
+        if (!isError) {
+            // 获得 handler 上是否指定了 JsonView
+            JsonView jsonView = returnType.getMethodAnnotation(JsonView.class);
+            // 如果 handler 上指定了 JsonView 注解, 则请求参数中指定 view 不生效
+            if (jsonView == null) {
+                // 从查询字符串中读取 view 参数值
+                String viewName = HttpUtils.getParam(request, "view");
+                if (!ObjectUtils.isNullOrEmpty(viewName)) {
+                    // Wraps the body object to the MappingJacksonValue
+                    body = resolveSerializationView2((ApiResult) body, viewName);
+                }
+            }
+        }
+        writeResponseLog(request, body);
+        return body;
     }
 
     public void addApiResultViewClasses(Class<?>[] classes) {
@@ -120,30 +137,35 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
     }
 
     /**
-     * Handles {@link NoHandlerFoundException no-handle-found exceptions}
-     * NOTE: 只有配置了 throw-exception-if-no-handler-found=true 才会抛出 {@link NoHandlerFoundException}
+     * Handles {@link NoHandlerFoundException} globally
+     * <p>
+     * NOTE: 只有在 application[.properties|.yaml] 中配置了 'throw-exception-if-no-handler-found=true' 时，
+     * 才会抛出 {@link NoHandlerFoundException}
+     * </p>
      */
     @ExceptionHandler(NoHandlerFoundException.class)
-    public Object handleException(NoHandlerFoundException ex) {
+    Object handleException(NoHandlerFoundException ex) {
+        log.error("处理请求时发生了未知异常", ex);
         int status = HttpStatus.NOT_FOUND.value(); // 404
         return ApiResult.failed(status, ex.getMessage(), status);
     }
 
     /**
-     * Handles {@link ApiException api exceptions}
+     * Handles {@link ApiException} globally.
      *
      * @param ex an {@link ApiException api exceptions}
      */
     @ExceptionHandler(ApiException.class)
-    public Object handleException(ApiException ex) {
+    Object handleException(ApiException ex) {
+        log.error("处理请求时发生了未知异常", ex);
         return ex.toApiResult();
     }
 
     /**
-     * Handles any unknown exceptions
+     * Handles any unknown exceptions globally.
      */
     @ExceptionHandler(Throwable.class)
-    public Object handleException(Throwable ex) {
+    Object handleException(Throwable ex) {
         log.error("处理请求时发生了未知异常", ex);
         int status = HttpStatus.INTERNAL_SERVER_ERROR.value(); // 500
         return ApiResult.failed(status, ex.getMessage(), status);
@@ -151,19 +173,34 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
 
     // Private Methods
 
-    private MappingJacksonValue setSerializationView(Object body, String viewName) {
-        MappingJacksonValue jsonBody = !(body instanceof MappingJacksonValue)
-                ? new MappingJacksonValue(body)
-                : (MappingJacksonValue) body;
+//    @Deprecated
+//    private Object resolveSerializationView(Object body, String viewName) {
+//        if (!(body instanceof ApiResult)) {
+//            body = ApiResult.success(body);
+//        }
+//        Class<?> viewClass = viewTypesByName.get(viewName);
+//        if (viewClass != null) {
+//            body = new MappingJacksonValue(body);
+//            ((MappingJacksonValue) body).setSerializationView(viewClass);
+//        }
+//        return body;
+//    }
+
+    private Object resolveSerializationView2(ApiResult result, String viewName) {
         Class<?> viewClass = viewTypesByName.get(viewName);
-        if (viewClass != null) {
-            jsonBody.setSerializationView(viewClass);
+        if (viewClass == null) {
+            return result;
         }
-        return jsonBody;
+        MappingJacksonValue mappingResult = new MappingJacksonValue(result);
+        mappingResult.setSerializationView(viewClass);
+        return mappingResult;
     }
 
+    /**
+     * 记录 API 执行结果日志
+     */
     private void writeResponseLog(ServerHttpRequest request, Object result) {
-        log.debug("{} - {} {} - {}", HttpUtils.getRemoteAddress(request),
+        log.debug("<<< {} - {} {} - {}", HttpUtils.getRemoteAddress(request),
                 request.getMethodValue(),
                 request.getURI().getPath(),
                 JsonUtils.toJson(result));
