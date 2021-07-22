@@ -127,48 +127,44 @@
         </el-form-item>
         <el-form-item label="注册时间">
           <div class="flex-box">
-            <el-date-picker type="date"
-                            style="width: 100%"
-                            v-model="query.createdStart"
-                            value-format="yyyy-MM-dd HH:mm:ss"
+            <el-date-picker type="date" v-model="query.createdStart"
+                            :picker-options="createdDatePickerOptions"
+                            style="width: 100%" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期">
             </el-date-picker>
             <span class="w32"/>
-            <el-date-picker type="date" style="width: 100%"
-                            v-model="query.createdEnd"
-                            value-format="yyyy-MM-dd HH:mm:ss"
+            <el-date-picker type="date" v-model="query.createdEnd"
+                            style="width: 100%" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期">
             </el-date-picker>
           </div>
         </el-form-item>
         <el-form-item label="最后登陆时间">
           <div class="flex-box">
-            <el-date-picker type="date"
-                            style="width: 100%"
-                            v-model="query.loginStart"
-                            value-format="yyyy-MM-dd HH:mm:ss"
+            <el-date-picker type="datetime" v-model="query.loginStart"
+                            :picker-options="loginDatePickerOptions"
+                            style="width: 100%" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期">
             </el-date-picker>
             <span class="w32"/>
-            <el-date-picker type="date" style="width: 100%"
-                            v-model="query.loginEnd"
-                            value-format="yyyy-MM-dd HH:mm:ss"
+            <el-date-picker type="datetime" v-model="query.loginEnd"
+                            :picker-options="loginDatePickerOptions"
+                            style="width: 100%" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期">
             </el-date-picker>
           </div>
         </el-form-item>
         <el-form-item label="封号时间">
           <div class="flex-box">
-            <el-date-picker type="date"
-                            style="width: 100%"
-                            v-model="query.blockStart"
-                            value-format="yyyy-MM-dd HH:mm:ss"
+            <el-date-picker type="date" v-model="query.blockStart"
+                            :picker-options="blockDatePickerOptions"
+                            style="width: 100%" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期">
             </el-date-picker>
             <span class="w32"/>
-            <el-date-picker type="date" style="width: 100%"
-                            v-model="query.blockEnd"
-                            value-format="yyyy-MM-dd HH:mm:ss"
+            <el-date-picker type="date" v-model="query.blockEnd"
+                            :picker-options="blockDatePickerOptions"
+                            style="width: 100%" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期">
             </el-date-picker>
           </div>
@@ -257,7 +253,7 @@
                        fixed="left" align="center" width="180"
                        sortable="custom"/>
       <el-table-column prop="name" label="用户名"
-                       align="center"
+                       align="center" width="100"
                        sortable="custom">
         <template slot-scope="props">
           <el-link type="primary" style="font-size:12px;" @click="handleNickClicked(props.row)">
@@ -266,11 +262,11 @@
         </template>
       </el-table-column>
       <el-table-column prop="name" label="创建角色数"
-                       align="center" width="120"
+                       align="center" min-width="110"
                        sortable="custom">
         <template slot-scope="props">
           <el-link type="primary" style="font-size:12px;" @click="handleNickClicked(props.row)">
-            0
+            1
           </el-link>
         </template>
       </el-table-column>
@@ -281,39 +277,38 @@
           <el-tag>{{ props.row.type | toUserTypeString }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="inactive" label="是否删除"
-                       align="center"
+      <el-table-column prop="inactive" label="已删除"
+                       align="center" min-width="100"
                        sortable="custom">
         <template slot-scope="props">
-          <el-tag v-if="props.row.inactive" type="info">已删</el-tag>
-          <el-tag v-else>正常</el-tag>
+          <el-checkbox :disabled="false" :value="props.row.inactive"/>
         </template>
       </el-table-column>
-      <el-table-column prop="inactive" label="账号状态"
-                       align="center"
+      <el-table-column prop="blockUntil" label="账号状态"
+                       align="center" min-width="100"
                        sortable="custom">
         <template slot-scope="props">
-          <el-tag v-if="props.row.inactive" type="info">已封</el-tag>
+          <el-tag v-if="props.row.blockUntil" type="info">已封</el-tag>
           <el-tag v-else type="success">正常</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="loginTime" label="最后登陆时间"
-                       fixed="right" align="center" width="160"
+                       align="center" width="160"
                        sortable="custom">
         <template slot-scope="props">{{ props.row.loginTime }}</template>
       </el-table-column>
       <el-table-column prop="loginIp" label="最后登陆 IP"
-                       fixed="right" align="center" width="160"
+                       align="center" width="160"
                        sortable="custom">
         <template slot-scope="props">{{ props.row.loginIp }}</template>
       </el-table-column>
       <el-table-column prop="createdAt" label="注册时间"
-                       fixed="right" align="center" width="160"
+                       align="center" width="160"
                        sortable="custom">
         <template slot-scope="props">{{ props.row.createdAt }}</template>
       </el-table-column>
       <el-table-column prop="createdAt" label="最后更新时间"
-                       fixed="right" align="center" width="160"
+                       align="center" width="160"
                        sortable="custom">
         <template slot-scope="props">{{ props.row.createdAt }}</template>
       </el-table-column>
@@ -345,12 +340,24 @@
 <script>
 import * as userApi from '../../../api/user-api'
 import { commonMixin, listMixin, ownerSuggestionMixin } from '../../../mixins'
-import { defaultLoadingText, userTypes } from '../../../utils/consts'
+import { datePickerShortcuts, defaultLoadingText, userTypes } from '../../../utils/consts'
+
+const { today, yesterday, past2, past3, past7, past30, past60, past90 } = datePickerShortcuts
 
 export default {
   mixins: [commonMixin, ownerSuggestionMixin, listMixin],
   data() {
     return {
+      datePickerShortcuts,
+      createdDatePickerOptions: {
+        shortcuts: [today, yesterday, past2, past3, past7, past30]
+      },
+      loginDatePickerOptions: {
+        shortcuts: [today, yesterday, past3, past7]
+      },
+      blockDatePickerOptions: {
+        shortcuts: [today, yesterday, past3, past7]
+      },
       userTypes,
       fetchMethod: this.fetchData,
       query: {
