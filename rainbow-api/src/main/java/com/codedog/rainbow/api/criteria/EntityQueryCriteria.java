@@ -4,11 +4,15 @@
 
 package com.codedog.rainbow.api.criteria;
 
+import java.util.Set;
+
 /**
  * EntityQueryCriteria class
  * TODO 移为公共
  *
  * @author https://github.com/gukt
  */
-public interface EntityQueryCriteria {
+public interface EntityQueryCriteria<ID> {
+
+    Set<ID> getIds();
 }

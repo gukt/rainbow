@@ -4,8 +4,6 @@
 
 package com.codedog.rainbow.api.controller;
 
-import com.codedog.rainbow.JsonViews;
-import com.codedog.rainbow.JsonViews.UserBasicView;
 import com.codedog.rainbow.JsonViews.UserLoginView;
 import com.codedog.rainbow.api.common.Errors;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
@@ -15,8 +13,12 @@ import com.codedog.rainbow.core.rest.ApiResult;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.RoleRepository;
 import com.codedog.rainbow.repository.UserRepository;
+import com.codedog.rainbow.util.ObjectUtils;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,8 +26,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
+import java.util.List;
+import java.util.Set;
+
 import static com.codedog.rainbow.api.common.Errors.ERR_BAD_PARAMETER;
 import static com.codedog.rainbow.core.rest.ApiResult.SUCCESS;
+import static com.codedog.rainbow.core.rest.ApiResult.success;
+import static javax.security.auth.callback.ConfirmationCallback.OK;
 
 /**
  * 用户相关 API
@@ -111,8 +118,8 @@ public class UserController {
 
     @DeleteMapping("users/{id}")
     public Object removeById(@PathVariable long id) {
-        int rows = userService.removeById(id, false);
-        return ApiResult.success(rows);
+        int rows = userService.removeByIds(Sets.newHashSet(id), false);
+        return success(rows);
     }
 
     @GetMapping("users/exists")
@@ -134,9 +141,36 @@ public class UserController {
         return SUCCESS;
     }
 
+    @Data
+    static class BatchRequestBody<T, ID> {
+        @JsonProperty("delete")
+        private Set<ID> deleteIds;
+        @JsonProperty("update")
+        private List<T> updatingEntities;
+        @JsonProperty("add")
+        private List<T> addingEntities;
+    }
+
     // 批量更新或删除
     @PostMapping("users/batch")
-    public Object batch() {
+    public Object batch(@RequestBody BatchRequestBody<User, Long> batchBody) {
+        log.info("BatchRequestBody: {}", batchBody);
+        // Batch deleting
+        if(!ObjectUtils.isNullOrEmpty(batchBody.getDeleteIds())) {
+            userService.removeByIds(batchBody.getDeleteIds(), false);
+        }
+        // Batch updating
+        if(!ObjectUtils.isNullOrEmpty(batchBody.getUpdatingEntities())) {
+            batchBody.getUpdatingEntities().forEach(user -> {
+                userService.save(user, false);
+            });
+        }
+        // Batch adding
+        if(!ObjectUtils.isNullOrEmpty(batchBody.getAddingEntities())) {
+            batchBody.getUpdatingEntities().forEach(user -> {
+                userService.save(user, true);
+            });
+        }
         return SUCCESS;
     }
 }

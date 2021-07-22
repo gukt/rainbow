@@ -49,11 +49,11 @@ public class User {
     private Integer type;
 
     /** 1表示删除，0 表示正常, NOTE: active 是 mysql 保留关键字 */
-    @Column(nullable = false, columnDefinition = "bit default 0") private
-    Boolean inactive = false;
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean inactive;
 
-    @Column(nullable = false, columnDefinition = "tinyint default 1")
-    private Integer state;
+//    @Column(nullable = false, columnDefinition = "tinyint default 1")
+//    private Integer state;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date blockedUntil;

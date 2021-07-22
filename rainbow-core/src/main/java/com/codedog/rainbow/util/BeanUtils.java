@@ -13,9 +13,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * TODO 提供能忽略对象属性默认值的功能，这样就可以自由在对象上给属性设置默认值了（之前不敢写，是因为DataBind 时会）
  * @author https://github.com/gukt
- * @version 1.0
- * @date 2020/2/2 17:26
  */
 @Slf4j
 public class BeanUtils {
@@ -38,11 +37,13 @@ public class BeanUtils {
         copyProperties(source, target, true);
     }
 
-    public static void copyProperties(Object source, Object target, boolean ignoreNullProperties) {
-        if (ignoreNullProperties) {
-            org.springframework.beans.BeanUtils.copyProperties(source, target, getNullProperties(source));
-        } else {
-            org.springframework.beans.BeanUtils.copyProperties(source, target);
+    public static void copyProperties(Object source, Object target, boolean ignoreNullProperties, String... ignoreProperties) {
+        String[] ignoreList = ignoreNullProperties
+                ? getNullProperties(source)
+                : new String[0];
+        if (ignoreProperties != null && ignoreProperties.length > 0) {
+            ignoreList = ArrayUtils.concat(ignoreList, ignoreProperties);
         }
+        org.springframework.beans.BeanUtils.copyProperties(source, target, ignoreList);
     }
 }

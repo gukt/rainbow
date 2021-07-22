@@ -284,11 +284,11 @@
           <el-checkbox :disabled="false" :value="props.row.inactive"/>
         </template>
       </el-table-column>
-      <el-table-column prop="blockUntil" label="账号状态"
+      <el-table-column prop="blockedUntil" label="账号状态"
                        align="center" min-width="100"
                        sortable="custom">
         <template slot-scope="props">
-          <el-tag v-if="props.row.blockUntil" type="info">已封</el-tag>
+          <el-tag v-if="props.row.blockedUntil" type="warning">已封</el-tag>
           <el-tag v-else type="success">正常</el-tag>
         </template>
       </el-table-column>

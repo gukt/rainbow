@@ -8,8 +8,8 @@ import com.codedog.rainbow.api.criteria.Predicates;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.UserRepository;
+import com.codedog.rainbow.util.BeanUtils;
 import com.codedog.rainbow.util.ObjectUtils;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
@@ -21,10 +21,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.Predicate;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ServerService class
@@ -79,13 +77,18 @@ public class UserService {
     public User save(User entity, boolean isAdd) {
         Objects.requireNonNull(entity);
         Date now = new Date();
+        User saving = entity;
         if (isAdd) {
-            entity.setCreatedAt(now);
+            saving.setInactive(false);
+//            saving.setType(0);
+            saving.setCreatedAt(now);
         } else {
-            entity.setUpdatedAt(now);
+            saving = userRepository.getById(entity.getId());
+            // 将本次要更新的所有属性拷贝到即将更新的对象上
+            BeanUtils.copyProperties(entity, saving, true, "id");
         }
-        userRepository.save(entity);
-        return entity;
+        saving.setUpdatedAt(now);
+        return userRepository.save(saving);
     }
 
     public Page<User> search(UserQueryCriteria criteria, Pageable page) {
@@ -124,10 +127,11 @@ public class UserService {
 
     /**
      * 根据 ID 查询指定的用户
+     *
      * @param id 用户 ID
      * @return 和 Id 关联的用户
      */
-    public User getById(long id) {
+    public User getById(Long id) {
         return userRepository.getById(id);
     }
 
@@ -135,21 +139,12 @@ public class UserService {
      * 根据 IDs 查询指定的多个用户，其实内部是通过 {@link #search(UserQueryCriteria, Pageable)} 方法查询的。
      * TODO 好像可以省略,没必要提供这个快捷方法
      *
-     * @param ids 用户 IDs
+     * @param ids  用户 IDs
      * @param page 分页参数
      * @return 和 Ids 关联的用户
      */
     public Page<User> getByIds(Set<Long> ids, Pageable page) {
-        ObjectUtils.requireNonEmpty(ids, "ids");
-        UserQueryCriteria criteria = new UserQueryCriteria();
-        criteria.setIds(ids);
-        return search(criteria, page);
-    }
-
-    // TODO 好像也可以省略
-    public int removeById(long id, boolean force) {
-        ObjectUtils.requirePositive(id, "id");
-        return removeByIds(Sets.newHashSet(id), force);
+        return search(UserQueryCriteria.of(ids), page);
     }
 
     public int removeByIds(Set<Long> ids, boolean force) {
@@ -158,13 +153,17 @@ public class UserService {
             // 物理删除
             return userRepository.deleteAllByIdIn(ids);
         }
+        AtomicInteger rows = new AtomicInteger();
         // 逻辑删除
         ids.forEach(id -> {
-            User entity = getById(id);
-            entity.setState(-1);
-            entity.setUpdatedAt(new Date());
-            userRepository.save(entity);
+            Optional<User> user = userRepository.findById(id);
+            user.ifPresent(entity -> {
+                entity.setInactive(true);
+                entity.setUpdatedAt(new Date());
+                userRepository.save(entity);
+                rows.getAndIncrement();
+            });
         });
-        return ids.size();
+        return rows.get();
     }
 }

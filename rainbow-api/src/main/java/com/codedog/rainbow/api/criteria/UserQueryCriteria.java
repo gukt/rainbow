@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.api.criteria;
 
+import com.codedog.rainbow.util.ObjectUtils;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,7 +18,7 @@ import java.util.Set;
  */
 @Data
 public class UserQueryCriteria implements
-        EntityQueryCriteria, FieldIdAwareQueryCriteria<Long>,
+        EntityQueryCriteria<Long>, FieldIdAwareQueryCriteria<Long>,
         FieldStateAwareQueryCriteria, FieldCreatedAtAwareQueryCriteria {
 
     private Set<Long> ids;
@@ -31,4 +32,11 @@ public class UserQueryCriteria implements
     private Date loginEnd;
     private Date blockStart;
     private Date blockEnd;
+
+    public static UserQueryCriteria of(Set<Long> ids){
+        ObjectUtils.requireNonEmpty(ids, "ids");
+        UserQueryCriteria instance = new UserQueryCriteria();
+        instance.ids = ids;
+        return instance;
+    }
 }
