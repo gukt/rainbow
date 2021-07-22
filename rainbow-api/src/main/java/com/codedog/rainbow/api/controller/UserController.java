@@ -9,10 +9,10 @@ import com.codedog.rainbow.api.common.Errors;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.api.service.ServerService;
 import com.codedog.rainbow.api.service.UserService;
-import com.codedog.rainbow.core.rest.ApiResult;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.RoleRepository;
 import com.codedog.rainbow.repository.UserRepository;
+import com.codedog.rainbow.util.JsonUtils;
 import com.codedog.rainbow.util.ObjectUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -24,15 +24,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpSession;
-
 import java.util.List;
 import java.util.Set;
 
 import static com.codedog.rainbow.api.common.Errors.ERR_BAD_PARAMETER;
 import static com.codedog.rainbow.core.rest.ApiResult.SUCCESS;
 import static com.codedog.rainbow.core.rest.ApiResult.success;
-import static javax.security.auth.callback.ConfirmationCallback.OK;
 
 /**
  * 用户相关 API
@@ -136,13 +135,14 @@ public class UserController {
 
     // 修改密码
     // 后台和玩家都需要使用该功能
-    @PostMapping("users/{id}")
-    public Object changePassword(String old, @RequestParam(name = "new") String newPwd) {
-        return SUCCESS;
-    }
+//    @PostMapping("users/{id}")
+//    public Object changePassword(@PathVariable long id, String old, @RequestParam(name = "new") String newPwd) {
+//        return SUCCESS;
+//    }
 
     @Data
     static class BatchRequestBody<T, ID> {
+
         @JsonProperty("delete")
         private Set<ID> deleteIds;
         @JsonProperty("update")
@@ -153,22 +153,26 @@ public class UserController {
 
     // 批量更新或删除
     @PostMapping("users/batch")
-    public Object batch(@RequestBody BatchRequestBody<User, Long> batchBody) {
-        log.info("BatchRequestBody: {}", batchBody);
+    public Object batch(@RequestBody BatchRequestBody<User, Long> body) {
+        log.info("BatchRequestBody: {}", body);
         // Batch deleting
-        if(!ObjectUtils.isNullOrEmpty(batchBody.getDeleteIds())) {
-            userService.removeByIds(batchBody.getDeleteIds(), false);
+        if (!ObjectUtils.isNullOrEmpty(body.getDeleteIds())) {
+            userService.removeByIds(body.getDeleteIds(), false);
         }
         // Batch updating
-        if(!ObjectUtils.isNullOrEmpty(batchBody.getUpdatingEntities())) {
-            batchBody.getUpdatingEntities().forEach(user -> {
-                userService.save(user, false);
+        if (!ObjectUtils.isNullOrEmpty(body.getUpdatingEntities())) {
+            body.getUpdatingEntities().forEach(entity -> {
+                try {
+                    userService.save(entity, false);
+                } catch (EntityNotFoundException e) {
+                    log.warn("Batch updating: Unable to find an user with id {}, body={}", entity.getId(), JsonUtils.toJson(body));
+                }
             });
         }
         // Batch adding
-        if(!ObjectUtils.isNullOrEmpty(batchBody.getAddingEntities())) {
-            batchBody.getUpdatingEntities().forEach(user -> {
-                userService.save(user, true);
+        if (!ObjectUtils.isNullOrEmpty(body.getAddingEntities())) {
+            body.getAddingEntities().forEach(entity -> {
+                userService.save(entity, true);
             });
         }
         return SUCCESS;

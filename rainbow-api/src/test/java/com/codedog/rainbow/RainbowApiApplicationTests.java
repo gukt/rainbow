@@ -1,28 +1,28 @@
 package com.codedog.rainbow;
 
-import com.codedog.rainbow.domain.User;
-import com.codedog.rainbow.util.JsonUtils;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.beans.PropertyDescriptor;
-import java.util.HashSet;
-import java.util.Set;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(args = "--app.test=one")
 class RainbowApiApplicationTests {
 
     @Test
     void contextLoads() {
     }
 
+    /**
+     * 可以在 @SpringBootTest 中指定命令行参数，用于测试那些依赖于命令行参数的场景，以下只是个示例。
+     *
+     * @param args 命令行参数
+     * @see <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.testing.spring-boot-applications.using-application-arguments">Using Application Arguments</a>
+     */
     @Test
-    void test1() {
-        String json = "{ \"id\": 1, \"name\": \"xxx\" }";
-        User u = JsonUtils.toBean(json, User.class);
-        System.out.println(u);
+    void testArguments(@Autowired ApplicationArguments args) {
+        assertThat(args.getOptionNames()).containsOnly("app.test");
+        assertThat(args.getOptionValues("app.test")).containsOnly(("one"));
     }
-
 }

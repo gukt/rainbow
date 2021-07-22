@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -69,12 +70,12 @@ public class UserService {
     /**
      * 保存（创建或更新） User 对象，如果 isAdd 为 true 表示新增，反之表示更新
      *
-     * @param entity
-     * @param isAdd
-     * @return
+     * @param entity 正在保存的 User 对象
+     * @param isAdd  是否是新增
+     * @return 保存后的 User 对象
      */
     @Cacheable(key = "#result.name")
-    public User save(User entity, boolean isAdd) {
+    public User save(User entity, boolean isAdd) throws EntityNotFoundException {
         Objects.requireNonNull(entity);
         Date now = new Date();
         User saving = entity;
@@ -83,9 +84,17 @@ public class UserService {
 //            saving.setType(0);
             saving.setCreatedAt(now);
         } else {
-            saving = userRepository.getById(entity.getId());
-            // 将本次要更新的所有属性拷贝到即将更新的对象上
-            BeanUtils.copyProperties(entity, saving, true, "id");
+//            saving = userRepository.getById(entity.getId());
+//            BeanUtils.copyProperties(entity, saving, true, "id");
+
+            // 如果碰到
+            Optional<User> result = userRepository.findById(entity.getId());
+            if (result.isPresent()) {
+                saving = result.get();
+            } else {
+//                log.warn("[Ignored updates] Unable to find an user with id {}", entity.getId());
+                throw new EntityNotFoundException("Unable to find an user with id " + entity.getId());
+            }
         }
         saving.setUpdatedAt(now);
         return userRepository.save(saving);

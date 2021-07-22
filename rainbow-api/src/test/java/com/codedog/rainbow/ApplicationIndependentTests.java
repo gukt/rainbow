@@ -27,15 +27,15 @@ public class ApplicationIndependentTests {
         User u = JsonUtils.toBean(json, User.class);
         System.out.println(u);
 
-        final BeanWrapper src = new BeanWrapperImpl(u);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-        Set<String> nullProperties = new HashSet<>();
-        for (PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null) {
-                nullProperties.add(pd.getName());
-            }
-        }
-        String[] result = new String[nullProperties.size()];
+//        final BeanWrapper src = new BeanWrapperImpl(u);
+//        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+//        Set<String> nullProperties = new HashSet<>();
+//        for (PropertyDescriptor pd : pds) {
+//            Object srcValue = src.getPropertyValue(pd.getName());
+//            if (srcValue == null) {
+//                nullProperties.add(pd.getName());
+//            }
+//        }
+//        String[] result = new String[nullProperties.size()];
     }
 }
