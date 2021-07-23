@@ -22,9 +22,15 @@ import java.util.jar.JarFile;
  * 提供类查找相关工具方法
  * TODO 优化
  * TODO 找一个更优秀的ClassUtils实现类
+ * TODO 去掉这里的 Slf4j
  */
 @Slf4j
-public class ClassUtils {
+public final class ClassUtils {
+
+    /** Prevents to construct an instance. */
+    private ClassUtils() {
+        throw new AssertionError("No ClassUtils instances for you.");
+    }
 
     public static Set<Class<?>> getClasses(String packageScan) {
         Set<Class<?>> classes = new LinkedHashSet<>();

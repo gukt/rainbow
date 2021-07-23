@@ -13,8 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -35,9 +33,7 @@ import java.util.Set;
  *
  * @author https://github.com/gukt
  */
-public class JsonUtils {
-
-    private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
+public final class JsonUtils {
 
     /**
      * TypeReference: List<Integer>
@@ -82,6 +78,11 @@ public class JsonUtils {
         OBJECT_MAPPER.setSerializationInclusion(Include.NON_NULL);
         OBJECT_MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         OBJECT_MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    /** Prevents to construct an instance. */
+    private JsonUtils() {
+        throw new AssertionError("No JsonUtils instances for you!");
     }
 
     public static String toJson(@Nullable Object object) {

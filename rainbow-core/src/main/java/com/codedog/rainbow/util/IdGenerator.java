@@ -23,22 +23,32 @@ import java.util.Date;
 @Slf4j
 public class IdGenerator {
 
-    /** Worker id, also called server id. */
-    private long workerId = 1;
-    private static long sequence = 0L;
     private static final long workerIdBits = 14L;
     private static final long sequenceBits = 10L;
     private static final long workerIdShift = sequenceBits;
     private static final long timestampShift = sequenceBits + workerIdBits;
     private static final long sequenceMask = ~(-1L << sequenceBits);
     private static final long epoch = 1625068800000L; // 2021-07-01 00:00:00
+    private static long sequence = 0L;
     private static long lastTimestamp = -1L;
+    /** Worker id, also called server id. */
+    private long workerId = 1;
 
     private IdGenerator() {
         long timeToLive = this.testUntil();
         log.info("timestampShift={}, workerIdBits={}, sequenceBits={}, workerId={}, deadline={}",
                 timestampShift, workerIdBits, sequenceBits, workerId,
                 new SimpleDateFormat("yyyy-MM-dd").format(timeToLive));
+    }
+
+    public static long nextId() {
+        return IdGeneratorHolder.INSTANCE.nextId0();
+    }
+
+    public static void main(String[] args) {
+        long timestamp = IdGeneratorHolder.INSTANCE.testUntil();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("Id will run out util about: " + sdf.format(new Date(timestamp)));
     }
 
     @Value("${app.server.id:${server.id:1}}")
@@ -49,10 +59,6 @@ public class IdGenerator {
             System.exit(1);
         }
         this.workerId = workerId;
-    }
-
-    public static long nextId() {
-        return IdGeneratorHolder.INSTANCE.nextId0();
     }
 
     private synchronized long nextId0() {
@@ -98,11 +104,5 @@ public class IdGenerator {
     private static class IdGeneratorHolder {
 
         private static final IdGenerator INSTANCE = new IdGenerator();
-    }
-
-    public static void main(String[] args) {
-        long timestamp = IdGeneratorHolder.INSTANCE.testUntil();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System.out.println("Id will run out util about: " + sdf.format(new Date(timestamp)));
     }
 }

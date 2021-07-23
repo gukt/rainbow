@@ -19,7 +19,12 @@ import java.util.concurrent.TimeUnit;
  *
  * @author https://github.com/gukt
  */
-public class DateTimeUtils {
+public final class DateTimeUtils {
+
+    /** Prevents to construct an instance. */
+    private DateTimeUtils() {
+        throw new AssertionError("No DateTimeUtils instances for you!");
+    }
 
     /**
      * 返回给定的两个时间是否是同一天，以零点为分界
@@ -78,6 +83,7 @@ public class DateTimeUtils {
 
     /**
      * 返回当前时间距离指定时间的间隔天数
+     *
      * @param d
      * @return
      */

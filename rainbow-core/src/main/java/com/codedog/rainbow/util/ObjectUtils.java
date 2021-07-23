@@ -5,8 +5,6 @@
 package com.codedog.rainbow.util;
 
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,13 +19,11 @@ import static java.util.Objects.requireNonNull;
  *
  * @author https://github.com/gukt
  */
-public class ObjectUtils {
-
-    private static final Logger logger = LoggerFactory.getLogger(ObjectUtils.class);
+public final class ObjectUtils {
 
     /** Prevents to construct an instance. */
     private ObjectUtils() {
-        throw new AssertionError("No MoreObjects instances for you!");
+        throw new AssertionError("No ObjectUtils instances for you!");
     }
 
     /**

@@ -17,7 +17,12 @@ import java.util.regex.Pattern;
  *
  * @author https://github.com/gukt
  */
-public class HttpUtils {
+public final class HttpUtils {
+
+    /** Prevents to construct an instance. */
+    private HttpUtils() {
+        throw new AssertionError("No HttpUtils instances for you!");
+    }
 
     public static String getRemoteAddress(HttpServletRequest request) {
         String realIp = request.getHeader("X-Real-IP");

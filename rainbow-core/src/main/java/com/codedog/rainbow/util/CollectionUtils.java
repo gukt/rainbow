@@ -4,12 +4,6 @@
 
 package com.codedog.rainbow.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
-import java.util.Map;
-
 /**
  * Collection Utils
  *
@@ -17,33 +11,33 @@ import java.util.Map;
  */
 public final class CollectionUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(CollectionUtils.class);
-
     /** Prevents to construct an instance. */
     private CollectionUtils() {
+        throw new AssertionError("No CollectionUtils instances for you.");
     }
 
-    public static boolean isNullOrEmpty(@Nullable Map<?, ?> map) {
-        return ObjectUtils.isNullOrEmpty(map);
-    }
+//    public static boolean isNullOrEmpty(@Nullable Map<?, ?> map) {
+//        return ObjectUtils.isNullOrEmpty(map);
+//    }
 
-    //  public static Map<String, Object> of(@Nullable Object... pairs) {
-    //    Objects.requireNonNull(pairs);
-    //
-    //    if (pairs.length % 2 != 0) {
-    //      throw new IllegalArgumentException("参数 pairs 的个数必须是偶数, got:" + pairs.length);
-    //    }
-    //
-    //    Object key, value;
-    //    Map<String, Object> retMap = new HashMap<>();
-    //    for (int i = 0; i < pairs.length; i += 2) {
-    //      key = pairs[i];
-    //      value = pairs[i + 1];
-    //      String k = key instanceof String ? (String) key : key.toString();
-    //      retMap.put(k, value);
-    //    }
-    //    return retMap;
-    //  }
+//    @SuppressWarnings("unchecked")
+//    public static <K, V> Map<K, V> fromPairs(Object[]... pairs) {
+//        Map<K, V> map = new HashMap<>();
+//        for (Object[] pair : pairs) {
+//            if (pairs.length != 2) {
+//                // TODO 修改提示文本
+//                throw new IllegalArgumentException("参数 pairs 的个数必须是偶数, got:" + pairs.length);
+//            }
+//            map.put((K) pair[0], (V) pair[1]);
+//        }
+//        return map;
+//    }
+//
+//    public static Map<String, Object> fromProperties(Object obj, String... properties) {
+//        Map<String, Object> map = new HashMap<>();
+//        // TODO 读取指定的属性值
+//        return map;
+//    }
 
 //    @SuppressWarnings("unchecked")
 //    public static <E> Map<String, E> of(@Nullable Object... pairs) {
@@ -62,6 +56,4 @@ public final class CollectionUtils {
 //        }
 //        return retMap;
 //    }
-
-    // TODO 定时清理 Map，指定 key, value, ttl, map 指定全局 ttl， key 指定局部 ttl，
 }

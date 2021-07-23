@@ -1,7 +1,6 @@
 package com.codedog.rainbow.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
@@ -10,13 +9,9 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.server.ServerHttpRequest;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,16 +20,16 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.requireNonNull;
-
 // TODO 需要移除或整合这里所有的方法
-@Slf4j
-public class CommonUtils {
+public final class CommonUtils {
 
-    private static Map<String, Integer> countsByIp = new HashMap<>();
     private static final Integer MAX_ACCESS_PER_DAY = 10;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final Map<String, Integer> countsByIp = new HashMap<>();
+    /** Prevents to construct an instance. */
+    private CommonUtils() {
+        throw new AssertionError("No CommonUtils instances for you!");
+    }
 
     @SuppressWarnings("UnstableApiUsage")
     public static String httpGet(String s) throws IOException {
@@ -123,7 +118,7 @@ public class CommonUtils {
                     }
                 });
         sb.append(appSecret);
-        log.debug("Make sign: params: {}, values serial: {}", params, sb.toString());
+//        log.debug("Make sign: params: {}, values serial: {}", params, sb.toString());
         return sb.toString();
     }
 

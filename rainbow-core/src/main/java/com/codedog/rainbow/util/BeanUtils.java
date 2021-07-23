@@ -4,7 +4,6 @@
 
 package com.codedog.rainbow.util;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -14,10 +13,15 @@ import java.util.Set;
 
 /**
  * TODO 提供能忽略对象属性默认值的功能，这样就可以自由在对象上给属性设置默认值了（之前不敢写，是因为DataBind 时会）
+ *
  * @author https://github.com/gukt
  */
-@Slf4j
-public class BeanUtils {
+public final class BeanUtils {
+
+    /** Prevents to construct an instance. */
+    private BeanUtils() {
+        throw new AssertionError("No ArrayUtils instances for you.");
+    }
 
     private static String[] getNullProperties(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);

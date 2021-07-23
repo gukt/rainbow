@@ -11,10 +11,16 @@ import java.util.Arrays;
  *
  * @author https://github.com/gukt
  */
-public class ArrayUtils {
+public final class ArrayUtils {
+
+    /** Prevents to construct an instance. */
+    private ArrayUtils() {
+        throw new AssertionError("No ArrayUtils instances for you.");
+    }
 
     /**
      * 连接多个数组
+     * TODO 看看这里是为什么 Possible heap pollution from parameterized vararg type
      *
      * @param first first array
      * @param rest  other arrays
