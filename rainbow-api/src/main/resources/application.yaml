@@ -33,7 +33,7 @@ spring:
         format_sql: true
         hbm2ddl:
           auto: update
-    show-sql: true
+    show-sql: false
   mvc:
     throw-exception-if-no-handler-found: false
   jackson:
