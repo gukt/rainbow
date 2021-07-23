@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 /**
  * Map utils
@@ -51,22 +52,22 @@ public final class MapUtils {
         return map;
     }
 
-    public static Map<String, Object> newHashMap(Object obj, String... fields) {
-        Objects.requireNonNull(obj);
-        Map<String, Object> map = newHashMap();
-        Arrays.stream(obj.getClass().getDeclaredFields())
-                .forEach(field -> Arrays.stream(fields)
-                        .filter(key -> Objects.equals(field.getName(), key))
-                        .forEach(key -> {
-                            try {
-                                field.setAccessible(true);
-                                map.put(key, field.get(obj));
-                            } catch (IllegalAccessException e) {
-                                System.out.println("Cannot read field value: field=" + field);
-                            } finally {
-                                field.setAccessible(false);
-                            }
-                        }));
-        return map;
-    }
+//    public static Map<String, Object> newHashMap(Object obj, String... fields) {
+//        Objects.requireNonNull(obj);
+//        Map<String, Object> map = newHashMap();
+//        Arrays.stream(obj.getClass().getDeclaredFields())
+//                .forEach(field -> Arrays.stream(fields)
+//                        .filter(key -> Objects.equals(field.getName(), key))
+//                        .forEach(key -> {
+//                            try {
+//                                field.setAccessible(true);
+//                                map.put(key, field.get(obj));
+//                            } catch (IllegalAccessException e) {
+//                                System.out.println("Cannot read field value: field=" + field);
+//                            } finally {
+//                                field.setAccessible(false);
+//                            }
+//                        }));
+//        return map;
+//    }
 }

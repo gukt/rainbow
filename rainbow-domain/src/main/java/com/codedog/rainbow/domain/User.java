@@ -6,8 +6,7 @@ package com.codedog.rainbow.domain;
 
 import com.codedog.rainbow.JsonViews.UserLoginView;
 import com.codedog.rainbow.core.rest.ApiResultView.IdOnly;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,6 +40,7 @@ public class User {
 
     /** 密码，仅用于内部账号系统 */
     @Column(nullable = false, length = 100)
+    @JsonIgnore
     private String password;
 
     /** 用户类型 */

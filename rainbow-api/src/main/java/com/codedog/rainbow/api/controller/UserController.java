@@ -5,15 +5,15 @@
 package com.codedog.rainbow.api.controller;
 
 import com.codedog.rainbow.JsonViews.UserLoginView;
-import com.codedog.rainbow.api.common.Errors;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.api.service.ServerService;
 import com.codedog.rainbow.api.service.UserService;
+import com.codedog.rainbow.core.rest.ApiResult;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.RoleRepository;
 import com.codedog.rainbow.repository.UserRepository;
+import com.codedog.rainbow.util.IdGenerator;
 import com.codedog.rainbow.util.JsonUtils;
-import com.codedog.rainbow.util.ObjectUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.base.Objects;
@@ -25,13 +25,18 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static com.codedog.rainbow.api.common.Errors.ERR_BAD_PARAMETER;
+import static com.codedog.rainbow.api.common.Errors.ERR_INVALID_NAME_OR_PASSWORD;
 import static com.codedog.rainbow.core.rest.ApiResult.SUCCESS;
 import static com.codedog.rainbow.core.rest.ApiResult.success;
+import static com.codedog.rainbow.util.ObjectUtils.isNullOrEmpty;
 
 /**
  * 用户相关 API
@@ -51,18 +56,35 @@ public class UserController {
         this.userService = userService;
     }
 
+//    static class RequestBodyValueResolver {
+//
+//        @SuppressWarnings("unchecked")
+//        public static <K, V> V resolve(Map<K, ?> map, K key) {
+//            V value = (V) map.get(key);
+//            if (value == null) {
+//                System.out.println("Key not found in given map. key: " + key);
+//            }
+//            return value;
+//        }
+//    }
+
     /**
      * 用户注册，仅限内部测试使用
      *
-     * @param user
      * @return
      */
     @PostMapping("user/register")
     @JsonView(UserLoginView.class)
-    public Object register(@RequestBody User user) {
-        if (user == null) {
+    public Object register(@RequestBody BodyData body, HttpServletRequest request) {
+        String name = body.get("name");
+        String password = body.get("password");
+        if (isNullOrEmpty(name) || isNullOrEmpty(password)) {
             return ERR_BAD_PARAMETER;
         }
+        User user = new User();
+        user.setId(IdGenerator.nextId());
+        // 注册成功即表示登陆，所以登陆时间和 IP 要记录一下
+        user.setLoginIp(request.getRemoteAddr());
         return userService.save(user, true);
     }
 
@@ -75,13 +97,16 @@ public class UserController {
      */
     @PostMapping("user/login")
     @JsonView(UserLoginView.class)
-    public Object login(String name, String password) {
-        User user = userService.getByName(name);
-        if (user == null) {
-            return Errors.ERR_ENTITY_NOT_FOUND;
+    public Object login(@RequestBody BodyData body) {
+        String name = body.get("name");
+        String password = body.get("password");
+        // 用户名和密码不能为空
+        if(isNullOrEmpty(name) || isNullOrEmpty(password)) {
+            return ERR_BAD_PARAMETER;
         }
-        if (!Objects.equal(user.getPassword(), password)) {
-            return Errors.ERR_INVALID_NAME_OR_PASSWORD;
+        User user = userService.findByName(name);
+        if (user == null || !Objects.equal(user.getPassword(), password)) {
+            return ERR_INVALID_NAME_OR_PASSWORD;
         }
         return user;
     }
@@ -126,19 +151,43 @@ public class UserController {
         return false; // TODO
     }
 
-    // 获得一个随机的名称，现代游戏中大多有这种功能需求
-    @GetMapping("users/random-name")
-    public Object randomName(String name) {
-        // TODO 判断用户名是否存在
-        return SUCCESS;
-    }
-
     // 修改密码
     // 后台和玩家都需要使用该功能
 //    @PostMapping("users/{id}")
 //    public Object changePassword(@PathVariable long id, String old, @RequestParam(name = "new") String newPwd) {
 //        return SUCCESS;
 //    }
+
+    static class BodyData extends HashMap<String , Object> {
+
+        @SuppressWarnings("unchecked")
+        public <V> V get(String key) {
+            return (V)super.get(key);
+        }
+
+//        @SuppressWarnings("unchecked")
+//        public <V> Optional<V> get(String key) {
+//            Object value = super.get(key);
+//            return Optional.ofNullable((V) value);
+//        }
+
+        public <V> V getOrThrow(Object key, Supplier<RuntimeException> supplier) {
+            return getOrThrow(key, supplier.get());
+        }
+
+        public <V> V getOrThrow(Object key, ApiResult result) {
+            return getOrThrow(key, result.toException());
+        }
+
+        @SuppressWarnings("unchecked")
+        public <V> V getOrThrow(Object key, RuntimeException throwable) {
+            V value = (V) get(key);
+            if (value == null) {
+                throw throwable;
+            }
+            return value;
+        }
+    }
 
     @Data
     static class BatchRequestBody<T, ID> {
@@ -156,11 +205,11 @@ public class UserController {
     public Object batch(@RequestBody BatchRequestBody<User, Long> body) {
         log.info("BatchRequestBody: {}", body);
         // Batch deleting
-        if (!ObjectUtils.isNullOrEmpty(body.getDeleteIds())) {
+        if (!isNullOrEmpty(body.getDeleteIds())) {
             userService.removeByIds(body.getDeleteIds(), false);
         }
         // Batch updating
-        if (!ObjectUtils.isNullOrEmpty(body.getUpdatingEntities())) {
+        if (!isNullOrEmpty(body.getUpdatingEntities())) {
             body.getUpdatingEntities().forEach(entity -> {
                 try {
                     userService.save(entity, false);
@@ -170,7 +219,7 @@ public class UserController {
             });
         }
         // Batch adding
-        if (!ObjectUtils.isNullOrEmpty(body.getAddingEntities())) {
+        if (!isNullOrEmpty(body.getAddingEntities())) {
             body.getAddingEntities().forEach(entity -> {
                 userService.save(entity, true);
             });

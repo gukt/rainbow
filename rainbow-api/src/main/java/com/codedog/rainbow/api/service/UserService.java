@@ -8,7 +8,6 @@ import com.codedog.rainbow.api.criteria.Predicates;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.UserRepository;
-import com.codedog.rainbow.util.BeanUtils;
 import com.codedog.rainbow.util.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -49,7 +48,7 @@ public class UserService {
      */
     @CachePut(key = "#name")
     @Nullable
-    public User getByName(String name) {
+    public User findByName(String name) {
         return userRepository.findByName(name);
     }
 
@@ -81,7 +80,11 @@ public class UserService {
         User saving = entity;
         if (isAdd) {
             saving.setInactive(false);
-//            saving.setType(0);
+            saving.setLoginTime(now);
+            if (saving.getLoginIp() == null) {
+                saving.setLoginIp("");
+            }
+            saving.setType(0);
             saving.setCreatedAt(now);
         } else {
 //            saving = userRepository.getById(entity.getId());

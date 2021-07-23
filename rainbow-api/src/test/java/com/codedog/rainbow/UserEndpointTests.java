@@ -1,17 +1,26 @@
 package com.codedog.rainbow;
 
-import com.jayway.jsonpath.JsonPath;
+import com.codedog.rainbow.api.service.UserService;
+import com.codedog.rainbow.domain.User;
+import com.codedog.rainbow.util.IdGenerator;
+import com.codedog.rainbow.util.JsonUtils;
+import com.codedog.rainbow.util.MapUtils;
+import com.google.common.collect.Maps;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.codedog.rainbow.util.TestUtils.apiResultIsOk;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * 默认情况下，@SpringBootTest 是不启动 web 服务器的，r
@@ -20,10 +29,111 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserEndpointTests {
 
-    private final ResultMatcher apiResultIsOk = jsonPath("$.code").value(0);
+    @Autowired private UserService userService;
 
     @Test
-    void contextLoads() {
+    void testRegister(@Autowired MockMvc mvc) throws Exception {
+        // 产生一个全局唯一 ID
+        long id = IdGenerator.nextId();
+        String body = "{\"id\":" + id + ", \"name\":\"xxx\", \"password\":\"aaaaaa\"}";
+        mvc.perform(post("/api/user/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
+    }
+
+    @Test
+    @Transactional
+    void testLogin0(@Autowired MockMvc mvc, @Autowired UserService userService) throws Exception {
+        User u = userService.getById(1L);
+        Map<String,Object> bodyMap = MapUtils.newHashMap();
+        bodyMap.put("name", u.getName());
+        bodyMap.put("password", u.getPassword());
+        mvc.perform(post("/api/user/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+//                .param("name","name1").param("password", "pwd1")
+                .content(JsonUtils.toJson(bodyMap)))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
+    }
+
+    @Test
+    void testLogout(@Autowired MockMvc mvc) throws Exception {
+        String body = "{\"delete\":[1,2,3]}";
+        mvc.perform(post("/api/users/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
+    }
+
+    @Test
+    void testSearchUsers(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("id", "1", "2", "3"))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
+    }
+
+    @Test
+    void testGetUserById(@Autowired MockMvc mvc) throws Exception {
+        String body = "{\"delete\":[1,2,3]}";
+        mvc.perform(post("/api/users/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
+    }
+
+    @Test
+    void testUpdateUser(@Autowired MockMvc mvc) throws Exception {
+        String body = "{\"delete\":[1,2,3]}";
+        mvc.perform(post("/api/users/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
+    }
+
+    @Test
+    void testRemoveUserById(@Autowired MockMvc mvc) throws Exception {
+        String body = "{\"delete\":[1,2,3]}";
+        mvc.perform(post("/api/users/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
+    }
+
+    @Test
+    void testExistsByName(@Autowired MockMvc mvc) throws Exception {
+        String body = "{\"delete\":[1,2,3]}";
+        mvc.perform(post("/api/users/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
+    }
+
+    @Test
+    void testResetPassword(@Autowired MockMvc mvc) throws Exception {
+        String body = "{\"delete\":[1,2,3]}";
+        mvc.perform(post("/api/users/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isOk())
+                .andExpect(apiResultIsOk());
     }
 
     @Test
@@ -34,7 +144,7 @@ class UserEndpointTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isOk())
-                .andExpect(apiResultIsOk);
+                .andExpect(apiResultIsOk());
     }
 
     @Test
@@ -45,7 +155,7 @@ class UserEndpointTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isOk())
-                .andExpect(apiResultIsOk);
+                .andExpect(apiResultIsOk());
     }
 
     @Test
@@ -56,7 +166,7 @@ class UserEndpointTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isOk())
-                .andExpect(apiResultIsOk);
+                .andExpect(apiResultIsOk());
     }
 
 }

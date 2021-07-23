@@ -8,8 +8,9 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 import java.beans.PropertyDescriptor;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
+import static com.codedog.rainbow.util.MapUtils.newHashMap;
 
 /**
  * TODO 提供能忽略对象属性默认值的功能，这样就可以自由在对象上给属性设置默认值了（之前不敢写，是因为DataBind 时会）
@@ -49,5 +50,24 @@ public final class BeanUtils {
             ignoreList = ArrayUtils.concat(ignoreList, ignoreProperties);
         }
         org.springframework.beans.BeanUtils.copyProperties(source, target, ignoreList);
+    }
+
+    public static Map<String, Object> toMap(Object obj, String... fields) {
+        Objects.requireNonNull(obj);
+        Map<String, Object> map = newHashMap();
+        Arrays.stream(obj.getClass().getDeclaredFields())
+                .forEach(field -> Arrays.stream(fields)
+                        .filter(key -> Objects.equals(field.getName(), key))
+                        .forEach(key -> {
+                            try {
+                                field.setAccessible(true);
+                                map.put(key, field.get(obj));
+                            } catch (IllegalAccessException e) {
+                                System.out.println("Cannot read field value: field=" + field);
+                            } finally {
+                                field.setAccessible(false);
+                            }
+                        }));
+        return map;
     }
 }
