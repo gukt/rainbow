@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static com.codedog.rainbow.util.ObjectUtils.isNotEmpty;
+
 /**
  * Specifications class
  *
@@ -27,14 +29,14 @@ public class Predicates {
         // id in (?)
         if (queryCriteria instanceof FieldIdAwareQueryCriteria) {
             Set<?> ids = ((FieldIdAwareQueryCriteria<?>) queryCriteria).getIds();
-            if (!ObjectUtils.isNullOrEmpty(ids)) {
+            if (isNotEmpty(ids)) {
                 predicates.add(root.get("id").in(ids));
             }
         }
         // state in (?)
         if (queryCriteria instanceof FieldStateAwareQueryCriteria) {
             Set<Integer> states = ((FieldStateAwareQueryCriteria) queryCriteria).getStates();
-            if (!ObjectUtils.isNullOrEmpty(states)) {
+            if (isNotEmpty(states)) {
                 predicates.add(root.get("state").in(states));
             }
         }

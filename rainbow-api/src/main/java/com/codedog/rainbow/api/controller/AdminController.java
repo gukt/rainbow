@@ -4,13 +4,11 @@
 
 package com.codedog.rainbow.api.controller;
 
-import com.codedog.rainbow.core.rest.ApiResult;
 import com.codedog.rainbow.util.CommonUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,7 +75,7 @@ public class AdminController {
     public Object logout(HttpSession session) {
         log.debug("GM: logout...");
         session.removeAttribute("user");
-        return SUCCESS;
+        return OK;
     }
 
 

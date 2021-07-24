@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * RingBuffer是一个大小固定的环形缓冲队列
+ * RingBuffer 是一个大小固定的环形缓冲队列
  *
  * @author https://github.com/gukt
  */

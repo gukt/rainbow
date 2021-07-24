@@ -69,7 +69,7 @@ public class ApiResult {
     /**
      * 成功
      */
-    public static final ApiResult SUCCESS = success("ok");
+    public static final ApiResult OK = success("ok");
     /**
      * 失败
      */

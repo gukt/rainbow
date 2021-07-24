@@ -26,17 +26,6 @@ public final class ObjectUtils {
         throw new AssertionError("No ObjectUtils instances for you!");
     }
 
-    /**
-     * Returns the {@code obj} itself if not null, or specified default value if null.
-     *
-     * @param obj          the object to test，may be null
-     * @param defaultValue the default value，must not be null
-     * @return 如果被测试的对象不为 null 则返回自身，反之，返回指定的默认值
-     */
-    public static <E> E nullToDefault(@Nullable E obj, E defaultValue) {
-        return obj == null ? defaultValue : obj;
-    }
-
     // requireNonEmpty
 
     /**
@@ -50,7 +39,7 @@ public final class ObjectUtils {
      */
     public static <E extends Map<?, ?>> E requireNonEmpty(@Nullable E obj, String name) {
         requireNonNull(obj, name);
-        checkArgument(!obj.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
+        Assert.isTrue(!obj.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
         return obj;
     }
 
@@ -65,14 +54,14 @@ public final class ObjectUtils {
      */
     public static <E extends Collection<?>> E requireNonEmpty(@Nullable E obj, String name) {
         requireNonNull(obj, name);
-        checkArgument(!obj.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
+        Assert.isTrue(!obj.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
         return obj;
     }
 
     public static <E extends Iterable<?>> E requireNonEmpty(@Nullable E obj, String name) {
         requireNonNull(obj, name);
-        checkArgument(
-                obj.iterator().hasNext(), "%s.iterator().hasNext(): false (expected: true)", name);
+        Assert.isTrue(obj.iterator().hasNext(),
+                "%s.iterator().hasNext(): false (expected: true)", name);
         return obj;
     }
 
@@ -140,20 +129,21 @@ public final class ObjectUtils {
 
     public static <E extends Map<?, ?>> E requireEmpty(@Nullable E obj, String name) {
         requireNonNull(obj, name);
-        checkArgument(obj.isEmpty(), "%s.isEmpty(): false (expected: = true)", name);
+        Assert.isTrue(obj.isEmpty(), "%s.isEmpty(): false (expected: = true)", name);
         return obj;
     }
 
     public static <E extends Collection<?>> E requireEmpty(@Nullable E obj, String name) {
         requireNonNull(obj, name);
-        checkArgument(obj.isEmpty(), "%s.isEmpty(): false (expected: = true)", name);
+        Assert.isTrue(obj.isEmpty(),
+                "%s.isEmpty(): false (expected: = true)", name);
         return obj;
     }
 
     public static <E extends Iterable<?>> E requireEmpty(@Nullable E obj, String name) {
         requireNonNull(obj, name);
-        checkArgument(
-                !obj.iterator().hasNext(), "%s.iterator().hasNext(): false (expected: = true)", name);
+        Assert.isTrue(!obj.iterator().hasNext(),
+                "%s.iterator().hasNext(): false (expected: = true)", name);
         return obj;
     }
 
@@ -217,72 +207,15 @@ public final class ObjectUtils {
         return arr;
     }
 
-    // isNullOrEmpty
-
-    public static <E extends Collection<?>> boolean isNullOrEmpty(@Nullable E obj) {
-        return obj == null || obj.isEmpty();
-    }
-
-    public static <E extends Iterable<?>> boolean isNullOrEmpty(@Nullable E obj) {
-        return obj == null || !obj.iterator().hasNext();
-    }
-
-    public static <E extends Map<?, ?>> boolean isNullOrEmpty(@Nullable E obj) {
-        return obj == null || obj.isEmpty();
-    }
-
-    public static <E extends CharSequence> boolean isNullOrEmpty(@Nullable E obj) {
-        return obj == null || obj.length() == 0;
-    }
-
-    public static <E> boolean isNullOrEmpty(@Nullable E[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
-    public static boolean isNullOrEmpty(@Nullable char[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
-    public static boolean isNullOrEmpty(@Nullable byte[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
-    public static boolean isNullOrEmpty(@Nullable short[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
-    public static boolean isNullOrEmpty(@Nullable int[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
-    public static boolean isNullOrEmpty(@Nullable long[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
-    public static boolean isNullOrEmpty(@Nullable float[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
-    public static boolean isNullOrEmpty(@Nullable double[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
-    public static boolean isNullOrEmpty(@Nullable boolean[] obj) {
-        return obj == null || obj.length == 0;
-    }
-
     // Number validations
 
     public static <E extends Comparable<E>> E requireBetween(E i, E start, E end, String name) {
         requireNonNull(i, "i");
         requireNonNull(start, "start");
         requireNonNull(end, "end");
-        checkArgument(start.compareTo(end) <= 0, "start must be less than or equal to end");
-
-        checkArgument(
-                i.compareTo(start) >= 0 && i.compareTo(end) <= 0,
-                "%s: %s (expected: in [%s, %s])",
-                name, i, start, end);
+        Assert.isTrue(start.compareTo(end) <= 0, "start must be less than or equal to end");
+        Assert.isTrue(i.compareTo(start) >= 0 && i.compareTo(end) <= 0,
+                "%s: %s (expected: in [%s, %s])", name, i, start, end);
         return i;
     }
 
@@ -304,7 +237,7 @@ public final class ObjectUtils {
      */
     public static <E extends Number> E requirePositive(@Nullable E i, String name) {
         requireNonNull(i);
-        checkArgument(i.intValue() > 0, "%s: %s (expected: > 0)", name, i);
+        Assert.isTrue(i.intValue() > 0, "%s: %s (expected: > 0)", name, i);
         return i;
     }
 
@@ -322,7 +255,7 @@ public final class ObjectUtils {
      */
     public static <E extends Number> E requireNonPositive(@Nullable E i, String name) {
         requireNonNull(i);
-        checkArgument(i.intValue() <= 0, "%s: %s (expected: <= 0)", name, i);
+        Assert.isTrue(i.intValue() <= 0, "%s: %s (expected: <= 0)", name, i);
         return i;
     }
 
@@ -340,7 +273,7 @@ public final class ObjectUtils {
      */
     public static <E extends Number> E requireNegative(@Nullable E i, String name) {
         requireNonNull(i);
-        checkArgument(i.intValue() < 0, "%s: %s (expected: < 0)", name, i);
+        Assert.isTrue(i.intValue() < 0, "%s: %s (expected: < 0)", name, i);
         return i;
     }
 
@@ -358,7 +291,7 @@ public final class ObjectUtils {
      */
     public static <E extends Number> E requireNonNegative(@Nullable E i, String name) {
         requireNonNull(i);
-        checkArgument(i.intValue() >= 0, "%s: %s (expected: >= 0)", name, i);
+        Assert.isTrue(i.intValue() >= 0, "%s: %s (expected: >= 0)", name, i);
         return i;
     }
 
@@ -368,7 +301,7 @@ public final class ObjectUtils {
 
     public static <E extends Number> E requireZero(@Nullable E i, String name) {
         requireNonNull(i);
-        checkArgument(i.intValue() == 0, "%s: %s (expected: = 0)", name, i);
+        Assert.isTrue(i.intValue() == 0, "%s: %s (expected: = 0)", name, i);
         return i;
     }
 
@@ -378,8 +311,118 @@ public final class ObjectUtils {
 
     // Method references for Predicate
 
+    // isEmpty
+
+    public static <E extends Collection<?>> boolean isEmpty(@Nullable E obj) {
+        return obj == null || obj.isEmpty();
+    }
+
+    public static <E extends Iterable<?>> boolean isEmpty(@Nullable E obj) {
+        return obj == null || !obj.iterator().hasNext();
+    }
+
+    public static <E extends Map<?, ?>> boolean isEmpty(@Nullable E obj) {
+        return obj == null || obj.isEmpty();
+    }
+
+    public static <E extends CharSequence> boolean isEmpty(@Nullable E obj) {
+        return obj == null || obj.length() == 0;
+    }
+
+    public static <E> boolean isEmpty(@Nullable E[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static boolean isEmpty(@Nullable char[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static boolean isEmpty(@Nullable byte[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static boolean isEmpty(@Nullable short[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static boolean isEmpty(@Nullable int[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static boolean isEmpty(@Nullable long[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static boolean isEmpty(@Nullable float[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static boolean isEmpty(@Nullable double[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static boolean isEmpty(@Nullable boolean[] obj) {
+        return obj == null || obj.length == 0;
+    }
+
+    public static <E extends Collection<?>> boolean isNotEmpty(@Nullable E obj) {
+        return !isEmpty(obj);
+    }
+
+    public static <E extends Iterable<?>> boolean isNotEmpty(@Nullable E obj) {
+        return !isEmpty(obj);
+    }
+
+    public static <E extends Map<?, ?>> boolean isNotEmpty(@Nullable E obj) {
+        return !isEmpty(obj);
+    }
+
+    public static <E extends CharSequence> boolean isNotEmpty(@Nullable E obj) {
+        return !isEmpty(obj);
+    }
+
+    public static <E> boolean isNotEmpty(@Nullable E[] obj) {
+        return !isEmpty(obj);
+    }
+
+    public static boolean isNotEmpty(@Nullable char[] obj) {
+        return !isEmpty(obj);
+    }
+
+    public static boolean isNotEmpty(@Nullable byte[] obj) {
+        return !isEmpty(obj);
+    }
+
+    public static boolean isNotEmpty(@Nullable short[] obj) {
+        return !isEmpty(obj);
+    }
+
+    public static boolean isNotEmpty(@Nullable int[] obj) {
+        return !isEmpty(obj);
+    }
+
+    public static boolean isNotEmpty(@Nullable long[] obj) {
+        return !isEmpty(obj);
+    }
+
+    public static boolean isNotEmpty(@Nullable float[] obj) {
+        return !isEmpty(obj);
+    }
+
+    public static boolean isNotEmpty(@Nullable double[] obj) {
+        return !isEmpty(obj);
+    }
+
+    public static boolean isNotEmpty(@Nullable boolean[] obj) {
+        return !isEmpty(obj);
+    }
+
     public static <E extends Number> boolean isPositive(E i) {
         return i.intValue() > 0;
+    }
+
+    public static <E extends Number> boolean isNegative(E i) {
+        return !isPositive(i);
     }
 
     /**
@@ -394,10 +437,6 @@ public final class ObjectUtils {
      */
     public static <E extends Number> boolean nonPositive(E i) {
         return i.intValue() <= 0;
-    }
-
-    public static <E extends Number> boolean isNegative(E i) {
-        return i.intValue() < 0;
     }
 
     /**
@@ -422,25 +461,36 @@ public final class ObjectUtils {
         return i.intValue() != 0;
     }
 
-    // checkArgument
-
-    public static void checkArgument(boolean expected, String errMessage) {
-        if (!expected) {
-            throw new IllegalArgumentException(errMessage);
-        }
+    /**
+     * Returns the {@code obj} itself if not null, or specified default value if null.
+     *
+     * @param obj          the object to test，may be null
+     * @param defaultValue the default value，must not be null
+     * @return 如果被测试的对象不为 null 则返回自身，反之，返回指定的默认值
+     */
+    public static <E> E nullToDefault(@Nullable E obj, E defaultValue) {
+        return obj == null ? defaultValue : obj;
     }
 
-    public static void checkArgument(boolean expected) {
-        if (!expected) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    public static void checkArgument(boolean expected, String format, Object... args) {
-        if (!expected) {
-            throw new IllegalArgumentException(String.format(format, args));
-        }
-    }
+//    // checkArgument
+//
+//    public static void checkArgument(boolean expected, String errMessage) {
+//        if (!expected) {
+//            throw new IllegalArgumentException(errMessage);
+//        }
+//    }
+//
+//    public static void checkArgument(boolean expected) {
+//        if (!expected) {
+//            throw new IllegalArgumentException();
+//        }
+//    }
+//
+//    public static void checkArgument(boolean expected, String format, Object... args) {
+//        if (!expected) {
+//            throw new IllegalArgumentException(String.format(format, args));
+//        }
+//    }
 
     // Misc
 

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-import static com.codedog.rainbow.core.rest.ApiResult.SUCCESS;
+import static com.codedog.rainbow.core.rest.ApiResult.OK;
 
 /**
  * 服务器相关 API
@@ -62,7 +62,7 @@ public class ServerController {
     @DeleteMapping("servers/{id}")
     public Object removeById(@PathVariable long id) {
         roleRepository.deleteById(id);
-        return SUCCESS;
+        return OK;
     }
 
     // 获得所有的服务器信息，包括统计信息，状态信息等。
@@ -73,21 +73,21 @@ public class ServerController {
         servers.forEach(server -> {
             // TODO 获取每个服务器的信息
         });
-        return SUCCESS;
+        return OK;
     }
 
     @GetMapping("servers/{id}/info")
     public Object singleServerInfo(@PathVariable int id) {
         Server server = serverService.getById(id);
         // TODO 获取单个服务器信息
-        return SUCCESS;
+        return OK;
     }
 
     @GetMapping("servers/{id}/health")
     public Object health(@PathVariable int id) {
         Server server = serverService.getById(id);
         // TODO 获取单个服务器信息
-        return SUCCESS;
+        return OK;
     }
 
     /**
@@ -103,7 +103,7 @@ public class ServerController {
     @PostMapping("servers/batch")
     public Object batch(Set<Long> ids, @RequestBody Map<String, Object> body) {
         // TODO servers/batch
-        return SUCCESS;
+        return OK;
     }
 
     @PatchMapping("servers/{id}")

@@ -21,12 +21,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MiscEndpointTests {
+public class MiscMvcTests {
 
     @Test
-    void test1(@Autowired MockMvc mvc) throws Exception {
+    void testApiHome(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(get("/api"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("It works."));
+    }
+
+    @Test
+    void testHome(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/"))
+                .andExpect(status().isOk());
     }
 }

@@ -24,6 +24,8 @@ import javax.persistence.criteria.Predicate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.codedog.rainbow.util.ObjectUtils.isNotEmpty;
+
 /**
  * ServerService class
  *
@@ -47,8 +49,7 @@ public class UserService {
      * @return an user object.
      */
     @CachePut(key = "#name")
-    @Nullable
-    public User findByName(String name) {
+    public Optional<User> findByName(String name) {
         return userRepository.findByName(name);
     }
 
@@ -108,7 +109,7 @@ public class UserService {
                 (root, query, cb) -> {
                     List<Predicate> predicates = Predicates.from(criteria, root, cb);
                     // And name like '...'
-                    if (!ObjectUtils.isNullOrEmpty(criteria.getQ())) {
+                    if (isNotEmpty(criteria.getQ())) {
                         String kw = "%" + criteria.getQ() + "%";
                         predicates.add(cb.or(
                                 cb.like(root.get("id"), kw),

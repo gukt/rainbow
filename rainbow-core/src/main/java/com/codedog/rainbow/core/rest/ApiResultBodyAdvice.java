@@ -106,7 +106,7 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
             if (jsonView == null) {
                 // 从查询字符串中读取 view 参数值
                 String viewName = HttpUtils.getParam(request, "view");
-                if (!ObjectUtils.isNullOrEmpty(viewName)) {
+                if (!ObjectUtils.isEmpty(viewName)) {
                     // Wraps the body object to the MappingJacksonValue
                     body = resolveSerializationView2((ApiResult) body, viewName);
                 }
