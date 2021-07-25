@@ -28,6 +28,14 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiResult {
 
     /**
+     * 成功
+     */
+    public static final ApiResult OK = success("ok");
+    /**
+     * 失败
+     */
+    public static final ApiResult FAILED = failed(-1, "failed");
+    /**
      * 错误代码，0 表示成功，非零表示失败。错误码不建议使用负数。
      */
     @JsonView(ApiResultView.class) private final int code;
@@ -35,14 +43,6 @@ public class ApiResult {
      * 详细的错误描述
      */
     @JsonView(ApiResultView.class) private String error;
-    /**
-     * 响应数据
-     */
-    @JsonView(ApiResultView.class) private Object data;
-    /**
-     * HTTP 状态码
-     */
-    private int status = 200;
 
 //    /**
 //     * TODO 解决 Errors 里静态变量append 一直被改变的问题
@@ -65,15 +65,14 @@ public class ApiResult {
 //    public ApiResult error(String s) {
 //        return error(s, true, ":");
 //    }
-
     /**
-     * 成功
+     * 响应数据
      */
-    public static final ApiResult OK = success("ok");
+    @JsonView(ApiResultView.class) private Object data;
     /**
-     * 失败
+     * HTTP 状态码
      */
-    public static final ApiResult FAILED = failed(-1, "failed");
+    private int status = 200;
 
     /**
      * Constructs an {@link ApiResult} object that represents success.

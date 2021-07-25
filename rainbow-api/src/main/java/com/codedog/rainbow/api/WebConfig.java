@@ -4,15 +4,8 @@
 
 package com.codedog.rainbow.api;
 
-import org.springframework.format.support.FormattingConversionService;
-import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.servlet.resource.ResourceUrlProvider;
-
-import java.util.List;
 
 /**
  * WebConfig class
@@ -25,8 +18,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
     protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
         return super.createRequestMappingHandlerMapping();
     }
-
-
 
 
 }

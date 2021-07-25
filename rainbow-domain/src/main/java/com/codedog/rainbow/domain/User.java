@@ -6,7 +6,9 @@ package com.codedog.rainbow.domain;
 
 import com.codedog.rainbow.JsonViews.UserLoginView;
 import com.codedog.rainbow.core.rest.ApiResultView.IdOnly;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

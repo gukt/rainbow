@@ -39,7 +39,7 @@ public class ApplicationIndependentTests {
 
     @Test
     void test111() {
-        User user  = new User();
+        User user = new User();
         user.setName("foo");
         user.setPassword("111");
         System.out.println(JsonUtils.toJson(user));

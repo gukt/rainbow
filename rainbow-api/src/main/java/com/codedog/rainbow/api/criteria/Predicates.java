@@ -4,14 +4,10 @@
 
 package com.codedog.rainbow.api.criteria;
 
-import com.codedog.rainbow.util.ObjectUtils;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 

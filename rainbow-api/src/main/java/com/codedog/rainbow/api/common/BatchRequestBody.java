@@ -16,7 +16,7 @@ import java.util.Set;
  * @author https://github.com/gukt
  */
 @Data
-  public class BatchRequestBody<T, ID> extends BodyData {
+public class BatchRequestBody<T, ID> extends BodyData {
 
     @JsonProperty("delete")
     private Set<ID> deleteIds;

@@ -5,7 +5,6 @@
 package com.codedog.rainbow.api.criteria;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Set;
 
 /**

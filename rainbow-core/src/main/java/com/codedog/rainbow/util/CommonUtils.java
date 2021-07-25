@@ -1,6 +1,5 @@
 package com.codedog.rainbow.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
@@ -8,14 +7,9 @@ import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import com.google.common.io.Resources;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -26,41 +20,12 @@ public final class CommonUtils {
     private static final Integer MAX_ACCESS_PER_DAY = 10;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Map<String, Integer> countsByIp = new HashMap<>();
+
     /** Prevents to construct an instance. */
     private CommonUtils() {
         throw new AssertionError("No CommonUtils instances for you!");
     }
 
-    @SuppressWarnings("UnstableApiUsage")
-    public static String httpGet(String s) throws IOException {
-        // TODO 使用IP代理池
-        URL url = new URL(s);
-        return Resources.asCharSource(url, Charsets.UTF_8).read();
-    }
-
-    public static String toJson(@Nullable Object object) {
-        try {
-            return OBJECT_MAPPER.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("将对象序列化成JSON字符串时发生解析异常", e);
-        }
-    }
-
-    public static Map<String, Object> fromKeyValuePairs(@Nonnull Object... pairs) {
-        Objects.requireNonNull(pairs);
-        if (pairs.length % 2 != 0) {
-            throw new IllegalArgumentException("参数 pairs 的个数必须是偶数, got:" + pairs.length);
-        }
-        Object key, value;
-        Map<String, Object> retMap = new HashMap<>();
-        for (int i = 0; i < pairs.length; i += 2) {
-            key = pairs[i];
-            value = pairs[i + 1];
-            String k = key instanceof String ? (String) key : key.toString();
-            retMap.put(k, value);
-        }
-        return retMap;
-    }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File ensureParentPath(File file) {
@@ -175,10 +140,6 @@ public final class CommonUtils {
             return (sslEnabled ? "https://" : "http://") + url;
         }
         return url;
-    }
-
-    public static boolean isValidDomain(String domain) {
-        return false;
     }
 
     public static String xor(String s, String salt) {

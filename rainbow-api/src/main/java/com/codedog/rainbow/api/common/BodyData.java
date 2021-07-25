@@ -15,12 +15,12 @@ import java.util.function.Supplier;
  *
  * @author https://github.com/gukt
  */
-public class BodyData extends HashMap<String , Object> {
+public class BodyData extends HashMap<String, Object> {
 
     // TODO 添加 Nullable 注释
     @SuppressWarnings("unchecked")
     public <V> V get(String key) {
-        return (V)super.get(key);
+        return (V) super.get(key);
     }
 
     public <V> Optional<V> find(String key) {

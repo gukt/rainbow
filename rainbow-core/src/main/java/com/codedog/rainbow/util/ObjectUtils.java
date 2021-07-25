@@ -4,11 +4,12 @@
 
 package com.codedog.rainbow.util;
 
-import org.jetbrains.annotations.Nullable;
-
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,6 +20,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author https://github.com/gukt
  */
+@SuppressWarnings("unused")
 public final class ObjectUtils {
 
     /** Prevents to construct an instance. */
@@ -26,100 +28,203 @@ public final class ObjectUtils {
         throw new AssertionError("No ObjectUtils instances for you!");
     }
 
+    /**
+     * 如果给定的对象不为 null 则返回自身；反之返回指定的默认值。
+     *
+     * @param obj          被检测的对象，可以为 null
+     * @param defaultValue 默认值，不能为 null
+     * @return 如果给定的对象不为 null 则返回自身；反之返回指定的默认值
+     */
+    public static <E> E nullToDefault(@Nullable E obj, @Nonnull E defaultValue) {
+        Objects.requireNonNull(defaultValue, "defaultValue: null (expected: non-null)");
+        return obj == null ? defaultValue : obj;
+    }
+
     // requireNonEmpty
 
     /**
-     * Checks that the specified {@link Map} object is not null and not empty. this method is designed
-     * primarily for argument checking in methods and constructors.
+     * 检查指定的 {@link Map} 对象是否不为 null，且不为空。
      *
-     * @param obj  the object to test, may be null
-     * @param name the name of {@code obj}
-     * @param <E>  the type of {@code obj}
-     * @return {@code obj} if not null and not empty
+     * @param map  被检测的 {@link Collection} 对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @param <E>  被检测对象的类型
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends Map<?, ?>> E requireNonEmpty(@Nullable E obj, String name) {
-        requireNonNull(obj, name);
-        Assert.isTrue(!obj.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
-        return obj;
+    public static <E extends Map<?, ?>> E requireNonEmpty(@Nullable E map, String name) {
+        requireNonNull(map, name);
+        Assert.isTrue(!map.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
+        return map;
     }
 
     /**
-     * Checks that the specified {@link Collection} object is not null and not empty. this method is
-     * designed primarily for argument checking in methods and constructors.
+     * 检查指定的 {@link Collection} 对象是否不为 null，且不为空。
      *
-     * @param obj  the object to test, may be null
-     * @param name the name of {@code obj}
-     * @param <E>  the type of {@code obj}
-     * @return {@code obj} if not null and not empty
+     * @param collection 被检测的 {@link Collection} 对象
+     * @param name       被检测对象的名称，用于错误描述
+     * @param <E>        被检测对象的类型
+     * @return 如果检测成功，返回被检测的对象。
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends Collection<?>> E requireNonEmpty(@Nullable E obj, String name) {
-        requireNonNull(obj, name);
-        Assert.isTrue(!obj.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
-        return obj;
+    public static <E extends Collection<?>> E requireNonEmpty(@Nullable E collection, String name) {
+        requireNonNull(collection, name);
+        Assert.isTrue(!collection.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
+        return collection;
     }
 
-    public static <E extends Iterable<?>> E requireNonEmpty(@Nullable E obj, String name) {
-        requireNonNull(obj, name);
-        Assert.isTrue(obj.iterator().hasNext(),
+    /**
+     * 检查指定的 {@link Iterable} 对象是否不为 null，且不为空。
+     *
+     * @param iterable 被检测的 {@link Iterable} 对象
+     * @param name     被检测对象的名称，用于错误描述
+     * @param <E>      {@link Iterable} 元素类型
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static <E extends Iterable<?>> E requireNonEmpty(@Nullable E iterable, String name) {
+        requireNonNull(iterable, name);
+        Assert.isTrue(iterable.iterator().hasNext(),
                 "%s.iterator().hasNext(): false (expected: true)", name);
-        return obj;
+        return iterable;
     }
 
-    public static <E extends CharSequence> E requireNonEmpty(@Nullable E obj, String name) {
-        requireNonNull(obj, name);
-        requirePositive(obj.length(), name + ".length");
-        return obj;
+    /**
+     * 检查指定的 {@link CharSequence} 对象是否不为 null，且不为空。当然也包含对 {@link String} 的检测。
+     *
+     * @param chars 被检测的 {@link CharSequence} 对象
+     * @param name  被检测对象的名称，用于错误描述
+     * @param <E>   被检测对象的类型
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static <E extends CharSequence> E requireNonEmpty(@Nullable E chars, String name) {
+        requireNonNull(chars, name);
+        requirePositive(chars.length(), name + ".length");
+        return chars;
     }
 
+    /**
+     * 检查指定的对象数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的对象数组
+     * @param name 被检测对象数组的名称，用于错误描述
+     * @param <E>  被检测对象数组的元素类型
+     * @return 如果检测成功，返回被检测的对象数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static <E> E[] requireNonEmpty(@Nullable E[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
     }
 
-    public static <E> byte[] requireNonEmpty(@Nullable byte[] arr, String name) {
+    /**
+     * 检查指定的数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的数组
+     * @param name 被检测数组的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static byte[] requireNonEmpty(@Nullable byte[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
     }
 
-    public static <E> short[] requireNonEmpty(@Nullable short[] arr, String name) {
+    /**
+     * 检查指定的数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的数组
+     * @param name 被检测数组的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static short[] requireNonEmpty(@Nullable short[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
     }
 
-    public static <E> int[] requireNonEmpty(@Nullable int[] arr, String name) {
+    /**
+     * 检查指定的数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的数组
+     * @param name 被检测数组的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static int[] requireNonEmpty(@Nullable int[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
     }
 
-    public static <E> long[] requireNonEmpty(@Nullable long[] arr, String name) {
+    /**
+     * 检查指定的数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的数组
+     * @param name 被检测数组的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static long[] requireNonEmpty(@Nullable long[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
     }
 
-    public static <E> float[] requireNonEmpty(@Nullable float[] arr, String name) {
+    /**
+     * 检查指定的数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的数组
+     * @param name 被检测数组的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static float[] requireNonEmpty(@Nullable float[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
     }
 
-    public static <E> double[] requireNonEmpty(@Nullable double[] arr, String name) {
+    /**
+     * 检查指定的数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的数组
+     * @param name 被检测数组的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static double[] requireNonEmpty(@Nullable double[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
     }
 
-    public static <E> boolean[] requireNonEmpty(@Nullable boolean[] arr, String name) {
+    /**
+     * 检查指定的数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的数组
+     * @param name 被检测数组的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static boolean[] requireNonEmpty(@Nullable boolean[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
     }
 
-    public static <E> char[] requireNonEmpty(@Nullable char[] arr, String name) {
+    /**
+     * 检查指定的数组是否不为 null，且 length > 0。
+     *
+     * @param arr  被检测的数组
+     * @param name 被检测数组的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的数组
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static char[] requireNonEmpty(@Nullable char[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -127,80 +232,184 @@ public final class ObjectUtils {
 
     // requireEmpty
 
-    public static <E extends Map<?, ?>> E requireEmpty(@Nullable E obj, String name) {
-        requireNonNull(obj, name);
-        Assert.isTrue(obj.isEmpty(), "%s.isEmpty(): false (expected: = true)", name);
-        return obj;
+    /**
+     * 检查指定的 {@link Map} 对象是否不为 null，且 <code>isEmpty() == true</code>。
+     *
+     * @param map  被检测的 {@link Map} 对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static <E extends Map<?, ?>> E requireEmpty(@Nullable E map, String name) {
+        requireNonNull(map, name);
+        Assert.isTrue(map.isEmpty(), "%s.isEmpty(): false (expected: = true)", name);
+        return map;
     }
 
-    public static <E extends Collection<?>> E requireEmpty(@Nullable E obj, String name) {
-        requireNonNull(obj, name);
-        Assert.isTrue(obj.isEmpty(),
+    /**
+     * 检查指定的 {@link Collection} 对象是否不为 null，且 <code>isEmpty() == true</code>。
+     *
+     * @param collection 被检测的 {@link Collection} 对象
+     * @param name       被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static <E extends Collection<?>> E requireEmpty(@Nullable E collection, String name) {
+        requireNonNull(collection, name);
+        Assert.isTrue(collection.isEmpty(),
                 "%s.isEmpty(): false (expected: = true)", name);
-        return obj;
+        return collection;
     }
 
-    public static <E extends Iterable<?>> E requireEmpty(@Nullable E obj, String name) {
-        requireNonNull(obj, name);
-        Assert.isTrue(!obj.iterator().hasNext(),
+    /**
+     * 检查指定的 {@link Iterable} 对象是否不为 null，且 <code>iterator.hasNext() == true</code>。
+     *
+     * @param iterable 被检测的 {@link Iterable} 对象
+     * @param name     被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static <E extends Iterable<?>> E requireEmpty(@Nullable E iterable, String name) {
+        requireNonNull(iterable, name);
+        Assert.isTrue(!iterable.iterator().hasNext(),
                 "%s.iterator().hasNext(): false (expected: = true)", name);
-        return obj;
+        return iterable;
     }
 
-    public static <E extends CharSequence> E requireEmpty(@Nullable E obj, String name) {
-        requireNonNull(obj, name);
-        requireZero(obj.length(), name + ".length");
-        return obj;
+    /**
+     * 检查指定的 {@link CharSequence} 对象是否不为 null，且 <code>length() == 0</code>。
+     *
+     * @param chars 被检测的 {@link CharSequence} 对象
+     * @param name  被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
+    public static <E extends CharSequence> E requireEmpty(@Nullable E chars, String name) {
+        requireNonNull(chars, name);
+        requireZero(chars.length(), name + ".length");
+        return chars;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static <E> E[] requireEmpty(@Nullable E[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static char[] requireEmpty(@Nullable char[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static boolean[] requireEmpty(@Nullable boolean[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static byte[] requireEmpty(@Nullable byte[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static short[] requireEmpty(@Nullable short[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static int[] requireEmpty(@Nullable int[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static long[] requireEmpty(@Nullable long[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static float[] requireEmpty(@Nullable float[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
     }
 
+    /**
+     * 检查指定的数组对象是否不为 null，且 <code>arr.length == 0</code>。
+     *
+     * @param arr  被检测的数组对象
+     * @param name 被检测对象的名称，用于错误描述
+     * @return 如果检测成功，返回被检测的对象
+     * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
+     */
     public static double[] requireEmpty(@Nullable double[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
@@ -221,10 +430,6 @@ public final class ObjectUtils {
 
     public static <E extends Comparable<E>> E requireBetween(E i, E start, E end) {
         return requireBetween(i, start, end, "actual");
-    }
-
-    public static <E extends Comparable<E>> boolean isBetween(E i, E start, E end) {
-        return i.compareTo(start) >= 0 && i.compareTo(end) <= 0;
     }
 
     /**
@@ -309,113 +514,125 @@ public final class ObjectUtils {
         return requireZero(i, "actual");
     }
 
-    // Method references for Predicate
+    // Method references for {@link Predicate predicate}
+
+    public static boolean isNull(Object obj) {
+        return obj == null;
+    }
+
+    public static boolean isNotNull(Object obj) {
+        return obj != null;
+    }
 
     // isEmpty
 
-    public static <E extends Collection<?>> boolean isEmpty(@Nullable E obj) {
-        return obj == null || obj.isEmpty();
+    public static <E extends Collection<?>> boolean isEmpty(@Nullable E collection) {
+        return collection == null || collection.isEmpty();
     }
 
-    public static <E extends Iterable<?>> boolean isEmpty(@Nullable E obj) {
-        return obj == null || !obj.iterator().hasNext();
+    public static <E extends Iterable<?>> boolean isEmpty(@Nullable E iterable) {
+        return iterable == null || !iterable.iterator().hasNext();
     }
 
-    public static <E extends Map<?, ?>> boolean isEmpty(@Nullable E obj) {
-        return obj == null || obj.isEmpty();
+    public static <E extends Map<?, ?>> boolean isEmpty(@Nullable E map) {
+        return map == null || map.isEmpty();
     }
 
-    public static <E extends CharSequence> boolean isEmpty(@Nullable E obj) {
-        return obj == null || obj.length() == 0;
+    public static <E extends CharSequence> boolean isEmpty(@Nullable E chars) {
+        return chars == null || chars.length() == 0;
     }
 
-    public static <E> boolean isEmpty(@Nullable E[] obj) {
-        return obj == null || obj.length == 0;
+    public static <E> boolean isEmpty(@Nullable E[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable char[] obj) {
-        return obj == null || obj.length == 0;
+    public static boolean isEmpty(@Nullable char[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable byte[] obj) {
-        return obj == null || obj.length == 0;
+    public static boolean isEmpty(@Nullable byte[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable short[] obj) {
-        return obj == null || obj.length == 0;
+    public static boolean isEmpty(@Nullable short[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable int[] obj) {
-        return obj == null || obj.length == 0;
+    public static boolean isEmpty(@Nullable int[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable long[] obj) {
-        return obj == null || obj.length == 0;
+    public static boolean isEmpty(@Nullable long[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable float[] obj) {
-        return obj == null || obj.length == 0;
+    public static boolean isEmpty(@Nullable float[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable double[] obj) {
-        return obj == null || obj.length == 0;
+    public static boolean isEmpty(@Nullable double[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable boolean[] obj) {
-        return obj == null || obj.length == 0;
+    public static boolean isEmpty(@Nullable boolean[] arr) {
+        return arr == null || arr.length == 0;
     }
 
-    public static <E extends Collection<?>> boolean isNotEmpty(@Nullable E obj) {
-        return !isEmpty(obj);
+    // isNotEmpty
+
+    public static <E extends Collection<?>> boolean isNotEmpty(@Nullable E collection) {
+        return !isEmpty(collection);
     }
 
-    public static <E extends Iterable<?>> boolean isNotEmpty(@Nullable E obj) {
-        return !isEmpty(obj);
+    public static <E extends Iterable<?>> boolean isNotEmpty(@Nullable E iterable) {
+        return !isEmpty(iterable);
     }
 
-    public static <E extends Map<?, ?>> boolean isNotEmpty(@Nullable E obj) {
-        return !isEmpty(obj);
+    public static <E extends Map<?, ?>> boolean isNotEmpty(@Nullable E map) {
+        return !isEmpty(map);
     }
 
-    public static <E extends CharSequence> boolean isNotEmpty(@Nullable E obj) {
-        return !isEmpty(obj);
+    public static <E extends CharSequence> boolean isNotEmpty(@Nullable E chars) {
+        return !isEmpty(chars);
     }
 
-    public static <E> boolean isNotEmpty(@Nullable E[] obj) {
-        return !isEmpty(obj);
+    public static <E> boolean isNotEmpty(@Nullable E[] arr) {
+        return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable char[] obj) {
-        return !isEmpty(obj);
+    public static boolean isNotEmpty(@Nullable char[] arr) {
+        return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable byte[] obj) {
-        return !isEmpty(obj);
+    public static boolean isNotEmpty(@Nullable byte[] arr) {
+        return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable short[] obj) {
-        return !isEmpty(obj);
+    public static boolean isNotEmpty(@Nullable short[] arr) {
+        return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable int[] obj) {
-        return !isEmpty(obj);
+    public static boolean isNotEmpty(@Nullable int[] arr) {
+        return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable long[] obj) {
-        return !isEmpty(obj);
+    public static boolean isNotEmpty(@Nullable long[] arr) {
+        return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable float[] obj) {
-        return !isEmpty(obj);
+    public static boolean isNotEmpty(@Nullable float[] arr) {
+        return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable double[] obj) {
-        return !isEmpty(obj);
+    public static boolean isNotEmpty(@Nullable double[] arr) {
+        return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable boolean[] obj) {
-        return !isEmpty(obj);
+    public static boolean isNotEmpty(@Nullable boolean[] arr) {
+        return !isEmpty(arr);
     }
+
+    // Number predications
 
     public static <E extends Number> boolean isPositive(E i) {
         return i.intValue() > 0;
@@ -461,15 +678,12 @@ public final class ObjectUtils {
         return i.intValue() != 0;
     }
 
-    /**
-     * Returns the {@code obj} itself if not null, or specified default value if null.
-     *
-     * @param obj          the object to test，may be null
-     * @param defaultValue the default value，must not be null
-     * @return 如果被测试的对象不为 null 则返回自身，反之，返回指定的默认值
-     */
-    public static <E> E nullToDefault(@Nullable E obj, E defaultValue) {
-        return obj == null ? defaultValue : obj;
+    public static <E extends Comparable<E>> boolean isBetween(E i, E start, E end) {
+        return i.compareTo(start) >= 0 && i.compareTo(end) <= 0;
+    }
+
+    public static <E extends Comparable<E>> boolean isNotBetween(E i, E start, E end) {
+        return !isBetween(i, start, end);
     }
 
 //    // checkArgument
@@ -494,6 +708,13 @@ public final class ObjectUtils {
 
     // Misc
 
+    /**
+     * 将一个多值（数组类型）的 {@link Map} 对象转换为字符串，常用于对 HttpServletRequest 中所有参数的输出。
+     *
+     * @param map value 为数组的 map
+     * @param <E> value 数组的类型
+     * @return 字符串
+     */
     public static <E> String toString(Map<String, E[]> map) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");

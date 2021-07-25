@@ -32,66 +32,66 @@ import java.nio.charset.StandardCharsets;
  * 该ServletInputStream的read委托ByteArrayInputStream.read()方法，从之前保存的body字节数组中读取数据
  *
  * @author https://github.com/gukt
- * @date 2020/3/19 11:52
  * @version 1.0
+ * @date 2020/3/19 11:52
  */
 @Slf4j
 public class RepeatableHttpServletRequest extends HttpServletRequestWrapper {
 
-  private byte[] body;
+    private byte[] body;
 
-  /**
-   * Constructs a request object wrapping the given request.
-   *
-   * @throws IllegalArgumentException if the request is null
-   * @param request the {@link HttpServletRequest} to be wrapped.
-   */
-  RepeatableHttpServletRequest(HttpServletRequest request) {
-    super(request);
+    /**
+     * Constructs a request object wrapping the given request.
+     *
+     * @param request the {@link HttpServletRequest} to be wrapped.
+     * @throws IllegalArgumentException if the request is null
+     */
+    RepeatableHttpServletRequest(HttpServletRequest request) {
+        super(request);
 
-    // 读取请求的body数据并保存
-    String data = getBodyString(request);
-    body = data.getBytes(StandardCharsets.UTF_8);
-  }
-
-  private String getBodyString(final ServletRequest request) {
-    try {
-      Reader reader = new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8);
-      return CharStreams.toString(reader);
-    } catch (IOException e) {
-      log.error("", e);
-      throw new RuntimeException("读取请求的body数据出错", e);
+        // 读取请求的body数据并保存
+        String data = getBodyString(request);
+        body = data.getBytes(StandardCharsets.UTF_8);
     }
-  }
 
-  @Override
-  public BufferedReader getReader() {
-    return new BufferedReader(new InputStreamReader(getInputStream()));
-  }
+    private String getBodyString(final ServletRequest request) {
+        try {
+            Reader reader = new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8);
+            return CharStreams.toString(reader);
+        } catch (IOException e) {
+            log.error("", e);
+            throw new RuntimeException("读取请求的body数据出错", e);
+        }
+    }
 
-  @Override
-  public ServletInputStream getInputStream() {
+    @Override
+    public BufferedReader getReader() {
+        return new BufferedReader(new InputStreamReader(getInputStream()));
+    }
 
-    final ByteArrayInputStream inputStream = new ByteArrayInputStream(body);
+    @Override
+    public ServletInputStream getInputStream() {
 
-    return new ServletInputStream() {
-      @Override
-      public int read() {
-        return inputStream.read();
-      }
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream(body);
 
-      @Override
-      public boolean isFinished() {
-        return false;
-      }
+        return new ServletInputStream() {
+            @Override
+            public int read() {
+                return inputStream.read();
+            }
 
-      @Override
-      public boolean isReady() {
-        return false;
-      }
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
 
-      @Override
-      public void setReadListener(ReadListener readListener) {}
-    };
-  }
+            @Override
+            public boolean isReady() {
+                return false;
+            }
+
+            @Override
+            public void setReadListener(ReadListener readListener) {}
+        };
+    }
 }

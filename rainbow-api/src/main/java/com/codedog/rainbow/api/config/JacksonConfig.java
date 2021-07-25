@@ -19,7 +19,12 @@ import java.util.List;
 @Configuration
 public class JacksonConfig implements WebMvcConfigurer {
 
+    /**
+     * @param converters
+     * @depreacated 实际上没起作用
+     */
     @Override
+    @Deprecated
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         for (HttpMessageConverter<?> converter : converters) {
             if (converter instanceof MappingJackson2HttpMessageConverter) {

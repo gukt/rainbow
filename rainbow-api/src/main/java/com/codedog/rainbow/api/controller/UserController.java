@@ -34,7 +34,7 @@ import static com.codedog.rainbow.api.common.Errors.ERR_BAD_PARAMETER;
 import static com.codedog.rainbow.api.common.Errors.ERR_INVALID_NAME_OR_PASSWORD;
 import static com.codedog.rainbow.core.rest.ApiResult.OK;
 import static com.codedog.rainbow.core.rest.ApiResult.success;
-import static com.codedog.rainbow.util.ObjectUtils.*;
+import static com.codedog.rainbow.util.ObjectUtils.isNotEmpty;
 
 /**
  * 用户相关 API
@@ -137,7 +137,7 @@ public class UserController {
      * 多条件查询
      *
      * @param criteria 查询条件
-     * @param page 分页参数
+     * @param page     分页参数
      * @return list of user with pagination info.
      */
     @GetMapping("users")

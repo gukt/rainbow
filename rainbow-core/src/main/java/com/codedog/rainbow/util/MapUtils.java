@@ -7,8 +7,6 @@ package com.codedog.rainbow.util;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.BiFunction;
 
 /**
  * Map utils
@@ -23,11 +21,6 @@ public final class MapUtils {
     private MapUtils() {
         throw new AssertionError("No MapUtils instances for you.");
     }
-
-
-//    public static boolean isNullOrEmpty(@Nullable Map<?, ?> map) {
-//        return ObjectUtils.isNullOrEmpty(map);
-//    }
 
     public static <K, V> Map<K, V> newHashMap() {
         return new HashMap<>();
@@ -44,7 +37,7 @@ public final class MapUtils {
         Map<K, V> map = newHashMap();
         for (Object[] pair : pairs) {
             if (pair.length != 2) {
-                throw new IllegalArgumentException("Length of pair must be even. actual: "
+                throw new IllegalArgumentException("Length of pairs must be even. actual: "
                         + pair.length + " (expected: 2)" + ", element: " + Arrays.toString(pair));
             }
             map.put((K) pair[0], (V) pair[1]);
