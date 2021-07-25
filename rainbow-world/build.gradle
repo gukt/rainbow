@@ -1,8 +1,8 @@
 plugins {
     id 'com.codedog.rainbow.java-application-conventions'
+    id 'com.codedog.rainbow.java-lombok-conventions'
     id 'org.springframework.boot' version '2.5.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
     // https://github.com/google/protobuf-gradle-plugin
     id "com.google.protobuf" version "0.8.17"
 }
@@ -60,9 +60,9 @@ dependencies {
     implementation project(':rainbow-core')
     implementation project(':rainbow-domain')
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'io.netty:netty-all:4.1.65.Final'
     implementation 'com.esotericsoftware:kryo:5.1.1'
     implementation 'com.esotericsoftware:reflectasm:1.11.9'
@@ -70,15 +70,10 @@ dependencies {
     implementation 'com.google.protobuf:protobuf-java-util:3.17.3'
     implementation 'com.googlecode.protobuf-java-format:protobuf-java-format:1.4'
     implementation 'com.alibaba:easyexcel:2.2.10'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.12.4'
-    implementation 'net.jcip:jcip-annotations:1.0'
     implementation 'io.grpc:grpc-protobuf:1.39.0'
     implementation 'io.grpc:grpc-stub:1.39.0'
-
-    compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

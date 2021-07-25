@@ -10,7 +10,6 @@ import com.codedog.rainbow.util.JsonUtils;
 import com.codedog.rainbow.util.ObjectUtils;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -72,11 +71,11 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body,
-                                  @NotNull MethodParameter returnType,
-                                  @NotNull MediaType selectedContentType,
-                                  @NotNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
-                                  @NotNull ServerHttpRequest request,
-                                  @NotNull ServerHttpResponse response) {
+                                  MethodParameter returnType,
+                                  MediaType selectedContentType,
+                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
+                                  ServerHttpRequest request,
+                                  ServerHttpResponse response) {
         if (body instanceof MappingJacksonValue
                 || body instanceof String
                 || body instanceof Resource) {

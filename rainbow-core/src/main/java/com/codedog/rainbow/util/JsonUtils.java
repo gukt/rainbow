@@ -1,182 +1,235 @@
-/*
- * Copyright 2018-2021 codedog996.com, The rainbow Project.
- */
-
 package com.codedog.rainbow.util;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.google.common.base.Strings;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.Data;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
- * TOOD: Resolve the following case:
- * boolean : null
- * List: 1,2,,3
- * List: 1,2,3   很多空格
- * Set: 1,1,2,3 很多重复
- * List<String>: a,b,c  want: "a","b","c"
- * [[1,2,3],[4,5,6]后面少一个空格的问题
- * [1,2,3],[4,5,6] 少了前后两个【】的格式问题
+ * JSON 序列化和反序列化工具类
  *
  * @author https://github.com/gukt
  */
 public final class JsonUtils {
 
-    /**
-     * TypeReference: List<Integer>
-     */
-    public static final TypeReference<List<Integer>> TYPE_REF_LIST_INT = new TypeReference<List<Integer>>() {};
-    /**
-     * TypeReference: List<Long>
-     */
-    public static final TypeReference<List<Long>> TYPE_REF_LIST_LONG = new TypeReference<List<Long>>() {};
-    /**
-     * TypeReference: List<String>
-     */
-    public static final TypeReference<List<String>> TYPE_REF_LIST_STR = new TypeReference<List<String>>() {};
-    /**
-     * TypeReference: Set<Integer>
-     */
-    public static final TypeReference<Set<Integer>> TYPE_REF_SET_INT = new TypeReference<Set<Integer>>() {};
-    /**
-     * TypeReference: Set<Long>
-     */
-    public static final TypeReference<Set<Long>> TYPE_REF_SET_LONG = new TypeReference<Set<Long>>() {};
-    /**
-     * TypeReference: Set<String>
-     */
-    public static final TypeReference<Set<String>> TYPE_REF_SET_STR = new TypeReference<Set<String>>() {};
-    /**
-     * TypeReference: Map<String, Object>
-     */
-    public static final TypeReference<Map<String, Object>> TYPE_REF_MAP_STR_OBJECT =
-            new TypeReference<Map<String, Object>>() {};
-    /**
-     * TypeReference: Map<String, String>
-     */
-    public static final TypeReference<Map<String, String>> TYPE_REF_MAP_STR_STR =
-            new TypeReference<Map<String, String>>() {};
-    private static final ObjectMapper OBJECT_MAPPER;
+    private static final ObjectMapper objectMapper =
+            new ObjectMapper()
+                    .registerModule(new SimpleModule())
+                    .registerModule(new Jdk8Module())
+                    .registerModule(new JavaTimeModule())
+                    .registerModule(new GuavaModule())
+                    .setSerializationInclusion(JsonInclude.Include.NON_NULL) // null 不参与转换
+                    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                    .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
+    private static final TypeFactory typeFactory;
 
     static {
-        OBJECT_MAPPER = new ObjectMapper();
-        OBJECT_MAPPER.registerModule(new SimpleModule());
-        OBJECT_MAPPER.registerModule(new GuavaModule());
-        OBJECT_MAPPER.setSerializationInclusion(Include.NON_NULL);
-        OBJECT_MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        OBJECT_MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        typeFactory = objectMapper.getTypeFactory();
     }
 
     /** Prevents to construct an instance. */
     private JsonUtils() {
-        throw new AssertionError("No JsonUtils instances for you!");
+        throw new AssertionError("No JsonUtils instances for you.");
     }
 
-    public static String toJson(@Nullable Object object) {
-        try {
-            return OBJECT_MAPPER.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            throw new JsonConversionException(e);
-        }
-    }
-
-    /**
-     * 将指定的JSON格式的字符串解析成指定类型的对象
-     *
-     * @param <V>  返回的对象类型
-     * @param json 要解析成对象的JSON格式字符串
-     * @param type 指定要解析成对象的类型
-     * @return 返回解析对象
-     * @throws RuntimeException 非检查型异常,表示解析过程中产生的错误
-     */
     @Nullable
-    public static <V> V toBean(@Nullable String json, Class<V> type) {
-        if (json == null || json.isEmpty()) {
-            return null;
-        }
-        try {
-            return OBJECT_MAPPER.readValue(json, type);
-        } catch (IOException e) {
-            throw new JsonConversionException(String.format("json: %s, type: %s", json, type), e);
-        }
-    }
+    public static <E> E toBean(@Nullable String s, Class<E> type) {
+        Objects.requireNonNull(type);
 
-    public static <V> V toBeanOrDefault(@Nullable String json, Class<V> type, V defaultValue) {
-        V bean = toBean(json, type);
-        return bean != null ? bean : defaultValue;
-    }
-
-    /**
-     * 将指定的JSON格式的字符串解析成指定类型的对象
-     *
-     * @param <V>     返回的对象类型
-     * @param json    要解析成对象的JSON格式字符串
-     * @param typeRef 指定要解析成对象的类型
-     * @return 返回解析对象
-     */
-    @Nullable
-    public static <V> V toBean(@Nullable String json, TypeReference<V> typeRef) {
-        if (json == null || json.isEmpty()) {
-            return null;
-        }
-        try {
-            return OBJECT_MAPPER.readValue(json, typeRef);
-        } catch (IOException e) {
-            throw new JsonConversionException(e);
-        }
-    }
-
-    public static <V> V toBeanOrDefault(@Nullable String json, TypeReference<V> typeRef, V defaultValue) {
-        V bean = toBean(json, typeRef);
-        return bean == null ? defaultValue : bean;
-    }
-
-    /**
-     * 将指定的JSON格式的字符串解析成指定类型的对象
-     *
-     * @param <V>  返回的对象类型
-     * @param json 要解析成对象的JSON格式字符串
-     * @param type 指定要解析成对象的类型
-     * @return 返回解析对象
-     */
-    @Nullable
-    public static <V> V toBean(@Nullable String json, JavaType type) {
-        try {
-            if (!Strings.isNullOrEmpty(json)) {
-                return OBJECT_MAPPER.readValue(json, type);
+        if (s != null && !s.isEmpty()) {
+            try {
+                return objectMapper.readValue(s, type);
+            } catch (JsonProcessingException e) {
+                deserializeFailed(s, type, e);
             }
-            return null;
-        } catch (IOException e) {
-            throw new JsonConversionException(e);
         }
+        return null;
     }
 
-    public static <V> V toBeanOrDefault(@Nullable String json, JavaType type, V defaultValue) {
-        V value = toBean(json, type);
+    @SuppressWarnings("unchecked")
+    public static <E> E toBeanOrDefault(@Nullable String s, E defaultValue) {
+        Objects.requireNonNull(defaultValue);
+
+        E value = toBean(s, (Class<E>) defaultValue.getClass());
         return value != null ? value : defaultValue;
     }
 
-    static class JsonConversionException extends RuntimeException {
+    @Nullable
+    public static <E> E toBean(@Nullable String s, TypeReference<E> typeRef) {
+        Objects.requireNonNull(typeRef);
 
-        JsonConversionException(Throwable e) {
-            super("JSON: Conversion exception", e);
+        if (s != null && !s.isEmpty()) {
+            try {
+                return objectMapper.readValue(s, typeRef);
+            } catch (JsonProcessingException e) {
+                deserializeFailed(s, typeRef.getType(), e);
+            }
         }
+        return null;
+    }
 
-        JsonConversionException(String message, Throwable cause) {
-            super(message, cause);
+    public static <E> E toBeanOrDefault(@Nullable String s, TypeReference<E> typeRef, E defaultValue) {
+        Objects.requireNonNull(typeRef);
+        Objects.requireNonNull(defaultValue);
+
+        E value = toBean(s, typeRef);
+        return value != null ? value : defaultValue;
+    }
+
+    @Nullable
+    public static String toJson(@Nullable Object object) {
+        if (object != null) {
+            try {
+                return objectMapper.writeValueAsString(object);
+            } catch (JsonProcessingException e) {
+                serializeFailed(object, e);
+            }
         }
+        return null;
+    }
+
+    public static String toJsonOrDefault(@Nullable Object object, String defaultValue) {
+        Objects.requireNonNull(defaultValue);
+
+        String value = toJson(object);
+        return value != null ? value : defaultValue;
+    }
+
+    // Collection
+
+    @Nullable
+    public static <E> Collection<E> toCollection(
+            @Nullable String s, Class<? extends Collection> collectionClass, Class<E> elementType) {
+        Objects.requireNonNull(collectionClass);
+        Objects.requireNonNull(elementType);
+
+        if (s != null && !s.isEmpty()) {
+            JavaType javaType = typeFactory.constructCollectionType(collectionClass, elementType);
+            try {
+                return objectMapper.readValue(s, javaType);
+            } catch (JsonProcessingException e) {
+                deserializeFailed(s, javaType, e);
+            }
+        }
+        return null;
+    }
+
+    public static <E> Collection<E> toCollectionOrDefault(
+            @Nullable String s, Class<E> elementType, Collection<E> defaultValue) {
+        Objects.requireNonNull(elementType);
+        Objects.requireNonNull(defaultValue);
+
+        Collection<E> value = toCollection(s, defaultValue.getClass(), elementType);
+        return value != null ? value : defaultValue;
+    }
+
+    @Nullable
+    public static <E> List<E> toList(@Nullable String s, Class<E> elementType) {
+        Objects.requireNonNull(elementType);
+        return (List<E>) toCollection(s, ArrayList.class, elementType);
+    }
+
+    public static <E> List<E> toListOrDefault(
+            @Nullable String s, Class<E> elementType, List<E> defaultValue) {
+        Objects.requireNonNull(elementType);
+        Objects.requireNonNull(defaultValue);
+
+        List<E> value = toList(s, elementType);
+        return value != null ? value : defaultValue;
+    }
+
+    public static <E> List<E> toListOrEmpty(@Nullable String s, Class<E> elementType) {
+        Objects.requireNonNull(elementType);
+        return toListOrDefault(s, elementType, new ArrayList<>());
+    }
+
+    // toSet
+
+    @Nullable
+    public static <E> Set<E> toSet(@Nullable String s, Class<E> elementType) {
+        Objects.requireNonNull(elementType);
+        return (Set<E>) toCollection(s, HashSet.class, elementType);
+    }
+
+    public static <E> Set<E> toSetOrDefault(
+            @Nullable String s, Class<E> elementType, Set<E> defaultValue) {
+        Objects.requireNonNull(elementType);
+        Objects.requireNonNull(defaultValue);
+
+        Set<E> value = toSet(s, elementType);
+        return value != null ? value : defaultValue;
+    }
+
+    public static <E> Set<E> toSetOrEmpty(@Nullable String s, Class<E> elementType) {
+        Objects.requireNonNull(elementType);
+        return toSetOrDefault(s, elementType, new HashSet<>());
+    }
+
+    // toMap
+
+    @Nullable
+    public static <K, V> Map<K, V> toMap(
+            @Nullable String s, Class<? extends Map> mapClass, Class<K> keyType, Class<V> valueType) {
+        Objects.requireNonNull(mapClass);
+        Objects.requireNonNull(keyType);
+        Objects.requireNonNull(valueType);
+
+        if (s != null && !s.isEmpty()) {
+            JavaType javaType = typeFactory.constructMapType(mapClass, keyType, valueType);
+            try {
+                return objectMapper.readValue(s, javaType);
+            } catch (JsonProcessingException e) {
+                deserializeFailed(s, javaType, e);
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static <K, V> Map<K, V> toMap(@Nullable String s, Class<K> keyType, Class<V> valueType) {
+        return toMap(s, HashMap.class, keyType, valueType);
+    }
+
+    public static <K, V> Map<K, V> toMapOrDefault(
+            @Nullable String s, Class<K> keyType, Class<V> valueType, Map<K, V> defaultValue) {
+        Objects.requireNonNull(defaultValue);
+        Objects.requireNonNull(keyType);
+        Objects.requireNonNull(valueType);
+
+        Map<K, V> value = toMap(s, keyType, valueType);
+        return value != null ? value : defaultValue;
+    }
+
+    public static <K, V> Map<K, V> toMapOrEmpty(
+            @Nullable String s, Class<K> keyType, Class<V> valueType) {
+        Objects.requireNonNull(keyType);
+        Objects.requireNonNull(valueType);
+
+        return toMapOrDefault(s, keyType, valueType, new HashMap<>());
+    }
+
+    // Private methods
+
+    private static void serializeFailed(Object object, Throwable e) {
+        throw new RuntimeException(String.format("序列化失败, source: %s", object), e);
+    }
+
+    private static void deserializeFailed(String s, Type type, Throwable e) {
+        throw new RuntimeException(
+                String.format("反序列化为 %s 类型对象时失败, source: '%s'", type.getTypeName(), s), e);
     }
 }

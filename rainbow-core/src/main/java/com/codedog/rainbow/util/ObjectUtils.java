@@ -5,7 +5,6 @@
 package com.codedog.rainbow.util;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -35,7 +34,7 @@ public final class ObjectUtils {
      * @param defaultValue 默认值，不能为 null
      * @return 如果给定的对象不为 null 则返回自身；反之返回指定的默认值
      */
-    public static <E> E nullToDefault(@Nullable E obj, @Nonnull E defaultValue) {
+    public static <E> E nullToDefault(E obj, @Nonnull E defaultValue) {
         Objects.requireNonNull(defaultValue, "defaultValue: null (expected: non-null)");
         return obj == null ? defaultValue : obj;
     }
@@ -51,7 +50,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends Map<?, ?>> E requireNonEmpty(@Nullable E map, String name) {
+    public static <E extends Map<?, ?>> E requireNonEmpty(E map, String name) {
         requireNonNull(map, name);
         Assert.isTrue(!map.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
         return map;
@@ -66,7 +65,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象。
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends Collection<?>> E requireNonEmpty(@Nullable E collection, String name) {
+    public static <E extends Collection<?>> E requireNonEmpty(E collection, String name) {
         requireNonNull(collection, name);
         Assert.isTrue(!collection.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
         return collection;
@@ -81,7 +80,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends Iterable<?>> E requireNonEmpty(@Nullable E iterable, String name) {
+    public static <E extends Iterable<?>> E requireNonEmpty(E iterable, String name) {
         requireNonNull(iterable, name);
         Assert.isTrue(iterable.iterator().hasNext(),
                 "%s.iterator().hasNext(): false (expected: true)", name);
@@ -97,7 +96,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends CharSequence> E requireNonEmpty(@Nullable E chars, String name) {
+    public static <E extends CharSequence> E requireNonEmpty(E chars, String name) {
         requireNonNull(chars, name);
         requirePositive(chars.length(), name + ".length");
         return chars;
@@ -112,7 +111,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E> E[] requireNonEmpty(@Nullable E[] arr, String name) {
+    public static <E> E[] requireNonEmpty(E[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -126,7 +125,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static byte[] requireNonEmpty(@Nullable byte[] arr, String name) {
+    public static byte[] requireNonEmpty(byte[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -140,7 +139,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static short[] requireNonEmpty(@Nullable short[] arr, String name) {
+    public static short[] requireNonEmpty(short[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -154,7 +153,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static int[] requireNonEmpty(@Nullable int[] arr, String name) {
+    public static int[] requireNonEmpty(int[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -168,7 +167,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static long[] requireNonEmpty(@Nullable long[] arr, String name) {
+    public static long[] requireNonEmpty(long[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -182,7 +181,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static float[] requireNonEmpty(@Nullable float[] arr, String name) {
+    public static float[] requireNonEmpty(float[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -196,7 +195,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static double[] requireNonEmpty(@Nullable double[] arr, String name) {
+    public static double[] requireNonEmpty(double[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -210,7 +209,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static boolean[] requireNonEmpty(@Nullable boolean[] arr, String name) {
+    public static boolean[] requireNonEmpty(boolean[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -224,7 +223,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的数组
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static char[] requireNonEmpty(@Nullable char[] arr, String name) {
+    public static char[] requireNonEmpty(char[] arr, String name) {
         requireNonNull(arr, name);
         requirePositive(arr.length, name + ".length");
         return arr;
@@ -240,7 +239,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends Map<?, ?>> E requireEmpty(@Nullable E map, String name) {
+    public static <E extends Map<?, ?>> E requireEmpty(E map, String name) {
         requireNonNull(map, name);
         Assert.isTrue(map.isEmpty(), "%s.isEmpty(): false (expected: = true)", name);
         return map;
@@ -254,7 +253,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends Collection<?>> E requireEmpty(@Nullable E collection, String name) {
+    public static <E extends Collection<?>> E requireEmpty(E collection, String name) {
         requireNonNull(collection, name);
         Assert.isTrue(collection.isEmpty(),
                 "%s.isEmpty(): false (expected: = true)", name);
@@ -269,7 +268,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends Iterable<?>> E requireEmpty(@Nullable E iterable, String name) {
+    public static <E extends Iterable<?>> E requireEmpty(E iterable, String name) {
         requireNonNull(iterable, name);
         Assert.isTrue(!iterable.iterator().hasNext(),
                 "%s.iterator().hasNext(): false (expected: = true)", name);
@@ -284,7 +283,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E extends CharSequence> E requireEmpty(@Nullable E chars, String name) {
+    public static <E extends CharSequence> E requireEmpty(E chars, String name) {
         requireNonNull(chars, name);
         requireZero(chars.length(), name + ".length");
         return chars;
@@ -298,7 +297,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static <E> E[] requireEmpty(@Nullable E[] arr, String name) {
+    public static <E> E[] requireEmpty(E[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -312,7 +311,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static char[] requireEmpty(@Nullable char[] arr, String name) {
+    public static char[] requireEmpty(char[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -326,7 +325,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static boolean[] requireEmpty(@Nullable boolean[] arr, String name) {
+    public static boolean[] requireEmpty(boolean[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -340,7 +339,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static byte[] requireEmpty(@Nullable byte[] arr, String name) {
+    public static byte[] requireEmpty(byte[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -354,7 +353,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static short[] requireEmpty(@Nullable short[] arr, String name) {
+    public static short[] requireEmpty(short[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -368,7 +367,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static int[] requireEmpty(@Nullable int[] arr, String name) {
+    public static int[] requireEmpty(int[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -382,7 +381,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static long[] requireEmpty(@Nullable long[] arr, String name) {
+    public static long[] requireEmpty(long[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -396,7 +395,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static float[] requireEmpty(@Nullable float[] arr, String name) {
+    public static float[] requireEmpty(float[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -410,7 +409,7 @@ public final class ObjectUtils {
      * @return 如果检测成功，返回被检测的对象
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
-    public static double[] requireEmpty(@Nullable double[] arr, String name) {
+    public static double[] requireEmpty(double[] arr, String name) {
         requireNonNull(arr, name);
         requireZero(arr.length, name + ".length");
         return arr;
@@ -422,6 +421,7 @@ public final class ObjectUtils {
         requireNonNull(i, "i");
         requireNonNull(start, "start");
         requireNonNull(end, "end");
+        requireNonNull(name, "name");
         Assert.isTrue(start.compareTo(end) <= 0, "start must be less than or equal to end");
         Assert.isTrue(i.compareTo(start) >= 0 && i.compareTo(end) <= 0,
                 "%s: %s (expected: in [%s, %s])", name, i, start, end);
@@ -440,13 +440,14 @@ public final class ObjectUtils {
      * @param name the name of {@code i}
      * @return {@code i}
      */
-    public static <E extends Number> E requirePositive(@Nullable E i, String name) {
-        requireNonNull(i);
+    public static <E extends Number> E requirePositive(E i, String name) {
+        requireNonNull(i, "i");
+        requireNonNull(name, "name");
         Assert.isTrue(i.intValue() > 0, "%s: %s (expected: > 0)", name, i);
         return i;
     }
 
-    public static <E extends Number> E requirePositive(@Nullable E i) {
+    public static <E extends Number> E requirePositive(E i) {
         return requirePositive(i, "actual");
     }
 
@@ -458,13 +459,14 @@ public final class ObjectUtils {
      * @param name the name of {@code i}
      * @return {@code i}
      */
-    public static <E extends Number> E requireNonPositive(@Nullable E i, String name) {
-        requireNonNull(i);
+    public static <E extends Number> E requireNonPositive(E i, String name) {
+        requireNonNull(i, "i");
+        requireNonNull(name, "name");
         Assert.isTrue(i.intValue() <= 0, "%s: %s (expected: <= 0)", name, i);
         return i;
     }
 
-    public static <E extends Number> E requireNonPositive(@Nullable E i) {
+    public static <E extends Number> E requireNonPositive(E i) {
         return requireNonPositive(i, "actual");
     }
 
@@ -476,13 +478,14 @@ public final class ObjectUtils {
      * @param name the name of {@code i}
      * @return {@code i}
      */
-    public static <E extends Number> E requireNegative(@Nullable E i, String name) {
-        requireNonNull(i);
+    public static <E extends Number> E requireNegative(E i, String name) {
+        requireNonNull(i, "i");
+        requireNonNull(name, "name");
         Assert.isTrue(i.intValue() < 0, "%s: %s (expected: < 0)", name, i);
         return i;
     }
 
-    public static <E extends Number> E requireNegative(@Nullable E i) {
+    public static <E extends Number> E requireNegative(E i) {
         return requireNegative(i, "actual");
     }
 
@@ -494,23 +497,25 @@ public final class ObjectUtils {
      * @param name the name of {@code i}
      * @return {@code i}
      */
-    public static <E extends Number> E requireNonNegative(@Nullable E i, String name) {
-        requireNonNull(i);
+    public static <E extends Number> E requireNonNegative(E i, String name) {
+        requireNonNull(i, "i");
+        requireNonNull(name, "name");
         Assert.isTrue(i.intValue() >= 0, "%s: %s (expected: >= 0)", name, i);
         return i;
     }
 
-    public static <E extends Number> E requireNonNegative(@Nullable E i) {
+    public static <E extends Number> E requireNonNegative(E i) {
         return requireNonNegative(i, "actual");
     }
 
-    public static <E extends Number> E requireZero(@Nullable E i, String name) {
-        requireNonNull(i);
+    public static <E extends Number> E requireZero(E i, String name) {
+        requireNonNull(i, "i");
+        requireNonNull(name, "name");
         Assert.isTrue(i.intValue() == 0, "%s: %s (expected: = 0)", name, i);
         return i;
     }
 
-    public static <E extends Number> E requireZero(@Nullable E i) {
+    public static <E extends Number> E requireZero(E i) {
         return requireZero(i, "actual");
     }
 
@@ -526,109 +531,109 @@ public final class ObjectUtils {
 
     // isEmpty
 
-    public static <E extends Collection<?>> boolean isEmpty(@Nullable E collection) {
+    public static <E extends Collection<?>> boolean isEmpty(E collection) {
         return collection == null || collection.isEmpty();
     }
 
-    public static <E extends Iterable<?>> boolean isEmpty(@Nullable E iterable) {
+    public static <E extends Iterable<?>> boolean isEmpty(E iterable) {
         return iterable == null || !iterable.iterator().hasNext();
     }
 
-    public static <E extends Map<?, ?>> boolean isEmpty(@Nullable E map) {
+    public static <E extends Map<?, ?>> boolean isEmpty(E map) {
         return map == null || map.isEmpty();
     }
 
-    public static <E extends CharSequence> boolean isEmpty(@Nullable E chars) {
+    public static <E extends CharSequence> boolean isEmpty(E chars) {
         return chars == null || chars.length() == 0;
     }
 
-    public static <E> boolean isEmpty(@Nullable E[] arr) {
+    public static <E> boolean isEmpty(E[] arr) {
         return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable char[] arr) {
+    public static boolean isEmpty(char[] arr) {
         return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable byte[] arr) {
+    public static boolean isEmpty(byte[] arr) {
         return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable short[] arr) {
+    public static boolean isEmpty(short[] arr) {
         return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable int[] arr) {
+    public static boolean isEmpty(int[] arr) {
         return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable long[] arr) {
+    public static boolean isEmpty(long[] arr) {
         return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable float[] arr) {
+    public static boolean isEmpty(float[] arr) {
         return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable double[] arr) {
+    public static boolean isEmpty(double[] arr) {
         return arr == null || arr.length == 0;
     }
 
-    public static boolean isEmpty(@Nullable boolean[] arr) {
+    public static boolean isEmpty(boolean[] arr) {
         return arr == null || arr.length == 0;
     }
 
     // isNotEmpty
 
-    public static <E extends Collection<?>> boolean isNotEmpty(@Nullable E collection) {
+    public static <E extends Collection<?>> boolean isNotEmpty(E collection) {
         return !isEmpty(collection);
     }
 
-    public static <E extends Iterable<?>> boolean isNotEmpty(@Nullable E iterable) {
+    public static <E extends Iterable<?>> boolean isNotEmpty(E iterable) {
         return !isEmpty(iterable);
     }
 
-    public static <E extends Map<?, ?>> boolean isNotEmpty(@Nullable E map) {
+    public static <E extends Map<?, ?>> boolean isNotEmpty(E map) {
         return !isEmpty(map);
     }
 
-    public static <E extends CharSequence> boolean isNotEmpty(@Nullable E chars) {
+    public static <E extends CharSequence> boolean isNotEmpty(E chars) {
         return !isEmpty(chars);
     }
 
-    public static <E> boolean isNotEmpty(@Nullable E[] arr) {
+    public static <E> boolean isNotEmpty(E[] arr) {
         return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable char[] arr) {
+    public static boolean isNotEmpty(char[] arr) {
         return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable byte[] arr) {
+    public static boolean isNotEmpty(byte[] arr) {
         return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable short[] arr) {
+    public static boolean isNotEmpty(short[] arr) {
         return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable int[] arr) {
+    public static boolean isNotEmpty(int[] arr) {
         return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable long[] arr) {
+    public static boolean isNotEmpty(long[] arr) {
         return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable float[] arr) {
+    public static boolean isNotEmpty(float[] arr) {
         return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable double[] arr) {
+    public static boolean isNotEmpty(double[] arr) {
         return !isEmpty(arr);
     }
 
-    public static boolean isNotEmpty(@Nullable boolean[] arr) {
+    public static boolean isNotEmpty(boolean[] arr) {
         return !isEmpty(arr);
     }
 
@@ -667,18 +672,24 @@ public final class ObjectUtils {
      * @since 1.8
      */
     public static <E extends Number> boolean nonNegative(E i) {
+        requireNonNull(i, "i");
         return i.intValue() >= 0;
     }
 
     public static <E extends Number> boolean isZero(E i) {
+        requireNonNull(i, "i");
         return i.intValue() == 0;
     }
 
     public static <E extends Number> boolean nonZero(E i) {
+        requireNonNull(i, "i");
         return i.intValue() != 0;
     }
 
     public static <E extends Comparable<E>> boolean isBetween(E i, E start, E end) {
+        requireNonNull(i, "i");
+        requireNonNull(start, "start");
+        requireNonNull(end, "end");
         return i.compareTo(start) >= 0 && i.compareTo(end) <= 0;
     }
 
@@ -716,6 +727,7 @@ public final class ObjectUtils {
      * @return 字符串
      */
     public static <E> String toString(Map<String, E[]> map) {
+        requireNonNull(map, "map");
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         map.forEach(

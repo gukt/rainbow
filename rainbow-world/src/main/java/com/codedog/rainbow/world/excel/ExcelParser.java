@@ -14,7 +14,6 @@ import com.esotericsoftware.kryo.io.Output;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import com.google.common.primitives.Primitives;
@@ -40,11 +39,12 @@ import java.util.function.Function;
 public class ExcelParser {
 
     private static final ObjectMapper OBJECT_MAPPER;
-    private static final String PATH_SEPERATOR = "/";
+    private static final String PATH_SEPARATOR = "/";
 
     static {
         OBJECT_MAPPER = new ObjectMapper();
-        OBJECT_MAPPER.registerModule(new GuavaModule());
+        // TODO Fix it ASAP
+//        OBJECT_MAPPER.registerModule(new GuavaModule());
     }
 
     private final Map<Class<?>, Map<String, Integer>> propertyMappingByType = new HashMap<>();

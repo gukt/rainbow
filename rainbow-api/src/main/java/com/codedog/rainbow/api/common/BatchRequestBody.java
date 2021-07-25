@@ -6,6 +6,7 @@ package com.codedog.rainbow.api.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
  *
  * @author https://github.com/gukt
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class BatchRequestBody<T, ID> extends BodyData {
 
