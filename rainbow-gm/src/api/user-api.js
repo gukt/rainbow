@@ -31,14 +31,18 @@ export function save(user) {
 /**
  * 批处理，如批量 [删除、更新、新增]
  *
- * @param data
- * @returns {AxiosPromise}
+ * @param action delete | update | add
+ * @param data the data
+ * @returns an {AxiosPromise} object
  */
-export function batch(data) {
+export function batch(action, data) {
+  const body = {}
+  body[action] = data
+  console.log('user-api: batch', body)
   return request({
     url: 'users/batch',
     method: 'POST',
-    data
+    data: body
   })
 }
 

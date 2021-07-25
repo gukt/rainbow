@@ -13,12 +13,11 @@ import java.util.Set;
 
 /**
  * RequestBodyData class
- *
+ * TODO 如果继承自 BodyData, 则这里定义的 JsonProperty 没有起作用，看看怎么回事
  * @author https://github.com/gukt
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class BatchRequestBody<T, ID> extends BodyData {
+public class BatchRequestBody<T, ID> {
 
     @JsonProperty("delete")
     private Set<ID> deleteIds;

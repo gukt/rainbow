@@ -25,16 +25,24 @@
       </span>
     </el-dialog>
     <!-- 对话框 - 封号 -->
-    <el-dialog title="封号设置" width="80%" :visible.sync="dialogBlockingForm.visible">
-      <el-form label-position="left" label-width="80px" style="margin: 0 24px;">
-        <el-form-item label="封号时长">
-          <el-input></el-input>
+    <el-dialog title="封号设置" width="300px" :visible.sync="dialogBlocking.visible">
+      <el-form :model="dialogBlocking" :rules="dialogBlocking.rules" ref="dialogBlocking"
+               label-position="left" label-width="80px">
+        <el-form-item label="封号时长" prop="selectedDuration">
+          <el-select v-model="dialogBlocking.selectedDuration" placeholder="请选择">
+            <el-option
+                v-for="item in dialogBlocking.durations"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <!-- 对话框底部按钮 -->
       <span slot="footer" class="app-dialog-footer">
-        <el-button @click="dialogView.visible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogView.visible = false">确 定</el-button>
+        <el-button @click="dialogBlocking.visible = false">取 消</el-button>
+        <el-button type="primary" @click="onBlockingDialogConfirmed">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 对话框 - 用户详情 -->
@@ -274,6 +282,7 @@
         <template slot-scope="props">
           <el-tag v-if="props.row.blockedUntil" type="warning">已封</el-tag>
           <el-tag v-else type="success">正常</el-tag>
+          <div>{{ props.row.blockedUntil }}</div>
         </template>
       </el-table-column>
       <el-table-column prop="loginTime" label="最后登陆时间"
@@ -384,13 +393,41 @@ export default {
         visible: false,
         entity: {}
       },
-      dialogBlockingForm: {
+      /** 封号设置对话框，将对话框相关的都配置在一起方便管理 */
+      dialogBlocking: {
         visible: false,
-        batch: true
+        selectedDuration: null,
+        /** 封号时长，单位：小时 */
+        durations: [
+          { value: 24, label: '三天' },
+          { value: 168, label: '一周' },
+          { value: 720, label: '一个月' },
+          { value: 2160, label: '三个月' }
+        ],
+        rules: {
+          selectedDuration: [
+            { required: true, message: '请选择封号时长', trigger: 'blur' }
+          ]
+        }
       }
     }
   },
   methods: {
+    onBlockingDialogConfirmed() {
+      console.log('onBlockingDialogConfirmed', arguments)
+      this.$refs.dialogBlocking.validate(valid => {
+        if (valid) {
+          const data = []
+          const now = new Date().getTime()
+          this.selectedIds.forEach(id => {
+            data.push({ id, blockedUntil: now + 60 * 1000 * this.dialogBlocking.selectedDuration })
+          })
+          this._doBatching('update', data)
+          this.dialogBlocking.selectedDuration = null
+          this.dialogBlocking.visible = false
+        }
+      })
+    },
     onNameLinkClicked() {
       console.log('onNameClicked', arguments)
       this.$notify({
@@ -417,7 +454,7 @@ export default {
       console.log('onEditClicked', arguments)
     },
     /**
-     * 处理搜索框自动提示
+     * 处理'ID/用户名'搜索框自动提示
      *
      * @param q 输入的值，字符串
      * @param cb 建议数据准备好时通过 cb(data) 返回到 autocomplete 组件中
@@ -443,9 +480,6 @@ export default {
       console.log('onCreateButtonClicked')
       this.dialogForm.visible = true
     },
-    _confirm(message, callback) {
-      this.$confirm(message, { callback })
-    },
     /**
      * 处理'批量操作项变更'事件
      *
@@ -453,7 +487,6 @@ export default {
      */
     onBatchActionChanged(action) {
       console.log('onBatchActionChanged', action)
-      // this.selectedBatchAction = null
       // 是否选中了？
       if (this.selectedIds.isEmpty()) {
         this.$message({
@@ -478,11 +511,11 @@ export default {
           break
         case 'block':
           // Show dialog
-          this.dialogBlockingForm.visible = true
+          this.dialogBlocking.visible = true
           break
         case 'unblock':
           this.selectedIds.forEach(id => {
-            data.push({ id, blockUntil: null })
+            data.push({ id, blockedUntil: null })
           })
           this._doBatching(action, data)
           break
@@ -501,8 +534,8 @@ export default {
       }
     },
     _doBatching(action, data) {
-      console.log('正在请求批量删除', action, data)
-      userApi.batch({ action, data }).then(() => {
+      console.log('doBatching', action, data)
+      userApi.batch(action, data).then(() => {
         this.$notify({
           title: '操作成功',
           type: 'success'

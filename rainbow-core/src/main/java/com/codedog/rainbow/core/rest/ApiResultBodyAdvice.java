@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -71,11 +72,11 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body,
-                                  MethodParameter returnType,
-                                  MediaType selectedContentType,
-                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
-                                  ServerHttpRequest request,
-                                  ServerHttpResponse response) {
+                                  @Nonnull MethodParameter returnType,
+                                  @Nonnull MediaType selectedContentType,
+                                  @Nonnull Class<? extends HttpMessageConverter<?>> selectedConverterType,
+                                  @Nonnull ServerHttpRequest request,
+                                  @Nonnull ServerHttpResponse response) {
         if (body instanceof MappingJacksonValue
                 || body instanceof String
                 || body instanceof Resource) {
@@ -168,19 +169,6 @@ public class ApiResultBodyAdvice implements ResponseBodyAdvice<Object> {
     }
 
     // Private Methods
-
-//    @Deprecated
-//    private Object resolveSerializationView(Object body, String viewName) {
-//        if (!(body instanceof ApiResult)) {
-//            body = ApiResult.success(body);
-//        }
-//        Class<?> viewClass = viewTypesByName.get(viewName);
-//        if (viewClass != null) {
-//            body = new MappingJacksonValue(body);
-//            ((MappingJacksonValue) body).setSerializationView(viewClass);
-//        }
-//        return body;
-//    }
 
     private Object resolveSerializationView2(ApiResult result, String viewName) {
         Class<?> viewClass = viewTypesByName.get(viewName);

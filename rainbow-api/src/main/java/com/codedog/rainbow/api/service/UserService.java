@@ -8,6 +8,7 @@ import com.codedog.rainbow.api.criteria.Predicates;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.UserRepository;
+import com.codedog.rainbow.util.BeanUtils;
 import com.codedog.rainbow.util.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -87,13 +88,12 @@ public class UserService {
             saving.setType(0);
             saving.setCreatedAt(now);
         } else {
-//            saving = userRepository.getById(entity.getId());
-//            BeanUtils.copyProperties(entity, saving, true, "id");
-
+            // TODO 这里用 find* 再自己抛出 EntityNotFoundException， 为什么不用 getById
             // 如果碰到
             Optional<User> result = userRepository.findById(entity.getId());
             if (result.isPresent()) {
                 saving = result.get();
+                BeanUtils.copyProperties(entity, saving, true, "id");
             } else {
 //                log.warn("[Ignored updates] Unable to find an user with id {}", entity.getId());
                 throw new EntityNotFoundException("Unable to find an user with id " + entity.getId());
@@ -111,7 +111,7 @@ public class UserService {
                     if (isNotEmpty(criteria.getQ())) {
                         String kw = "%" + criteria.getQ() + "%";
                         predicates.add(cb.or(
-                                cb.like(root.get("id"), kw),
+                                cb.like(root.get("id").as(String.class), kw),
                                 cb.like(root.get("name"), kw))
                         );
                     }
@@ -147,17 +147,17 @@ public class UserService {
         return userRepository.getById(id);
     }
 
-    /**
-     * 根据 IDs 查询指定的多个用户，其实内部是通过 {@link #search(UserQueryCriteria, Pageable)} 方法查询的。
-     * TODO 好像可以省略,没必要提供这个快捷方法
-     *
-     * @param ids  用户 IDs
-     * @param page 分页参数
-     * @return 和 Ids 关联的用户
-     */
-    public Page<User> getByIds(Set<Long> ids, Pageable page) {
-        return search(UserQueryCriteria.of(ids), page);
-    }
+//    /**
+//     * 根据 IDs 查询指定的多个用户，其实内部是通过 {@link #search(UserQueryCriteria, Pageable)} 方法查询的。
+//     * TODO 好像可以省略,没必要提供这个快捷方法
+//     *
+//     * @param ids  用户 IDs
+//     * @param page 分页参数
+//     * @return 和 Ids 关联的用户
+//     */
+//    public Page<User> getByIds(Set<Long> ids, Pageable page) {
+//        return search(UserQueryCriteria.of(ids), page);
+//    }
 
     public int removeByIds(Set<Long> ids, boolean force) {
         ObjectUtils.requireNonEmpty(ids, "ids");
