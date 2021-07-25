@@ -357,7 +357,7 @@
 <script>
 import * as houseApi from '../../../api/role-api'
 import { commonMixin, listMixin, ownerSuggestionMixin } from '../../../mixins'
-import { aspects, defaultLoadingText, payments } from '../../../utils/consts'
+import { defaultLoadingText } from '../../../utils/consts'
 
 export default {
   mixins: [commonMixin, ownerSuggestionMixin, listMixin],
@@ -425,9 +425,7 @@ export default {
       dialogSearch: {
         visible: false,
         entity: {}
-      },
-      allPayments: payments,
-      allAspects: aspects
+      }
     }
   },
   methods: {

@@ -73,8 +73,8 @@ service.interceptors.response.use(
     const apiResult = res.data
     const config = res.config
     const reqId = _requestId()
-    console.debug(reqId, config.method.toLocaleUpperCase() + ':', resolveUrl(config.url, config.params))
-    console.debug(reqId, apiResult.data, apiResult)
+    console.debug('>', reqId, config.method.toLocaleUpperCase() + ':', resolveUrl(config.url, config.params))
+    console.debug('<', reqId, apiResult.data, apiResult)
     // 成功，返回接口响应值
     if (apiResult.code === 0) {
       return apiResult.data

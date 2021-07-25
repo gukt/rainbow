@@ -43,8 +43,8 @@ export function batch(data) {
 }
 
 export function resetPassword(id, newPwd) {
-  let data = {
-    update: [{id, password: newPwd}]
+  const data = {
+    update: [{ id, password: newPwd }]
   }
-  return this.batch(data);
+  return this.batch(data)
 }

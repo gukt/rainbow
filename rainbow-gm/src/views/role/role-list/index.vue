@@ -181,24 +181,24 @@
       <!-- 全选/取消全选列 -->
       <el-table-column type="selection" align="left" width="40"/>
       <el-table-column sortable="custom" fixed="left"
-                       align="center" width="60" prop="id" label="ID" />
+                       align="center" width="60" prop="id" label="ID"/>
       <!--      <el-table-column align="center" width="65" label="头像">-->
       <!--        <template slot-scope="props">-->
       <!--          <el-avatar :src="props.row.avatar"></el-avatar>-->
       <!--        </template>-->
       <!--      </el-table-column>-->
       <el-table-column align="left" width="280" prop="community" label="标题">
-      <template slot-scope="props">
-        <el-link type="primary" @click="handleViewDetail(props.row)">
-          {{ props.row.title }}
-        </el-link>
-        <div>
-          {{ props.row.stations }}
-          <el-tag v-for="(item, index) in props.row.stations" :key="index">
-            {{ item[0] - item[1] }}
-          </el-tag>
-        </div>
-      </template>
+        <template slot-scope="props">
+          <el-link type="primary" @click="handleViewDetail(props.row)">
+            {{ props.row.title }}
+          </el-link>
+          <div>
+            {{ props.row.stations }}
+            <el-tag v-for="(item, index) in props.row.stations" :key="index">
+              {{ item[0] - item[1] }}
+            </el-tag>
+          </div>
+        </template>
       </el-table-column>
       <el-table-column align="center" width="100" label="用户">
         <template slot-scope="props">
@@ -256,7 +256,7 @@
 <script>
 import * as roleApi from '../../../api/role-api'
 import { commonMixin, listMixin, ownerSuggestionMixin } from '../../../mixins'
-import { defaultLoadingText, roomTypes } from '../../../utils/consts'
+import { defaultLoadingText } from '../../../utils/consts'
 
 export default {
   mixins: [commonMixin, ownerSuggestionMixin, listMixin],
@@ -280,8 +280,7 @@ export default {
       dialogSearch: {
         visible: false,
         entity: {}
-      },
-      allRoomTypes: roomTypes
+      }
     }
   },
   methods: {
@@ -303,22 +302,6 @@ export default {
       })
     },
     /**
-     * 查看求租详情
-     */
-    handleViewDetail(row) {
-      this.dialogView.visible = true
-      this.dialogView.entity = row
-    },
-    /**
-     * 处理几个标记位的变更
-     * @param row 标记位所在行对应的实体对象
-     * @param field 标记位字段
-     */
-    handleStateChanged(row) {
-      const { state } = row.state
-      this._doBatchSave(row.id, { state })
-    },
-    /**
      * 批量处理
      * @param action 动作
      */
@@ -335,6 +318,7 @@ export default {
     },
     /**
      * 批量保存
+     *
      * @param ids Entity ids
      * @param partial 被修改的属性
      * @param action 动作
@@ -356,6 +340,7 @@ export default {
     },
     /**
      * 加载列表数据
+     *
      * @returns {Promise<void>}
      */
     fetchData() {

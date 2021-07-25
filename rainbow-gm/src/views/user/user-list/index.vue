@@ -1,8 +1,7 @@
 <template>
   <div class="app-page">
     <!-- 对话框 - 创建账号 -->
-    <el-dialog title="创建账号" width="80%"
-               :visible.sync="dialogForm.visible">
+    <el-dialog title="创建账号" width="80%" :visible.sync="dialogForm.visible">
       <el-form label-position="left" label-width="80px" style="margin: 0 24px;">
         <el-form-item label="用户名">
           <el-input></el-input>
@@ -25,9 +24,21 @@
         <el-button type="primary" @click="dialogView.visible = false">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 对话框 - 封号 -->
+    <el-dialog title="封号设置" width="80%" :visible.sync="dialogBlockingForm.visible">
+      <el-form label-position="left" label-width="80px" style="margin: 0 24px;">
+        <el-form-item label="封号时长">
+          <el-input></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 对话框底部按钮 -->
+      <span slot="footer" class="app-dialog-footer">
+        <el-button @click="dialogView.visible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogView.visible = false">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 对话框 - 用户详情 -->
-    <el-dialog title="用户详情" width="80%"
-               :visible.sync="dialogView.visible">
+    <el-dialog title="用户详情" width="80%" :visible.sync="dialogView.visible">
       <el-form label-position="left" label-width="80px" style="margin: 0 24px;">
         <el-carousel height="300">
           <el-carousel-item v-for="image in dialogView.entity.images" :key="image">
@@ -106,8 +117,7 @@
       </span>
     </el-dialog>
     <!-- 对话框 - 高级搜索 -->
-    <el-dialog title="高级搜索" width="70%"
-               :visible.sync="dialogSearch.visible">
+    <el-dialog title="高级搜索" width="70%" :visible.sync="dialogSearch.visible">
       <el-form label-position="left" label-width="100px" style="margin: 0 24px;">
         <el-form-item label="关键字">
           <el-select clearable multiple filterable
@@ -180,7 +190,7 @@
       <!-- 对话框底部按钮 -->
       <span slot="footer" class="app-dialog-footer">
         <el-button @click="dialogSearch.visible = false">取 消</el-button>
-        <el-button type="primary" :loading="processing" @click="handleSubmitAdvancedSearch">确 定</el-button>
+        <el-button type="primary" :loading="processing" @click="doAdvancedSearch">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 操作栏 -->
@@ -188,62 +198,36 @@
       <el-button type="primary"
                  icon="el-icon-download"
                  :loading="loadingStates['unshelve']"
-                 @click="handleCreate('unshelve')">创建账号...
+                 @click="onCreateButtonClicked('unshelve')">创建账号...
       </el-button>
-      <!--      <el-popconfirm title="确定要删除吗？"-->
-      <!--                     style="margin-right: 5px;"-->
-      <!--                     @confirm="handleBatchOps('delete')">-->
-      <!--        <el-button slot="reference" type="danger"-->
-      <!--                   :disabled="selectedIds.isEmpty()"-->
-      <!--                   :loading="loadingStates['delete']"-->
-      <!--                   icon="el-icon-delete">删除-->
-      <!--        </el-button>-->
-      <!--      </el-popconfirm>-->
-      <!--      <el-button type="danger"-->
-      <!--                 :disabled="selectedIds.isEmpty()"-->
-      <!--                 icon="el-icon-download"-->
-      <!--                 :loading="loadingStates['unshelve']"-->
-      <!--                 @click="handleBatchOps('unshelve')">封号-->
-      <!--      </el-button>-->
-      <!--      <el-button type="primary"-->
-      <!--                 :disabled="selectedIds.isEmpty()"-->
-      <!--                 icon="el-icon-download"-->
-      <!--                 :loading="loadingStates['unshelve']"-->
-      <!--                 @click="handleBatchOps('unshelve')">解封-->
-      <!--      </el-button>-->
-      <el-select v-model="markAction"
-                 :disabled="selectedIds.isEmpty()"
-                 v-loading.fullscreen.lock="fullscreenLoading"
-                 placeholder="批量操作..." @change="handleBatchMarking(markAction);">
-        <el-option-group
-            v-for="(group, index) in markOptions"
-            :key="index"
-            :label="group.label">
-          <el-option
-              v-for="item in group.options"
-              :key="item.label"
-              :label="item.label"
-              :value="item.value">
+      <!-- 批量操作行为下拉选择框 -->
+      <!-- NOTE：不使用 v-model 绑定变量，因为每次选中后需要自动移除掉被选项 -->
+      <el-select value="" v-loading.fullscreen.lock="fullscreenLoading"
+                 placeholder="批量操作..." @change="onBatchActionChanged">
+        <el-option-group v-for="(group, index) in batchActions" :key="index" :label="group.label">
+          <el-option v-for="item in group.options"
+                     :key="item.label"
+                     :label="item.label"
+                     :value="item.value">
           </el-option>
         </el-option-group>
       </el-select>
       <div style="flex-grow: 1"/>
       <el-button type="text" @click="fetchData">刷新</el-button>
-      <el-input clearable v-model="query.q"
-                style="width: 240px"
-                placeholder="请输入用户ID或用户名"
-                prefix-icon="el-icon-search"
-                @keydown.enter="fetchData"
-                @change="fetchData"
-                @clear="fetchData">搜索
-      </el-input>
+      <el-autocomplete clearable v-model="query.q" placeholder="请输入用户ID或用户名"
+                       style="width: 240px" prefix-icon="el-icon-search"
+                       value-key="value"
+                       :debounce="500"
+                       :fetch-suggestions="onFetchSuggestions"
+                       @change="fetchData"
+                       @clear="fetchData">
+      </el-autocomplete>
       <el-button type="primary" @click="dialogSearch.visible = true">高级搜索</el-button>
     </div>
     <!-- 表格 -->
     <el-table fit highlight-current-row stripe
               :border="true"
-              v-loading="loading"
-              :element-loading-text="loadingText"
+              v-loading="loading" :element-loading-text="loadingText"
               :default-sort="defaultSort"
               :data="listData"
               @selection-change="handleSelectionChanged"
@@ -256,7 +240,7 @@
                        align="center" width="100"
                        sortable="custom">
         <template slot-scope="props">
-          <el-link type="primary" style="font-size:12px;" @click="handleNickClicked(props.row)">
+          <el-link type="primary" style="font-size:12px;" @click="onNameLinkClicked(props.row)">
             {{ props.row.name }}
           </el-link>
         </template>
@@ -265,7 +249,7 @@
                        align="center" min-width="110"
                        sortable="custom">
         <template slot-scope="props">
-          <el-link type="primary" style="font-size:12px;" @click="handleNickClicked(props.row)">
+          <el-link type="primary" style="font-size:12px;" @click="onRoleLinkClicked(props.row)">
             1
           </el-link>
         </template>
@@ -314,13 +298,14 @@
       </el-table-column>
 
       <el-table-column prop="actions" label="操作"
-                       fixed="right" align="center" width="160">
+                       fixed="right" align="center" width="120">
         <template slot-scope="props">
-          <el-button type="text" @click="openWithdrawDialog(props.row)">重置密码</el-button>
-          <template>
-            <el-button v-if="props.row.blockedUntil" type="text" @click="openWithdrawDialog(props.row)">解封</el-button>
-            <el-button v-else type="text" @click="openWithdrawDialog(props.row)">封号</el-button>
-          </template>
+          <el-popconfirm title="确定要重置吗？"
+                         style="margin-right: 5px;"
+                         @confirm="onResetPasswordClicked(props.row)">
+            <el-button slot="reference" type="text">重置密码</el-button>
+          </el-popconfirm>
+          <el-button type="text" @click="onEditButtonClicked(props.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -342,7 +327,7 @@ import * as userApi from '../../../api/user-api'
 import { commonMixin, listMixin, ownerSuggestionMixin } from '../../../mixins'
 import { datePickerShortcuts, defaultLoadingText, userTypes } from '../../../utils/consts'
 
-const { today, yesterday, past2, past3, past7, past30, past60, past90 } = datePickerShortcuts
+const { today, yesterday, past2, past3, past7, past30 } = datePickerShortcuts
 
 export default {
   mixins: [commonMixin, ownerSuggestionMixin, listMixin],
@@ -363,26 +348,26 @@ export default {
       query: {
         types: [0, 1]
       },
-      markAction: '',
-      markOptions: [
+      // selectedBatchAction: '',
+      batchActions: [
         {
           label: '',
           options: [
-            { label: '删除...', value: 'delete' },
+            { label: '删除...', value: 'delete' }
           ]
         },
         {
           label: '',
           options: [
             { label: '封号...', value: 'block' },
-            { label: '解封...', value: 'un-block' }
+            { label: '解封...', value: 'unblock' }
           ]
         },
         {
           label: '',
           options: [
-            { label: '设为普通', value: 'block' },
-            { label: '设为高级', value: 'un-block' }
+            { label: '设为普通', value: 'type0' },
+            { label: '设为高级', value: 'type1' }
           ]
         }
       ],
@@ -398,33 +383,140 @@ export default {
       dialogSearch: {
         visible: false,
         entity: {}
+      },
+      dialogBlockingForm: {
+        visible: false,
+        batch: true
       }
     }
   },
   methods: {
-    /**
-     * 创建账号
-     */
-    handleCreate() {
-      console.log('handleCreate')
-      this.dialogForm.visible = true
+    onNameLinkClicked() {
+      console.log('onNameClicked', arguments)
+      this.$notify({
+        title: 'onNameClicked',
+        type: 'success'
+      })
+    },
+    onRoleLinkClicked() {
+      console.log('onRoleClicked', arguments)
+      this.$confirm('确定要删除吗', {
+        callback() {
+          console.log(arguments)
+        }
+      })
+    },
+    onResetPasswordClicked() {
+      console.log('onResetPasswordClicked', arguments)
+      this.$notify({
+        title: '重置成功',
+        type: 'success'
+      })
+    },
+    onEditButtonClicked() {
+      console.log('onEditClicked', arguments)
     },
     /**
-     * 批量标注
-     * @param action 批量标记动作
+     * 处理搜索框自动提示
+     *
+     * @param q 输入的值，字符串
+     * @param cb 建议数据准备好时通过 cb(data) 返回到 autocomplete 组件中
+     * @see https://element.eleme.cn/#/zh-CN/component/input
      */
-    handleBatchMarking(action) {
-      console.log('handleBatchMarking', action)
-      this.handleBatchOps(action).then(() => {
-        this.markAction = ''
+    onFetchSuggestions(q, cb) {
+      console.log('onFetchSuggestions', q, cb)
+      const arr = []
+      if (!q) {
+        return cb(arr)
+      }
+      userApi.search({ q, size: 15, page: 0 }).then(res => {
+        res.content && res.content.forEach(item => {
+          arr.push({ value: item.name })
+        })
+        cb(arr)
       })
     },
     /**
-     * 高级搜索 - 提交
+     * 处理'创建账号'按钮被点击
      */
-    handleSubmitAdvancedSearch() {
+    onCreateButtonClicked() {
+      console.log('onCreateButtonClicked')
+      this.dialogForm.visible = true
+    },
+    _confirm(message, callback) {
+      this.$confirm(message, { callback })
+    },
+    /**
+     * 处理'批量操作项变更'事件
+     *
+     * @param action 当前选择的项
+     */
+    onBatchActionChanged(action) {
+      console.log('onBatchActionChanged', action)
+      // this.selectedBatchAction = null
+      // 是否选中了？
+      if (this.selectedIds.isEmpty()) {
+        this.$message({
+          message: '请选择你要操作的记录',
+          type: 'error'
+        })
+        return
+      }
+      let data = []
+      const that = this
+      switch (action) {
+        case 'delete':
+          data = [...this.selectedIds]
+          this.$confirm('确定要删除吗?', {
+            callback(result) {
+              console.log(result)
+              if (result === 'confirm') {
+                that._doBatching(action, data)
+              }
+            }
+          })
+          break
+        case 'block':
+          // Show dialog
+          this.dialogBlockingForm.visible = true
+          break
+        case 'unblock':
+          this.selectedIds.forEach(id => {
+            data.push({ id, blockUntil: null })
+          })
+          this._doBatching(action, data)
+          break
+        case 'type0':
+          this.selectedIds.forEach(id => {
+            data.push({ id, type: 0 })
+          })
+          this._doBatching(action, data)
+          break
+        case 'type1':
+          this.selectedIds.forEach(id => {
+            data.push({ id, type: 1 })
+          })
+          this._doBatching(action, data)
+          break
+      }
+    },
+    _doBatching(action, data) {
+      console.log('正在请求批量删除', action, data)
+      userApi.batch({ action, data }).then(() => {
+        this.$notify({
+          title: '操作成功',
+          type: 'success'
+        })
+        this.loadingStates[action] = false
+        this.fetchData()
+      })
+    },
+    /**
+     * 提交 - 高级搜索
+     */
+    doAdvancedSearch() {
       this.processing = true
-      console.log('handleSubmitAdvancedSearch')
+      console.log('doAdvancedSearch')
       this.fetchData().then(() => {
         this.processing = false
         this.dialogSearch.visible = false
@@ -434,59 +526,6 @@ export default {
           type: 'error'
         })
         this.processing = false
-      })
-    },
-    /**
-     * 查看用户详情
-     */
-    handleViewDetail(row) {
-      this.dialogView.visible = true
-      this.dialogView.entity = row
-    },
-    /**
-     * 处理几个标记位的变更
-     *
-     * @param row 标记位所在行对应的实体对象
-     * @param field 标记位字段
-     */
-    handleFlagChanged(row, field) {
-      const partial = {}
-      partial[field] = row[field]
-      this._doBatch(row.id, partial)
-    },
-    /**
-     * 批量处理
-     */
-    handleBatchOps(action) {
-      const partials = {
-        'delete': { active: 0 },
-        'block': { state: 0 },
-        'unblock': { audited: 1 }
-      }
-      this.loadingStates[action] = true
-      this.loadingText = '处理中...'
-      const partial = partials[action]
-      return this._doBatch(action, this.selectedIds, partial)
-    },
-    /**
-     * 批量保存，返回 {Promise<void>} 对象。
-     *
-     * @param action batch action
-     * @param ids ids of updating entities
-     * @param partial modified fields
-     */
-    _doBatch(action, ids, partial) {
-      return
-      console.log('批量处理:', ids, partial)
-      this.loading = true
-      this.loadingStates[action] = true
-      return userApi.batch(ids, partial).then(() => {
-        this.$notify({
-          title: '操作成功',
-          type: 'success'
-        })
-        this.loadingStates[action] = false
-        this.fetchData()
       })
     },
     /**
