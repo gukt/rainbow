@@ -26,7 +26,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
 }
-
-test {
-    useJUnitPlatform()
-}
+//
+//test {
+//    useJUnitPlatform()
+//}
