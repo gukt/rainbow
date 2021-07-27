@@ -5,7 +5,8 @@
 package com.codedog.rainbow.tcp.session;
 
 import com.codedog.rainbow.core.AbstractAttributeSupport;
-import com.codedog.rainbow.tcp.PeerInfo;
+import com.codedog.rainbow.tcp.util.PeerInfo;
+import com.codedog.rainbow.world.config.TcpProperties.SessionProperties;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

@@ -6,6 +6,7 @@ package com.codedog.rainbow.core;
 
 import lombok.Getter;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +32,20 @@ public abstract class AbstractLifecycle implements Lifecycle {
      * 失败原因
      */
     @Getter protected LifecycleException failureCause;
+
+    @Override
+    public void start() {
+        requireStateNew();
+        startTime = System.currentTimeMillis();
+        setState(State.STARTING);
+    }
+
+    /**
+     * 获得总运行时长。
+     */
+    public Duration uptime() {
+        return Duration.ofMillis(System.currentTimeMillis() - startTime);
+    }
 
     @Override
     public Lifecycle addListener(Listener listener) {

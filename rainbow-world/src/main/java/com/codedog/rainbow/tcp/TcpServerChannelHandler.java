@@ -4,7 +4,6 @@
 
 package com.codedog.rainbow.tcp;
 
-import com.codedog.rainbow.tcp.PacketDispatcher.PacketResolver;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.config.TcpProperties;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -20,20 +19,20 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Sharable
-public class TcpServerHandler<T> extends AbstractTcpServerHandler<T> {
+public class TcpServerChannelHandler<T> extends AbstractTcpServerHandler<T> {
 
-    private final PacketResolver<T> resolver;
+    private final MessageResolver<T> resolver;
 
-    public TcpServerHandler(TcpProperties tcpProperties, PacketResolver<T> resolver) {
-        super(tcpProperties);
+    public TcpServerChannelHandler(TcpProperties properties, MessageResolver<T> resolver) {
+        super(properties);
         this.resolver = resolver;
     }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        log.debug("TCP: New client registering: {}", ctx.channel());
+        log.debug("TCP - New client registering: {}", ctx.channel());
         if (!active) {
-            rejectConnection(ctx, resolver.serverUnavailable());
+            rejectConnection(ctx, resolver.serverUnavailableError());
             return;
         }
         if (isOverload()) {
@@ -45,13 +44,13 @@ public class TcpServerHandler<T> extends AbstractTcpServerHandler<T> {
             return;
         }
         super.channelRegistered(ctx);
-        log.debug("TCP: New client registered: {}", ctx.channel());
+        log.debug("TCP - New client registered: {}", ctx.channel());
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, final T message) {
         final Session session = ctx.channel().attr(Session.KEY).get();
-        log.debug("TCP: Receiving: {} <- {}, w:{}", message, session, session.getStore().getPendingRequests().size());
+        log.debug("TCP - Receiving: {} <- {}, w:{}", message, session, session.getStore().getPendingRequests().size());
 
         // 只有通过所有interceptors的前置检查，才会执行后续消息处理
         if (applyPreHandle(session, message)) {
@@ -59,7 +58,7 @@ public class TcpServerHandler<T> extends AbstractTcpServerHandler<T> {
             T err = null;
             // 如果服务器处于“非运行”状态(此时应该是正在关闭)，此时对于接受到的任何新消息都立即返回错误
             if (!active) {
-                err = resolver.serverUnavailable();
+                err = resolver.serverUnavailableError();
             }
             // 如果当前系统过载，则立即返回"系统忙"错误
             else if (isOverload()) {
@@ -73,7 +72,7 @@ public class TcpServerHandler<T> extends AbstractTcpServerHandler<T> {
             if (err != null) {
 //                err.withRtd(request.getRtd()).writeTo(session);
                 Object rtd = resolver.getRtd(message);
-                session.write(resolver.withRtd(message, rtd));
+                session.write(resolver.withRtd(err, rtd));
             }
         }
         // apply each post handle in reverse order

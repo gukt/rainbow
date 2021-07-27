@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.tcp.session;
 
-import com.codedog.rainbow.tcp.PeerInfo;
+import com.codedog.rainbow.tcp.util.PeerInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -30,7 +30,7 @@ public final class DummySession extends AbstractSession {
     @Override
     public CompletableFuture<Void> write(Object message, boolean flush) {
         if (message != null) {
-            log.debug("TCP: Writing: {} -> {}", message, this);
+            log.debug("TCP - Writing: {} -> {}", message, this);
         }
         return new CompletableFuture<>();
     }

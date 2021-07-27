@@ -40,7 +40,7 @@ public class RoleController {
 
         Optional<Session> old = SessionManager.getSessionById(roleId);
         if (!old.isPresent()) {
-            JsonPacket.ofError(ErrorCodeEnum.ERR_RECONNECT_EXPIRED).writeTo(session);
+            JsonPacket.ofError(ErrorCode.ERR_SESSION_EXPIRED).writeTo(session);
             // TODO 需要在上面发送完的监听中关闭连接
             session.close();
         } else {

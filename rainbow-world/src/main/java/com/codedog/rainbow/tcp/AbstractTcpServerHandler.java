@@ -6,7 +6,6 @@ package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
-import com.codedog.rainbow.tcp.session.SessionProperties;
 import com.codedog.rainbow.util.Encrypts;
 import com.codedog.rainbow.world.config.TcpProperties;
 import com.codedog.rainbow.world.net.SessionManager;
@@ -35,32 +34,28 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHandler<T> {
 
-    protected final TcpProperties tcpProperties;
-    private final SessionProperties sessionProperties;
+    protected final TcpProperties properties;
     /**
      * 消息拦截器列表,供外部调用，动态添加interceptors用的
+     * TODO 初始化完成后，需要是不可变的？？？ 可以动态添加是不是更好？考虑一下
      */
-    @Getter
-    private final List<MessageInterceptor<?>> interceptorList = new ArrayList<>();
-    @Getter
-    @Setter
-    protected volatile boolean active;
+    @Getter private final List<MessageInterceptor<?>> interceptorList = new ArrayList<>();
+    @Setter protected volatile boolean active;
     /**
      * 消息拦截器列表，内部循环使用的
      */
     private MessageInterceptor<T>[] interceptors;
 
-    AbstractTcpServerHandler(TcpProperties tcpProperties) {
-        this.tcpProperties = tcpProperties;
-        this.sessionProperties = tcpProperties.getSession();
+    AbstractTcpServerHandler(TcpProperties properties) {
+        this.properties = properties;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        log.debug("TCP: New client connected: {}", channel);
+        log.debug("TCP - New client connected: {}", channel);
         // 实例化Session放到ctx的自定义属性中
-        channel.attr(Session.KEY).setIfAbsent(new DefaultSession(ctx, sessionProperties) {
+        channel.attr(Session.KEY).setIfAbsent(new DefaultSession(ctx, properties.getSession()) {
             @Override
             public boolean beforeWrite(@NonNull Object message) {
                 JsonPacket msg = (JsonPacket) message;
@@ -88,7 +83,7 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
     boolean isConnectionsExceeded() {
         // 获取当前所有的连接总数(包括暂时离线的）
         int connCount = SessionManager.getConnectionCount() + SessionManager.getOfflineRoleCount();
-        return connCount >= tcpProperties.getMaxConnections();
+        return connCount >= properties.getMaxConnections();
     }
 
     @Override
@@ -98,12 +93,12 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.warn("TCP: exceptionCaught: {}, {}", ctx.channel(), cause.getMessage());
+        log.warn("TCP - exceptionCaught: {}, {}", ctx.channel(), cause.getMessage());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        log.debug("TCP: Client disconnected：{}", ctx.channel());
+        log.debug("TCP - Client disconnected：{}", ctx.channel());
 
         Session session = ctx.channel().attr(Session.KEY).get();
         // TODO Fix it ASAP
@@ -118,7 +113,7 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE || e.state() == IdleState.ALL_IDLE) {
-                log.info("TCP: Connection timeout: {}", ctx.channel());
+                log.info("TCP - Connection timeout: {}", ctx.channel());
                 ctx.close();
             }
         }
@@ -177,8 +172,8 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
      * @param ctx 表示一条 {@link ChannelHandlerContext 客户端连接}
      * @param msg 待发送的消息
      */
-    void rejectConnection(ChannelHandlerContext ctx, T msg) {
-        log.debug("TCP: Client connection was rejected: msg={}, remoteAddress={}", msg, ctx.channel().remoteAddress());
+    void rejectConnection(ChannelHandlerContext ctx, Object msg) {
+        log.debug("TCP - Client connection was rejected: msg={}, remoteAddress={}", msg, ctx.channel().remoteAddress());
         ctx.writeAndFlush(msg).addListener(ChannelFutureListener.CLOSE);
     }
 }

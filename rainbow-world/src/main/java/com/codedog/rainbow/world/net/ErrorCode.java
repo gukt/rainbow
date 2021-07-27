@@ -11,12 +11,12 @@ import lombok.Getter;
  *
  * @author https://github.com/gukt
  */
-public enum ErrorCodeEnum {
+public enum ErrorCode {
 
     /**
-     * Bad Request
+     * 错误的请求
      */
-    BAD_REQUEST(0, "BAD_REQUEST"),
+    ERR_BAD_REQUEST(0, "错误的请求"),
     /**
      * 超出最大连接数
      */
@@ -32,28 +32,26 @@ public enum ErrorCodeEnum {
     /**
      * 没有找到相应的MessageHandler
      */
-    ERR_MESSAGE_HANDLER_NOT_FOUND(1, "没有找到相应的MessageHandler"),
+    ERR_HANDLER_NOT_FOUND(1, "没有找到相应的MessageHandler"),
     /**
      * 消息处理过程中发生的未知异常
      */
-    ERR_UNKNOWN_MESSAGE_HANDLE_EXCEPTION(1, "未知消息处理异常"),
+    ERR_UNKNOWN_HANDLING_EXCEPTION(1, "未知消息处理异常"),
     /**
      * 服务器当前忙
      */
-    ERR_SERVER_IS_BUSYING(1, "服务器当前忙"),
+    ERR_SERVER_BUSYING(1, "服务器当前忙"),
     /**
      * 服务器正在关闭中
      */
-    ERR_SERVER_IS_SHUTTING_DOWN(1, "服务器正在关闭中"),
+    ERR_SERVER_TERMINATING(1, "服务器正在关闭中"),
     /**
      * 服务器当前不可用
      */
     ERR_SERVER_UNAVAILABLE(1, "服务器当前不可用"),
-
     ERR_UNSUPPORTED_MESSAGE_HANDLE_RESULT(1, "ERR_UNSUPPORTED_MESSAGE_HANDLE_RESULT"),
-
-    ERR_RECONNECT_EXPIRED(1, "重连过期"),
-    ERR_UNEXCEPTED_PACKET_SEQ(1, "不正确的包序"),
+    ERR_SESSION_EXPIRED(1, "重连过期"),
+    ERR_ILLEGAL_SN(1, "不正确的包序"),
 
     // more
     ;
@@ -61,16 +59,14 @@ public enum ErrorCodeEnum {
     /**
      * 错误代码
      */
-    @Getter
-    private final int code;
+    @Getter private final int code;
 
     /**
      * 错误详细描述
      */
-    @Getter
-    private final String error;
+    @Getter private final String error;
 
-    ErrorCodeEnum(int code, String error) {
+    ErrorCode(int code, String error) {
         this.code = code;
         this.error = error;
     }

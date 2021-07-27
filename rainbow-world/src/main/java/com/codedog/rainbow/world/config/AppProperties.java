@@ -20,7 +20,6 @@ import java.util.Map;
 @Data
 public class AppProperties {
 
-//    private String name = "xxx";
     private String description = "xxx";
     private boolean debug = false;
     private boolean tcpServerEnabled = true;

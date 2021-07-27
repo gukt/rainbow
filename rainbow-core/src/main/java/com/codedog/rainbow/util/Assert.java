@@ -18,6 +18,11 @@ public final class Assert {
         throw new AssertionError("No Assert instances for you!");
     }
 
+    // state
+    public static void state(boolean expected) {
+
+    }
+
     // isTrue
 
     public static void isTrue(boolean expected) {

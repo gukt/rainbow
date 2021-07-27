@@ -5,6 +5,7 @@
 package com.codedog.rainbow.tcp.session;
 
 import com.codedog.rainbow.core.RingBuffer;
+import com.codedog.rainbow.world.config.TcpProperties.SessionProperties;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -19,20 +20,26 @@ public class SessionStore {
     /**
      * 待处理的请求
      */
-    @Getter
-    private final RingBuffer<Object> pendingRequests;
+    @Getter private final RingBuffer<Object> pendingRequests;
     /**
      * 缓存的响应，存入该buffer的内容为[seq, response],
      * response应该经过压缩以节约内存空间，由于response需要压缩，因此当需要按序号删除buffer中的节点元素时没法取得序号
      * 因此buffer中的元素保存为[包序, 压缩过的下发消息
      */
-    @Getter
-    private final RingBuffer<Object[]> cachedResponses;
+    @Getter private final RingBuffer<Object[]> cachedResponses;
+
+    private final SessionProperties properties;
+
+    SessionStore(SessionProperties properties) {
+        this.properties = properties;
+        this.pendingRequests = new RingBuffer<>(properties.getMaxPendingRequestSize());
+        this.cachedResponses = new RingBuffer<>(properties.getMaxCacheResponseSize());
+    }
+
     /**
      * 用以生成确认序号，注意：确认序号表示下一条可接收的包序(已接受包序+1）
      */
-    @Getter
-    private final AtomicInteger nextAck = new AtomicInteger(1);
+    @Getter private final AtomicInteger nextAck = new AtomicInteger(1);
     /**
      * 下一条消息序号
      */
@@ -40,21 +47,11 @@ public class SessionStore {
     /**
      * "连续接收到的无效包个数"计数器，一旦消息被接受该字段会被清零
      */
-    @Getter
-    private int badPacketCount = 0;
+    @Getter private int badPacketCount = 0;
     /**
      * 总计"连续接收到的无效包个数"
      */
-    @Getter
-    private int badPacketAmount = 0;
-
-    private SessionProperties properties;
-
-    SessionStore(SessionProperties properties) {
-        this.properties = properties;
-        this.pendingRequests = new RingBuffer<>(properties.getMaxPendingRequestSize());
-        this.cachedResponses = new RingBuffer<>(properties.getMaxCacheResponseSize());
-    }
+    @Getter private int badPacketAmount = 0;
 
     public int incrementSeq() {
         // 一旦某个包被接受了，就重置"连续接收无效包计数器"为0

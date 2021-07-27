@@ -13,6 +13,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * WaitGroupWrapper
+ *
  * @author https://github.com/gukt
  */
 public class WaitGroupWrapper {
@@ -29,13 +31,11 @@ public class WaitGroupWrapper {
 
     public void run(Runnable task, String threadName) {
         phaser.register();
-
-        // create a single thread to run specified task
+        // 创建一个单线程运行指定的任务
         ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1,
                 0, TimeUnit.SECONDS, new SynchronousQueue<>(),
                 r -> new Thread(r, threadName));
-
-        // execute task
+        // 执行任务
         executor.execute(() -> {
             task.run();
             phaser.arriveAndDeregister();

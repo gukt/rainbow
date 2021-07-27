@@ -26,10 +26,10 @@ spring:
     web-application-type: none
 logging:
   level:
-    io:
-      codedog: debug
     root: info
     web: debug
+    com:
+      codedog: debug
 
 # Application Configurations
 #
@@ -47,8 +47,8 @@ app:
   # TCP Server properties
   tcp:
     enabled: false
-    protocol: json
     port: 5000
+    message-protocol: json
     keep-alive-timeout: 30
     max-connections: 30000
     seq-check-enabled: false
@@ -56,26 +56,17 @@ app:
     boss-thread-name: tcp-boss
     bootstrap-thread-name: tcp-bootstrap
     worker-thread-pattern: tcp-%d
-    session:
-      maxPendingRequestSize: 10
-      maxCacheResponseSize: 10
-  # RPC Server properties
-  rpc:
-    enabled: false
-    port: 15000
-    bootstrap-thread-name: rpc-bootstrap
-  # 以下待整理
-  #biz executor
-  biz-executor:
-    core-pool-size: 5
-    max-pool-size: 50
-    keep-alive-timeout-seconds: 60000
-    queue-capacity: 100
-    thread-pattern: biz-%d
-    wait-termination-timeout-millis: 5000
-    session-max-pending-request-size: 10
-    session-max-cache-response-size: 100
     slow-processing-threshold: 1000
     pumper-exec-thread-pattern: message-pumper
     pumper-wait-millis-on-idle: 300
     pumper-wait-millis-on-rejected: 300
+    wait-termination-timeout-millis: 5000
+    session:
+      max-pending-request-size: 10
+      max-cache-response-size: 10
+    executor:
+      core-pool-size: 5
+      max-pool-size: 50
+      keep-alive-timeout-seconds: 60000
+      queue-capacity: 100
+      thread-pattern: biz-%d

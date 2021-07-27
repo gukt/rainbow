@@ -4,11 +4,9 @@
 
 package com.codedog.rainbow.world.config;
 
-import com.codedog.rainbow.tcp.session.SessionProperties;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,35 +18,54 @@ import org.springframework.stereotype.Component;
 public class TcpProperties {
 
     private boolean enabled = false;
-    private String protocol = "json"; // TODO 改为枚举
+    /**
+     * 消息的协议类型
+     */
+    private String messageProtocol = "json";
+    /**
+     * 对外 Socket 服务的端口号
+     */
     private Integer port = 5000;
+    /**
+     * 心跳超时时间，单位：秒
+     */
     private Integer keepAliveTimeout = 30; // Seconds
     private boolean seqCheckEnabled = false;
-    private Integer maxConnections = 100;
+    /**
+     * 服务器允许的最大连接数
+     */
+    private Integer maxConnections = 1000;
     private Integer badPacketThreshold = 100;
     private String bossThreadName = "tcp-boss";
     private String bootstrapThreadName = "tcp-bootstrap";
     private String workerThreadPattern = "tcp-%d";
-    private Integer waitTerminationTimeoutMillis = 5000;
-    private Integer sessionMaxPendingRequestSize = 10;
-    private Integer sessionMaxCacheResponseSize = 100;
+    private Integer waitTerminationTimeoutMillis = 5_000;
     private Integer slowProcessingThreshold = 1000;
     private String pumperExecThreadPattern = "message-pumper";
     private Integer pumperWaitMillisOnIdle = 300;
     private Integer pumperWaitMillisOnRejected = 300;
 
-    private BizExecutor bizExecutor;
-    public SessionProperties session;
+    private SessionProperties session;
+    private ExecutorProperties executor;
 
-    @Getter
-    @Setter
-    public static class BizExecutor {
+    @Configuration
+    @ConfigurationProperties(prefix = "app.tcp.session")
+    @Data
+    public static class SessionProperties {
 
-        private int corePoolSize = 0;
-        private int maxPoolSize = 1;
-        private int keepAliveTimeoutSeconds = 60;
-        private int queueCapacity = 1;
-        private String threadPattern = "biz-%d";
-        private int waitTerminationTimeoutMillis = 5_000;
+        int maxPendingRequestSize;
+        int maxCacheResponseSize;
+    }
+
+    @Configuration
+    @ConfigurationProperties(prefix = "app.tcp.executor")
+    @Data
+    public static class ExecutorProperties {
+
+        int corePoolSize = 0;
+        int maxPoolSize = 1;
+        int keepAliveTimeoutSeconds = 60;
+        int queueCapacity = 1;
+        String threadPattern = "biz-%d";
     }
 }

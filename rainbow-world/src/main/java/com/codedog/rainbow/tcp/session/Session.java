@@ -5,7 +5,7 @@
 package com.codedog.rainbow.tcp.session;
 
 import com.codedog.rainbow.core.AttributeSupport;
-import com.codedog.rainbow.tcp.PeerInfo;
+import com.codedog.rainbow.tcp.util.PeerInfo;
 import io.netty.util.AttributeKey;
 
 import java.io.Serializable;

@@ -5,9 +5,9 @@
 package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.lang.NotImplementedException;
+import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.config.TcpProperties;
 import com.codedog.rainbow.world.net.SessionManager;
-import com.codedog.rainbow.tcp.session.Session;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher {
 
-    protected Class<T> packetType;
+    protected Class<T> supportedMessageType;
 
     private final TcpProperties tcpProperties;
     /**
@@ -46,8 +46,8 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
      */
     private final Map<Serializable, MessageHandler<?>> handlersMap = new HashMap<>(16);
 
-    public AbstractMessageDispatcher(TcpProperties tcpProperties) {
-        this.tcpProperties = tcpProperties;
+    public AbstractMessageDispatcher(TcpProperties properties) {
+        this.tcpProperties = properties;
         this.pumper = new MessagePumper();
 
         // TODO 将bizExec通过外部传入？
@@ -62,40 +62,40 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
         // 此时，客户端由于一只没有等待到请求的响应，可以继续等待或做超时处理，
         // 如果等待期间，服务器的业务处理线程池迅速处理了请求，则满足预期，只是客户端看到的表现是响应比较慢，但合理（因为服务器忙）
         // 如果等待超时，客户端可尝试自动重试机制，继续发送刚刚处理超时的请求（注意：
-        TcpProperties.BizExecutor bizExecutorOpts = tcpProperties.getBizExecutor();
+        TcpProperties.ExecutorProperties bizExecProperties = properties.getExecutor();
         this.executor = new ThreadPoolExecutor(
-                bizExecutorOpts.getCorePoolSize(),
-                bizExecutorOpts.getMaxPoolSize(),
-                bizExecutorOpts.getKeepAliveTimeoutSeconds(), TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(bizExecutorOpts.getQueueCapacity()),
+                bizExecProperties.getCorePoolSize(),
+                bizExecProperties.getMaxPoolSize(),
+                bizExecProperties.getKeepAliveTimeoutSeconds(), TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(bizExecProperties.getQueueCapacity()),
                 // new SynchronousQueue<>(),
-                new ThreadFactoryBuilder().setNameFormat(bizExecutorOpts.getThreadPattern()).build(),
+                new ThreadFactoryBuilder().setNameFormat(bizExecProperties.getThreadPattern()).build(),
                 (r, executor) -> pumper.onRequestRejected(r)
         );
     }
 
     @Override
     public void start() {
-        log.info("TCP: Starting message dispatcher");
+        log.info("TCP - Starting message dispatcher");
         pumper.start();
-        log.info("TCP: Started the message dispatcher.");
+        log.info("TCP - Started the message dispatcher.");
     }
 
     @Override
     public void stop() {
         // 关闭消息泵, 不再往业务线程池派发请求
         // 每条连接积压的请求不再处理
-        log.info("TCP: Stopping message dispatcher");
+        log.info("TCP - Stopping message dispatcher");
         pumper.stop();
-        log.info("TCP: Stopped the message dispatcher");
+        log.info("TCP - Stopped the message dispatcher");
 
         // 关闭业务处理线程池
-        log.info("TCP: Shutting down the executor of dispatcher");
+        log.info("TCP - Shutting down the executor of dispatcher");
         executor.shutdown();
         try {
             // 等待线程池现有任务全部执行完成
-            if (!executor.awaitTermination(tcpProperties.getBizExecutor().getWaitTerminationTimeoutMillis(), TimeUnit.MILLISECONDS)) {
-                log.info("TCP: 等待业务处理线程池关闭超时，将强制关闭！");
+            if (!executor.awaitTermination(tcpProperties.getWaitTerminationTimeoutMillis(), TimeUnit.MILLISECONDS)) {
+                log.info("TCP - 等待业务处理线程池关闭超时，将强制关闭！");
                 // 如果等待超时，强制关闭
                 executor.shutdownNow();
             }
@@ -103,7 +103,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
             // 如果当前关闭线程收到中断请求，也强制关闭业务处理线程池
             executor.shutdownNow();
         }
-        log.info("TCP: 业务处理线程池已关闭.");
+        log.info("TCP - 业务处理线程池已关闭.");
     }
 
     @Override
@@ -133,7 +133,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
         }
         long duration = System.currentTimeMillis() - startTime;
         if (duration > tcpProperties.getSlowProcessingThreshold()) {
-            log.warn("TCP: slow process: {} millis, {}", duration, message);
+            log.warn("TCP - slow process: {} millis, {}", duration, message);
         }
     }
 
@@ -206,7 +206,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                 // 更新processing状态，以便下一轮循环可以被调度
                 RequestTask task = (RequestTask) r;
                 task.session.setProcessingRequest(null);
-                log.info("TCP: Task rejected by biz executor: {}, session:{}", task.request, task.session);
+                log.info("TCP - Task rejected by biz executor: {}, session:{}", task.request, task.session);
             } catch (Exception e) {
                 // TODO refines the log
                 log.error("exception:", e);
@@ -233,7 +233,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
          * TODO 移除日志前缀TCP:
          */
         private void start() {
-            log.info("TCP: Starting message pumper.");
+            log.info("TCP - Starting message pumper.");
             pumpExec.execute(() -> {
                 try {
                     while (!Thread.interrupted()) {
@@ -241,10 +241,10 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                             try {
                                 long timeout = pauseUntil - System.currentTimeMillis();
                                 if (timeout > spinForTimeoutThreshold) {
-                                    log.info("TCP: Message pumper was suspended for {} millis", timeout);
+                                    log.info("TCP - Message pumper was suspended for {} millis", timeout);
                                     Thread.sleep(timeout);
                                 }
-                                log.info("TCP: Message pumper awake.");
+                                log.info("TCP - Message pumper awake.");
                             } catch (InterruptedException e) {
                                 break;
                             }
@@ -269,27 +269,27 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                         }
                     }
                 } catch (Exception e) {
-                    log.error("TCP: Message pumping loop error: ", e);
+                    log.error("TCP - Message pumping loop error: ", e);
                 } finally {
-                    log.error("TCP: Message pumping loop terminated.");
+                    log.error("TCP - Message pumping loop terminated.");
                 }
             });
-            log.info("TCP: Started message pumper.");
+            log.info("TCP - Started message pumper.");
         }
 
         private void stop() {
-            log.info("TCP: Stopping message pumper.");
+            log.info("TCP - Stopping message pumper.");
             pumpExec.shutdownNow();
             try {
-                log.info("TCP: Waiting pumping loop terminated.");
+                log.info("TCP - Waiting pumping loop terminated.");
                 // TODO magic number
                 if (!pumpExec.awaitTermination(60, TimeUnit.SECONDS)) {
-                    log.error("TCP: Waiting for pumping loop terminated timeout");
+                    log.error("TCP - Waiting for pumping loop terminated timeout");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("TCP: Message pumper terminated.");
+            log.info("TCP - Message pumper terminated.");
         }
     }
 }

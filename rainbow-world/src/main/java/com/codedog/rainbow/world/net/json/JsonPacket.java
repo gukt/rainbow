@@ -5,7 +5,7 @@
 package com.codedog.rainbow.world.net.json;
 
 import com.codedog.rainbow.util.ObjectUtils;
-import com.codedog.rainbow.world.net.ErrorCodeEnum;
+import com.codedog.rainbow.world.net.ErrorCode;
 import com.codedog.rainbow.world.net.Payload;
 import com.codedog.rainbow.tcp.session.Session;
 import lombok.*;
@@ -82,11 +82,11 @@ public class JsonPacket {
                 .build();
     }
 
-    public static JsonPacket ofError(@NonNull ErrorCodeEnum errCode) {
+    public static JsonPacket ofError(@NonNull ErrorCode errCode) {
         return ofError(errCode, null);
     }
 
-    public static JsonPacket ofError(@NonNull ErrorCodeEnum errCode, String text) {
+    public static JsonPacket ofError(@NonNull ErrorCode errCode, String text) {
         return ofError(errCode.getCode(), ObjectUtils.nullToDefault(text, errCode.getError()));
     }
 

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @author https://github.com/gukt
  */
 @Component
-public class GameContext {
+public class GameWorldContext {
 
     @Getter
     @Setter
@@ -50,7 +50,7 @@ public class GameContext {
     // }
     //
     // /**
-    //  * 使用Demand Holder模式实现线程安全的单例
+    //  * 使用 Demand Holder 模式实现线程安全的单例
     //  * 这比"double-checked locking"模式更高效，且更容易理解
     //  * 这种单例实现模式是有由"内部类的静态成员直到第一次使用时才初始化"的特性保证的
     //  */

@@ -29,10 +29,10 @@ public class ProtobufEncoder extends MessageToMessageEncoder<MessageLiteOrBuilde
                 ByteBuf buf = Unpooled.wrappedBuffer(packet.toByteArray());
                 out.add(buf);
             } else {
-                log.warn("TCP: a null packet wrapped, is this correct?");
+                log.warn("TCP - a null packet wrapped, is this correct?");
             }
         } catch (Exception e) {
-            log.error("TCP: exception: ", e);
+            log.error("TCP - exception: ", e);
         }
     }
 }

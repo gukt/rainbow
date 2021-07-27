@@ -5,7 +5,7 @@
 package com.codedog.rainbow.world.net.json.interceptor;
 
 import com.codedog.rainbow.world.config.TcpProperties;
-import com.codedog.rainbow.world.net.ErrorCodeEnum;
+import com.codedog.rainbow.world.net.ErrorCode;
 import com.codedog.rainbow.tcp.MessageInterceptor;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.session.SessionStore;
@@ -72,7 +72,7 @@ public final class TcpSecurityInterceptor implements MessageInterceptor<JsonPack
             if (store.getBadPacketCount() > tcpProperties.getBadPacketThreshold()) {
                 log.warn("TCP: 检测到该连接持续发送无效包，即将关闭对方的连接: {}", session);
                 // 下发错误代码，然后关闭连接
-                JsonPacket.ofError(ErrorCodeEnum.ERR_EXCEED_CONTINUOUS_BAD_REQUEST_THRESHOLD)
+                JsonPacket.ofError(ErrorCode.ERR_EXCEED_CONTINUOUS_BAD_REQUEST_THRESHOLD)
                         .writeTo(session)
                         .whenComplete((v, e) -> {
                             log.warn("TCP: 已经关闭持续发送无效包的连接: {}", session);
@@ -82,7 +82,7 @@ public final class TcpSecurityInterceptor implements MessageInterceptor<JsonPack
                 blockedRemoteAddresses.add(session.getPeerInfo().getRemoteAddress().getHostString());
             }
             // 下发错误代码
-            JsonPacket.ofError(ErrorCodeEnum.ERR_UNEXCEPTED_PACKET_SEQ).writeTo(session);
+            JsonPacket.ofError(ErrorCode.ERR_ILLEGAL_SN).writeTo(session);
             return false;
         } else {
             // 如果收到一个已经处理过的包，则判断是否需要把缓存中的消息下发给客户端

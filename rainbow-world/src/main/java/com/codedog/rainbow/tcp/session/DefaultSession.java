@@ -4,7 +4,8 @@
 
 package com.codedog.rainbow.tcp.session;
 
-import com.codedog.rainbow.tcp.PeerInfo;
+import com.codedog.rainbow.tcp.util.PeerInfo;
+import com.codedog.rainbow.world.config.TcpProperties.SessionProperties;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +35,9 @@ public class DefaultSession extends AbstractSession {
     @Override
     public CompletableFuture<Void> write(Object message, boolean flush) {
         if (beforeWrite(message)) {
-            log.debug("TCP: Writing: {} -> {}", message, this);
+            log.debug("TCP - Writing: {} -> {}", message, this);
             if (isClosed()) {
-                log.warn("TCP: You are writing a message to the closed session: message={}, session={}", message, this);
+                log.warn("TCP - You are writing a message to the closed session: message={}, session={}", message, this);
             }
             if (flush) {
                 delegate.writeAndFlush(message);

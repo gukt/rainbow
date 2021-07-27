@@ -9,6 +9,9 @@ import com.codedog.rainbow.tcp.session.Session;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 消息处理器
@@ -36,5 +39,31 @@ public interface MessageHandler<T> {
     @Nullable
     default Object handle(Session session, T request) {
         throw new NotImplementedException();
+    }
+
+    class Error {
+        private final List<Object> errors = new ArrayList<>();
+
+        private Error() {}
+
+        public static Error of() {
+            return new Error();
+        }
+
+        public static Error of(Object... errors) {
+            Error instance = new Error();
+            if (errors != null && errors.length > 0) {
+                instance.errors.addAll(Arrays.asList(errors));
+            }
+            return instance;
+        }
+
+        public void addError(Object error) {
+            this.errors.add(error);
+        }
+
+        public boolean isEmpty() {
+            return errors.isEmpty();
+        }
     }
 }

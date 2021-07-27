@@ -36,7 +36,7 @@ public class IdGenerator {
 
     private IdGenerator() {
         long timeToLive = this.testUntil();
-        log.info("timestampShift={}, workerIdBits={}, sequenceBits={}, workerId={}, deadline={}",
+        log.info("ID Generator configuration: timestampShift={}, workerIdBits={}, sequenceBits={}, workerId={}, deadline={}",
                 timestampShift, workerIdBits, sequenceBits, workerId,
                 new SimpleDateFormat("yyyy-MM-dd").format(timeToLive));
     }
@@ -101,6 +101,12 @@ public class IdGenerator {
         }
     }
 
+    /**
+     * 使用 Demand Holder 模式实现线程安全的单例。
+     * 这比 "double-checked locking" 模式更高效且更容易理解。
+     * 这种单例实现模式是有由"内部类的静态成员直到第一次使用时才初始化"的特性保证的。
+     * @see <a href="https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom">Initialization-on-demand holder idiom</a>
+     */
     private static class IdGeneratorHolder {
 
         private static final IdGenerator INSTANCE = new IdGenerator();

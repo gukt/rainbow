@@ -4,22 +4,16 @@
 
 package com.codedog.rainbow.world.config;
 
+import com.codedog.rainbow.tcp.*;
 import com.codedog.rainbow.util.ObjectUtils;
-import com.codedog.rainbow.tcp.PacketDispatcher;
-import com.codedog.rainbow.tcp.PacketDispatcher.JsonPacketResolver;
-import com.codedog.rainbow.tcp.PacketDispatcher.PacketResolver;
-import com.codedog.rainbow.tcp.PacketDispatcher.ProtobufPacketResolver;
 import com.codedog.rainbow.world.net.json.JsonPacket;
-import com.codedog.rainbow.tcp.TcpServerHandler;
 import com.codedog.rainbow.world.net.json.interceptor.KeepAliveInterceptor;
 import com.codedog.rainbow.world.net.json.interceptor.TcpSecurityInterceptor;
-import com.codedog.rainbow.tcp.*;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +31,6 @@ import java.util.List;
  */
 @Configuration
 @ConditionalOnClass(TcpServer.class)
-@EnableConfigurationProperties(TcpProperties.class)
 @Slf4j
 public class TcpServerAutoConfiguration {
 
@@ -48,40 +41,51 @@ public class TcpServerAutoConfiguration {
     }
 
     @Bean
+    public ProtoPacketMessageResolver protoPacketMessageResolver() {
+        return new ProtoPacketMessageResolver();
+    }
+
+    @Bean
+    public JsonPacketMessageResolver jsonPacketMessageResolver() {
+        return new JsonPacketMessageResolver();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(TcpServer.class)
     @ConditionalOnSingleCandidate(TcpProperties.class)
     public TcpServer tcpServer(TcpProperties properties) {
         // 获取消息协议类型
-        String messageProtocol = properties.getProtocol();
+        String messageProtocol = properties.getMessageProtocol();
         if (ObjectUtils.isEmpty(messageProtocol)) {
             // 如果没有指定，默认使用 json 格式。
             log.warn("TCP: No protocol found, back to 'json'.");
             messageProtocol = "json";
         }
-        PacketResolver<?> resolver;
+        // 创建 tcpServerHandler
+        TcpServerChannelHandler<?> tcpServerChannelHandler;
+        MessageDispatcher dispatcher;
         switch (messageProtocol.toLowerCase()) {
             case "protobuf":
-                resolver = new ProtobufPacketResolver();
+                tcpServerChannelHandler = new ProtoPacketTcpServerChannelHandler(properties, protoPacketMessageResolver());
+                dispatcher = new DefaultMessageDispatcher<>(properties, protoPacketMessageResolver());
                 break;
             case "json":
-                resolver = new JsonPacketResolver();
+                tcpServerChannelHandler = new JsonPacketTcpServerChannelHandler(properties, jsonPacketMessageResolver());
+                dispatcher = new DefaultMessageDispatcher<>(properties, jsonPacketMessageResolver());
                 break;
             default:
                 throw new TcpServerException("TCP: 不支持的消息协议类型: actual: " + messageProtocol + " (expected: protobuf|json)");
         }
-        // 创建消息分发器
-        MessageDispatcher dispatcher = new PacketDispatcher<>(properties, resolver);
-        // 查找所有的 handlers，并将它们注册到 dispatcher
+        // 注册 Handlers
         messageHandlers().forEach(dispatcher::registerHandler);
-        // 创建 tcpServerHandler
-        TcpServerHandler<?> tcpServerHandler = new TcpServerHandler<>(properties, resolver);
-        // 查找所有的 interceptors，并将它们注册到 tcpServerHandler
-        messageInterceptors(properties).forEach(item -> tcpServerHandler.getInterceptorList().add(item));
-        return new TcpServer(properties, tcpServerHandler, dispatcher);
+        // 注册 Interceptors
+        messageInterceptors(properties).forEach(item -> tcpServerChannelHandler.getInterceptorList().add(item));
+        // 构造一个 TcpServer 实例返回
+        return new TcpServer(properties, tcpServerChannelHandler, dispatcher);
     }
 
     private List<MessageHandler<?>> messageHandlers() {
-        log.debug("TCP: 正在查找所有可用的消息处理器");
+        log.debug("TCP - Scanning message handlers...");
         List<MessageHandler<?>> handlers = new ArrayList<>();
         context.getBeansWithAnnotation(Controller.class).values().forEach(bean -> {
             Class<?> beanType = bean.getClass();
@@ -104,6 +108,7 @@ public class TcpServerAutoConfiguration {
                         });
             }
         });
+        log.info("TCP - Finished message handler scanning: found {} handlers", handlers.size());
         return handlers;
     }
 

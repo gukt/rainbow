@@ -4,6 +4,8 @@
 
 package com.codedog.rainbow.core;
 
+import java.time.Duration;
+
 /**
  * 生命周期接口
  *
@@ -30,6 +32,8 @@ public interface Lifecycle {
      * 获取服务的启动时间，单位：毫秒。
      */
     long getStartTime();
+
+    Duration uptime();
 
     /**
      * 当前是否处于 {@link State#RUNNING RUNNING} 状态。
