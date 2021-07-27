@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.util;
 
-import com.codedog.rainbow.world.net.Session;
+import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.net.SessionManager;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;

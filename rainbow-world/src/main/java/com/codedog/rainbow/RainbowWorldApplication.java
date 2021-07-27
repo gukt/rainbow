@@ -7,7 +7,7 @@ package com.codedog.rainbow;
 import com.codedog.rainbow.world.GameWorld;
 import com.codedog.rainbow.world.net.EnableRpcServer;
 import com.codedog.rainbow.world.net.EnableTcpServer;
-import com.codedog.rainbow.world.net.TcpServer;
+import com.codedog.rainbow.tcp.TcpServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

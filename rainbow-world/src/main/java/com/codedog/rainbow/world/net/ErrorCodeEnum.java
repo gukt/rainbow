@@ -7,11 +7,12 @@ package com.codedog.rainbow.world.net;
 import lombok.Getter;
 
 /**
- * 错误代码枚举
+ * 错误代码枚举类
  *
  * @author https://github.com/gukt
  */
 public enum ErrorCodeEnum {
+
     /**
      * Bad Request
      */
@@ -57,13 +58,20 @@ public enum ErrorCodeEnum {
     // more
     ;
 
+    /**
+     * 错误代码
+     */
     @Getter
-    private final int value;
-    @Getter
-    private final String text;
+    private final int code;
 
-    ErrorCodeEnum(int value, String text) {
-        this.value = value;
-        this.text = text;
+    /**
+     * 错误详细描述
+     */
+    @Getter
+    private final String error;
+
+    ErrorCodeEnum(int code, String error) {
+        this.code = code;
+        this.error = error;
     }
 }

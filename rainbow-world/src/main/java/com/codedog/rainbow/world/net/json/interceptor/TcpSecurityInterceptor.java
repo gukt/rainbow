@@ -4,11 +4,11 @@
 
 package com.codedog.rainbow.world.net.json.interceptor;
 
-import com.codedog.rainbow.world.TcpProperties;
+import com.codedog.rainbow.world.config.TcpProperties;
 import com.codedog.rainbow.world.net.ErrorCodeEnum;
-import com.codedog.rainbow.world.net.MessageInterceptor;
-import com.codedog.rainbow.world.net.Session;
-import com.codedog.rainbow.world.net.SessionStore;
+import com.codedog.rainbow.tcp.MessageInterceptor;
+import com.codedog.rainbow.tcp.session.Session;
+import com.codedog.rainbow.tcp.session.SessionStore;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -56,7 +56,7 @@ public final class TcpSecurityInterceptor implements MessageInterceptor<JsonPack
     private boolean checkPacketSeq(Session session, JsonPacket request) {
         final SessionStore store = session.getStore();
         final int ack = store.getNextAck().get();
-        final int seq = request.getSeq();
+        final int seq = request.getSn();
         // 收到的包序和期望的包序一致，放行并递增 ACK
         if (seq == ack) {
             store.getNextAck().incrementAndGet();
@@ -65,7 +65,7 @@ public final class TcpSecurityInterceptor implements MessageInterceptor<JsonPack
         // 如果收到的包序大于期望的包序，则返回错误
         // 任何一个下发包都带有服务器期望的下一个包序号，对端可以通过下发包中的ack纠正发包错误
         if (seq > ack) {
-            log.warn("TCP: Received a bad packet: want={}, got={}, session={}", ack, request.getSeq(), session);
+            log.warn("TCP: Received a bad packet: want={}, got={}, session={}", ack, request.getSn(), session);
             // 累加 “收到的无效包” 计数
             store.incrBadPacketCount();
             // 检查连续发送无效包是否超出阈值。超出视为攻击服务器主动掐断连接并将该连接加入黑名单

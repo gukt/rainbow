@@ -5,6 +5,7 @@
 package com.codedog.rainbow.world.net;
 
 import com.codedog.rainbow.util.Sessions;
+import com.codedog.rainbow.tcp.session.Session;
 
 import java.io.Serializable;
 import java.util.ArrayList;

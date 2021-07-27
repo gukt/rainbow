@@ -6,9 +6,11 @@ package com.codedog.rainbow.world;
 
 import com.codedog.rainbow.core.concurrent.Once;
 import com.codedog.rainbow.core.concurrent.WaitGroupWrapper;
-import com.codedog.rainbow.support.AbstractLifecycle;
-import com.codedog.rainbow.world.net.RpcServer;
-import com.codedog.rainbow.world.net.TcpServer;
+import com.codedog.rainbow.core.AbstractLifecycle;
+import com.codedog.rainbow.tcp.RpcServer;
+import com.codedog.rainbow.tcp.TcpServer;
+import com.codedog.rainbow.world.config.AppProperties;
+import com.codedog.rainbow.world.config.TcpProperties;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,7 +29,6 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class GameWorld extends AbstractLifecycle {
 
-    private final  EventPublisher eventPublisher;
     /**
      * 退出标记，启动过程可能会启动多个服务，比如 TcpServer、HttpServer 等
      * 只有当所有服务都启动完成没有出错，才表示启动成功
@@ -47,9 +48,8 @@ public class GameWorld extends AbstractLifecycle {
     private RpcServer rpcServer;
 
 
-    public GameWorld(AppProperties appProperties, EventPublisher eventPublisher, TcpProperties tcpProperties) {
+    public GameWorld(AppProperties appProperties,  TcpProperties tcpProperties) {
         this.appProperties = appProperties;
-        this.eventPublisher = eventPublisher;
         this.tcpProperties = tcpProperties;
     }
 
@@ -121,19 +121,19 @@ public class GameWorld extends AbstractLifecycle {
 
     @Override
     public void stop() {
-        log.info("Stopping GameApp...");
+        log.info("Stopping the game world...");
         setState(State.STOPPING);
 
-        // Stop the event publisher
-        // TODO 这里会有个问题，异步事件线程中不能再派发异步线程。否则异步事件处理线程池理论上存在将可能永远关不掉的情况
-        if (eventPublisher != null) {
-            eventPublisher.stop();
-        }
+//        // Stop the event publisher
+//        // TODO 这里会有个问题，异步事件线程中不能再派发异步线程。否则异步事件处理线程池理论上存在将可能永远关不掉的情况
+//        if (eventPublisher != null) {
+//            eventPublisher.stop();
+//        }
         // Waiting for all starting/started services to stop
         waitGroup.await();
         // Set as terminated
         setState(State.TERMINATED);
-        log.info("GameWorld Stopped!");
+        log.info("Stopped the game world!");
     }
 
     private void addShutdownHook() {

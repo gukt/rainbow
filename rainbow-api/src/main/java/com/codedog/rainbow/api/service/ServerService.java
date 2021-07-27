@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.api.service;
 
-import com.codedog.rainbow.NotImplementedException;
+import com.codedog.rainbow.lang.NotImplementedException;
 import com.codedog.rainbow.api.criteria.ServerQueryCriteria;
 import com.codedog.rainbow.domain.Server;
 import com.codedog.rainbow.repository.ServerRepository;

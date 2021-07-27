@@ -56,6 +56,9 @@ app:
     boss-thread-name: tcp-boss
     bootstrap-thread-name: tcp-bootstrap
     worker-thread-pattern: tcp-%d
+    session:
+      maxPendingRequestSize: 10
+      maxCacheResponseSize: 10
   # RPC Server properties
   rpc:
     enabled: false

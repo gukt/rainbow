@@ -5,7 +5,7 @@
 package com.codedog.rainbow.util;
 
 
-import com.codedog.rainbow.NotImplementedException;
+import com.codedog.rainbow.lang.NotImplementedException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

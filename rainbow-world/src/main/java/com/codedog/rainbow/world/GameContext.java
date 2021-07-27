@@ -4,6 +4,8 @@
 
 package com.codedog.rainbow.world;
 
+import com.codedog.rainbow.util.TemplateManager;
+import com.codedog.rainbow.world.config.AppProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;

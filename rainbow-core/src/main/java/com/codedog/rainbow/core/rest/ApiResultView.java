@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.core.rest;
 
-import com.codedog.rainbow.core.Tag;
+import com.codedog.rainbow.lang.Tag;
 
 /**
  * ApiBasicView class

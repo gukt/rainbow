@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.net;
 
-import com.codedog.rainbow.world.TcpServerAutoConfiguration;
+import com.codedog.rainbow.world.config.TcpServerAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

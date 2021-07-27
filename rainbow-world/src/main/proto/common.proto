@@ -20,7 +20,7 @@ message ProtoPacket {
   // 消息具体内容
   bytes payload = 3;
   // 透传的扩展信息，服务器会原封不动传回该字段信息，及时是返回Error
-  string ext = 4;
+  bytes rtd = 4;
   // 创建包实例的时间戳，单位：毫秒
   uint64 time = 5;
   // 校验和

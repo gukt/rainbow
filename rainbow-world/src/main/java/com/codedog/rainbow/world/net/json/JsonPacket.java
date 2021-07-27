@@ -7,7 +7,7 @@ package com.codedog.rainbow.world.net.json;
 import com.codedog.rainbow.util.ObjectUtils;
 import com.codedog.rainbow.world.net.ErrorCodeEnum;
 import com.codedog.rainbow.world.net.Payload;
-import com.codedog.rainbow.world.net.Session;
+import com.codedog.rainbow.tcp.session.Session;
 import lombok.*;
 
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +28,7 @@ public class JsonPacket {
     /**
      * 包序号，递增，默认从0开始，客户端和服务器各自维护
      */
-    private int seq;
+    private int sn;
     /**
      * 确认序号，表示确认端期望接收到的下一个序号，因此该字段值为成功接收到的消息序号+1
      */
@@ -48,9 +48,9 @@ public class JsonPacket {
      */
     private Object payload;
     /**
-     * 透传信息，一般供客户端发送请求时使用，在请求响应消息模式下，客户端请求携带的透传信息会在响应消息中原封不动的返回
+     * 透传信息（Round Trip Data），一般供客户端发送请求时使用，在请求响应消息模式下，客户端请求携带的透传信息会在响应消息中原封不动的返回。
      */
-    private String ext;
+    private Object rtd;
     /**
      * 发送消息的时间，毫秒
      */
@@ -76,9 +76,9 @@ public class JsonPacket {
     public static JsonPacket of(String type, Object payload, int sn, String ext) {
         return JsonPacket.builder()
                 .type(type)
-                .seq(sn)
+                .sn(sn)
                 .payload(payload)
-                .ext(ext)
+                .rtd(ext)
                 .build();
     }
 
@@ -87,7 +87,7 @@ public class JsonPacket {
     }
 
     public static JsonPacket ofError(@NonNull ErrorCodeEnum errCode, String text) {
-        return ofError(errCode.getValue(), ObjectUtils.nullToDefault(text, errCode.getText()));
+        return ofError(errCode.getCode(), ObjectUtils.nullToDefault(text, errCode.getError()));
     }
 
     public static JsonPacket ofError(int code, String msg) {
@@ -97,8 +97,8 @@ public class JsonPacket {
         );
     }
 
-    public JsonPacket withExt(String ext) {
-        this.ext = ext;
+    public JsonPacket withRtd(Object ext) {
+        this.rtd = ext;
         return this;
     }
 
@@ -110,12 +110,8 @@ public class JsonPacket {
         return session.write(this, flush);
     }
 
-    @SuppressWarnings("unchecked")
-    public <V> V getPayload() {
-        return (V) payload;
-    }
-
-    public String toCompatString() {
-        return String.format("JsonPacket#%d-%s-%s", seq, type, payload);
+    @Deprecated
+    public String toCompactString() {
+        return String.format("JsonPacket#%d-%s-%s", sn, type, payload);
     }
 }

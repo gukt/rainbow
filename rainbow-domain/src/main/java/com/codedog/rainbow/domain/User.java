@@ -9,6 +9,8 @@ import com.codedog.rainbow.core.rest.ApiResultView.IdOnly;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,9 +35,11 @@ public class User {
     /** 主键，由程序提供，需保证全局唯一 */
     @Id
     @JsonView(IdOnly.class)
+    // TODO 全局控制，并根据接口对外服务的对象不同，自动决定要不要自动转换为字符串类型
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
-    /** 用户名，仅用于内部账号登陆 */
+    /** 用户名，仅用于内部账号系统 */
     @Column(nullable = false, length = 50)
     @JsonView(UserLoginView.class)
     private String name;

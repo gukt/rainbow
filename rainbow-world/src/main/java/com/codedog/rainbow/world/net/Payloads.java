@@ -4,10 +4,7 @@
 
 package com.codedog.rainbow.world.net;
 
-import com.codedog.rainbow.world.PayloadDataAccessException;
 import com.codedog.rainbow.world.net.json.JsonPacket;
-
-import java.util.Map;
 
 /**
  * @author https://github.com/gukt
@@ -23,12 +20,14 @@ public class Payloads {
     }
 
     private static Object getValue(JsonPacket packet, String key) {
-        Map<String, Object> payload = packet.getPayload();
-        Object value = payload.get(key);
-        if (value == null) {
-            throw new PayloadDataAccessException("key not found: " + key);
-        }
-        return value;
+        // TODO Fix it ASAP
+//        Map<String, Object> payload = packet.getPayload();
+//        Object value = payload.get(key);
+//        if (value == null) {
+//            throw new PayloadDataAccessException("key not found: " + key);
+//        }
+//        return value;
+        return null;
     }
 
     public static String textValue(JsonPacket packet, String key) {

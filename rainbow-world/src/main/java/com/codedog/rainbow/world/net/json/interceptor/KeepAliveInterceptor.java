@@ -4,8 +4,8 @@
 
 package com.codedog.rainbow.world.net.json.interceptor;
 
-import com.codedog.rainbow.world.net.MessageInterceptor;
-import com.codedog.rainbow.world.net.Session;
+import com.codedog.rainbow.tcp.MessageInterceptor;
+import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import com.codedog.rainbow.world.net.json.MsgTypeEnum;
 

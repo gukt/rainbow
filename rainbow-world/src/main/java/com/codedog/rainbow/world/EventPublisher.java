@@ -45,7 +45,7 @@ public class EventPublisher {
         subscribers.forEach(this::registerSubscribe);
     }
 
-    void registerSubscribe(@NonNull Object subscriber) {
+    public void registerSubscribe(@NonNull Object subscriber) {
         eventBus.register(subscriber);
         asyncEventBus.register(subscriber);
     }

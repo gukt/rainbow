@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.core.rest;
 
-import com.codedog.rainbow.core.Tag;
+import com.codedog.rainbow.lang.Tag;
 import com.codedog.rainbow.util.HttpUtils;
 import com.codedog.rainbow.util.JsonUtils;
 import com.codedog.rainbow.util.ObjectUtils;

@@ -10,4 +10,8 @@ class RainbowWorldApplicationTests {
     void contextLoads() {
     }
 
+    @Test
+    public void test1() {
+
+    }
 }
