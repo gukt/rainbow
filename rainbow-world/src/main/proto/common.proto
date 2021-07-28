@@ -14,17 +14,21 @@ option optimize_for = SPEED;
 
 message ProtoPacket {
   // 序号，每个包序号递增且唯一
-  uint64 sn = 1;
+  uint32 sn = 1;
+  uint32  ack = 2;
+  uint32  sync = 3;
   // 消息类型
-  MsgTypeEnum type = 2;
+  MsgTypeEnum type = 4;
   // 消息具体内容
-  bytes payload = 3;
+  bytes payload = 5;
   // 透传的扩展信息，服务器会原封不动传回该字段信息，及时是返回Error
-  bytes rtd = 4;
+  bytes rtd = 6;
   // 创建包实例的时间戳，单位：毫秒
-  uint64 time = 5;
+  uint64 time = 7;
   // 校验和
-  bytes checksum = 6;
+  bytes checksum = 8;
+
+
 }
 
 /** 消息类型 */
@@ -35,6 +39,9 @@ enum MsgTypeEnum {
   Pong = 10003;
   Notification = 10004;
   Error = 10005;
+
+  GameEnterRequest = 20001;
+  GameEnterResponse = 20002;
 }
 
 //message KeepAlive {

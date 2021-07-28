@@ -5,13 +5,13 @@
 package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.tcp.session.Session;
-import com.codedog.rainbow.world.net.json.JsonPacket;
+import com.codedog.rainbow.tcp.util.MessageUtils;
+import com.codedog.rainbow.util.Assert;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.Optional;
 
 import static com.google.common.base.Objects.equal;
 import static java.util.Objects.requireNonNull;
@@ -29,9 +29,12 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
     private MessageResolver<T> messageResolver;
 
     protected MessageHandlerAdapter(Object delegate, MethodAccess methodAccess, String methodName) {
-        this.delegate = requireNonNull(delegate, "delegate: null (expected: not null)");
-        this.methodAccess = requireNonNull(methodAccess, "methodAccess: null (expected: not null)");
-        this.methodName = requireNonNull(methodName, "delegate: null (expected: not null)");
+        Assert.notNull(delegate, "delegate");
+        Assert.notNull(methodAccess, "methodAccess");
+        Assert.notNull(methodName, "methodName");
+        this.delegate = delegate;
+        this.methodAccess = methodAccess;
+        this.methodName = methodName;
         this.methodIndex = methodAccess.getIndex(methodName);
     }
 
@@ -53,6 +56,7 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
         requireNonNull(message, "message: null (expected: not null)");
         Object[] args = resolveArgs(session, message);
         Object result = methodAccess.invoke(delegate, methodIndex, args);
+        // 如果有错误直接返回错误，反之返回 result 值
         Optional<MessageHandler.Error> error = getError(args);
         if (error.isPresent()) {
             return error.get();
@@ -64,29 +68,16 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
     private Object[] resolveArgs(Session session, T packet) {
         Class<?>[] parameterTypes = methodAccess.getParameterTypes()[methodIndex];
         Object[] args = new Object[parameterTypes.length];
-        IntStream.range(0, parameterTypes.length)
-                .forEach(i -> {
-                    Class<?> paramType = parameterTypes[i];
-                    if (Session.class.isAssignableFrom(paramType)) {
-                        args[i] = session;
-                    } else if (messageResolver.getMessageClass().equals(JsonPacket.class)) {
-                        if (Set.class.isAssignableFrom(paramType)) {
-                            args[i] = new HashSet<Object>((Collection<?>) messageResolver.getPayload(packet));
-                        } else if (List.class.isAssignableFrom(paramType)) {
-                            args[i] = new ArrayList<>((Collection<?>) messageResolver.getPayload(packet));
-                        }
-                    }
-//                    else if (paramType.equals(SessionState.class)) {
-//                        args[i] = session.getState();
-//                    }
-                    else if (paramType.equals(JsonPacket.class)) {
-                        args[i] = packet;
-                    } else if (paramType.equals(MessageHandler.Error.class)) {
-                        args[i] = MessageHandler.Error.of();
-                    } else {
-                        args[i] = messageResolver.getPayload(packet);
-                    }
-                });
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> paramType = parameterTypes[i];
+            if (Session.class.isAssignableFrom(paramType)) {
+                args[i] = session;
+            } else if (paramType.equals(Error.class)) {
+                args[i] = Error.of();
+            } else {
+                args[i] = MessageUtils.resolveArgs(packet, paramType);
+            }
+        }
         return args;
     }
 

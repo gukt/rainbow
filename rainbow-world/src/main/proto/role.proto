@@ -59,3 +59,15 @@ message RoleInfo {
   int64 create_time = 5;
   int64 ban_time = 6;
 }
+
+message GameEnterRequest {
+  uint64 uid = 1;
+}
+
+message GameEnterResponse {
+  uint64 uid = 1;
+  uint64 role_id = 2;
+  string nick = 3;
+  string avatar = 4;
+  uint32 gold = 5;
+}

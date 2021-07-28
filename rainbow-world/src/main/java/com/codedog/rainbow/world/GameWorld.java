@@ -46,7 +46,7 @@ public class GameWorld extends AbstractLifecycle {
     public void start() {
         super.start();
 
-        log.info("Starting GameWorld...");
+        log.info("🚀 Starting GameWorld.");
         log.debug("GameWorld configuration: {}", properties);
 
         // 初始化 GameContext 对象，并设置相关配置属性
@@ -113,7 +113,7 @@ public class GameWorld extends AbstractLifecycle {
     }
 
     private void addShutdownHook() {
-        log.info("Adding a shutdown hook...");
+        log.info("Adding a shutdown hook.");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 log.info("将要关闭应用程序，因为 JVM 正在被关闭");

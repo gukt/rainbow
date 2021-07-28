@@ -270,6 +270,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                     }
                 } catch (Exception e) {
                     log.error("TCP - Message pumping loop error: ", e);
+                    // TODO 停止服务还是退出系统？
                 } finally {
                     log.error("TCP - Message pumping loop terminated.");
                 }

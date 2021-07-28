@@ -8,9 +8,7 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
-
-import static java.util.Objects.requireNonNull;
+import java.util.function.Supplier;
 
 /**
  * MoreObjects class
@@ -35,8 +33,20 @@ public final class ObjectUtils {
      * @return 如果给定的对象不为 null 则返回自身；反之返回指定的默认值
      */
     public static <E> E nullToDefault(E obj, @Nonnull E defaultValue) {
-        Objects.requireNonNull(defaultValue, "defaultValue: null (expected: non-null)");
+        requireNonNull(defaultValue, "defaultValue");
         return obj == null ? defaultValue : obj;
+    }
+
+    // requireNonNull
+
+    public static <E> E requireNonNull(E obj, String name) {
+        Assert.notNull(obj, name);
+        return obj;
+    }
+
+    public static <E> E requireNonNull(E obj, Supplier<String> messageSupplier) {
+        Assert.notNull(obj, messageSupplier);
+        return obj;
     }
 
     // requireNonEmpty
@@ -81,7 +91,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static <E extends Iterable<?>> E requireNonEmpty(E iterable, String name) {
-        requireNonNull(iterable, name);
+        Assert.notNull(iterable, name);
         Assert.isTrue(iterable.iterator().hasNext(),
                 "%s.iterator().hasNext(): false (expected: true)", name);
         return iterable;

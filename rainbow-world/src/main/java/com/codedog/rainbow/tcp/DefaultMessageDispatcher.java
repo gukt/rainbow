@@ -35,6 +35,8 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
     /**
      * 将指定session的请求提交到"业务处理线程池"中运行，
      * 如果业务线程池当前忙导致提交任务被拒绝，应降级处理
+     * TODO 调整参数位置
+     * TODO 调整英文注释空格
      *
      * @throws RejectedExecutionException 如果业务线程池当前已经处理不过来
      * @throws NullPointerException       如果msg或session为null
@@ -55,8 +57,9 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
                     .writeTo(session);
             return;
         }
-        log.debug("TCP - Dispatching: {}", resolver.toCompactString(request));
-        // 执行任务
+//        log.debug("TCP - Dispatching a message to handle: {}", resolver.toCompactString(request));
+        log.debug("TCP - Dispatching a message to handle: {}", request);
+        // 执行任务Message pumping loop error
         executor.execute(new RequestTask<T>(session, request) {
             @Override
             public void run() {

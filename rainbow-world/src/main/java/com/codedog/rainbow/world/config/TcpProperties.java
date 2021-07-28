@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.world.config;
 
+import com.codedog.rainbow.tcp.MessageProtocol;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +22,7 @@ public class TcpProperties {
     /**
      * 消息的协议类型
      */
-    private String messageProtocol = "json";
+    private MessageProtocol messageProtocol = MessageProtocol.JSON;
     /**
      * 对外 Socket 服务的端口号
      */

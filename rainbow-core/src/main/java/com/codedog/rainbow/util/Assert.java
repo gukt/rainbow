@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.util;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -23,6 +24,18 @@ public final class Assert {
 
     }
 
+    public static void notNull(Object obj, String name) {
+        if (obj == null) {
+            throw new IllegalArgumentException(name + ": null (expected: non-null)");
+        }
+    }
+
+    public static void notNull(Object obj, Supplier<String> supplier) {
+        if (obj == null) {
+            throw new IllegalArgumentException(nullSafeGet(supplier));
+        }
+    }
+
     // isTrue
 
     public static void isTrue(boolean expected) {
@@ -34,12 +47,6 @@ public final class Assert {
     public static void isTrue(boolean expected, String message) {
         if (!expected) {
             throw new IllegalArgumentException(message);
-        }
-    }
-
-    public static void isTrue(boolean expected, RuntimeException cause) {
-        if (!expected) {
-            throw cause;
         }
     }
 
@@ -55,8 +62,12 @@ public final class Assert {
         }
     }
 
-    private static <V> V nullSafeGet(Supplier<V> messageSupplier) {
-        return (messageSupplier != null ? messageSupplier.get() : null);
+    private static <V> V nullSafeGet(Supplier<V> supplier) {
+        return supplier != null ? supplier.get() : null;
+    }
+
+    private static <V> V nullSafeGet(Map<?, V> map, Object key) {
+        return map != null ? map.get(key) : null;
     }
 
     // Internal helper methods

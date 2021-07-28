@@ -2,11 +2,13 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.json;
 
+import com.codedog.rainbow.tcp.MessageResolver;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 
 import java.io.Serializable;
+import java.util.*;
 
 /**
  * JsonPacketMessageResolver class
@@ -41,7 +43,39 @@ public class JsonPacketMessageResolver implements MessageResolver<JsonPacket> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public <V> Optional<V> resolveArgs(JsonPacket msg, Class<?> paramType) {
+        V value = null;
+        if (Set.class.isAssignableFrom(paramType)) {
+            value = (V) new HashSet<>((Collection<V>) getPayload(msg));
+        } else if (List.class.isAssignableFrom(paramType)) {
+            value = (V) new ArrayList<>((Collection<V>) getPayload(msg));
+        }
+        return Optional.ofNullable(value);
+    }
+
+    @Override
     public Class<JsonPacket> getMessageClass() {
         return JsonPacket.class;
+    }
+
+    @Override
+    public void setSn(JsonPacket msg, int sn) {
+        msg.setSn(sn);
+    }
+
+    @Override
+    public void setAck(JsonPacket msg, int ack) {
+        msg.setAck(ack);
+    }
+
+    @Override
+    public void setTime(JsonPacket msg, long timestamp) {
+        msg.setTime(timestamp);
+    }
+
+    @Override
+    public void setSync(JsonPacket msg, int sync) {
+        msg.setSync(sync);
     }
 }

@@ -2,8 +2,10 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.protobuf;
 
+import com.codedog.rainbow.tcp.MessageResolver;
+import com.codedog.rainbow.tcp.TcpServerChannelHandler;
 import com.codedog.rainbow.world.config.TcpProperties;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 

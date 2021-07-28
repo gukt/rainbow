@@ -13,8 +13,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Repeatable(value = HandlerMappings.class)
-public @interface HandlerMapping {
+public @interface HandlerMappings {
 
-    String value();
+    HandlerMapping[] value() default {};
 }

@@ -44,6 +44,7 @@ public interface MessageHandler<T> {
     class Error {
         private final List<Object> errors = new ArrayList<>();
 
+        /** Prevents to construct an instance. */
         private Error() {}
 
         public static Error of() {
@@ -58,7 +59,7 @@ public interface MessageHandler<T> {
             return instance;
         }
 
-        public void addError(Object error) {
+        public void add(Object error) {
             this.errors.add(error);
         }
 

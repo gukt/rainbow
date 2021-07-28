@@ -9,7 +9,7 @@ package com.codedog.rainbow.tcp;
  *
  * @author https://github.com/gukt
  */
-public enum MessageProtocolType {
+public enum MessageProtocol {
 
     JSON, PROTOBUF
 }

@@ -48,8 +48,9 @@ app:
   tcp:
     enabled: false
     port: 5000
-    message-protocol: json
-    keep-alive-timeout: 30
+    message-protocol: protobuf
+    # TODO 改为 Duration
+    keep-alive-timeout: 300
     max-connections: 30000
     seq-check-enabled: false
     bad-packet-threshold: 100
@@ -60,6 +61,7 @@ app:
     pumper-exec-thread-pattern: message-pumper
     pumper-wait-millis-on-idle: 300
     pumper-wait-millis-on-rejected: 300
+    # TODO 改为 Duration
     wait-termination-timeout-millis: 5000
     session:
       max-pending-request-size: 10
@@ -67,6 +69,7 @@ app:
     executor:
       core-pool-size: 5
       max-pool-size: 50
+      # TODO 改为 Duration
       keep-alive-timeout-seconds: 60000
       queue-capacity: 100
       thread-pattern: biz-%d

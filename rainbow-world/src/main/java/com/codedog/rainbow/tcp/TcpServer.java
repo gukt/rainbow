@@ -25,7 +25,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 
 /**
  * TcpServer表示一个Tcp服务
@@ -60,14 +59,12 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
     public void start() {
         requireStateNew();
 
-        log.info("TCP - Starting TcpServer ...");
+        log.info("TCP - Starting TcpServer");
         startTime = System.currentTimeMillis();
         setState(State.STARTING);
-//        String protocolType = properties.getMessageProtocol();
-        final String protocolType = "xxx"; // 故意抛出一个异常
-        // 检查协议格式是否设置正确
-        if (Arrays.stream(MessageProtocolType.values()).noneMatch(p -> p.name().equalsIgnoreCase(protocolType))) {
-            fail("TCP - Message protocol: " + protocolType + " (expected: json/protobuf)");
+        MessageProtocol messageProtocol = properties.getMessageProtocol();
+        if (messageProtocol == null) {
+            fail("TCP - Message protocol: null (expected: json/protobuf)");
         }
         final EventLoopGroup bossGroup = new NioEventLoopGroup(1, new ThreadFactoryBuilder()
                 .setNameFormat(properties.getBossThreadName()).build());
@@ -82,11 +79,11 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
                     @Override
                     protected void initChannel(Channel ch) {
                         ChannelPipeline p = ch.pipeline();
-                        if (MessageProtocolType.JSON.name().equalsIgnoreCase(protocolType)) {
+                        if (messageProtocol == MessageProtocol.JSON) {
                             p.addLast(new JsonObjectDecoder());
                             p.addLast(new JsonDecoder());
                             p.addLast(new JsonEncoder());
-                        } else if (MessageProtocolType.PROTOBUF.name().equalsIgnoreCase(protocolType)) {
+                        } else if (messageProtocol == MessageProtocol.PROTOBUF) {
                             p.addLast(new ProtobufFixed32FrameDecoder());
                             p.addLast(new ProtobufDecoder(CommonProto.ProtoPacket.getDefaultInstance()));
                             p.addLast(new ProtobufFixed32LengthFieldPrepender());
@@ -102,14 +99,19 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
                 .addListener((ChannelFutureListener) f -> {
                     if (!f.isSuccess()) {
                         log.error("TCP - 启动 TcpServer 时发生绑定异常");
+                        fail("启动 TcpServer 时发生绑定异常");
                     }
-                    dispatcher.start();
+                    // 获得真实绑定的端口
                     this.realPort = ((InetSocketAddress) f.channel().localAddress()).getPort();
+                    // 启动 Message dispatcher
+                    // TODO 是否需要返回 Future，根据 Future 设定 channelHandler.active
+                    dispatcher.start();
                     // 允许接收请求
                     channelHandler.setActive(true);
                     // 设状态为 Running
                     setState(State.RUNNING);
-                    log.info("TCP - Started TcpServer in {} seconds , listening on {}",
+
+                    log.info("TCP - Started TcpServer in {} seconds , listening on {}.",
                             ((double) (System.currentTimeMillis() - startTime)) / 1000, getRealPort());
                 });
         try {

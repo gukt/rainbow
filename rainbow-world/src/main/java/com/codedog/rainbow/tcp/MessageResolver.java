@@ -5,9 +5,9 @@
 package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.lang.NotImplementedException;
-import com.codedog.rainbow.world.net.json.JsonPacket;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * MessageResolver class
@@ -17,6 +17,8 @@ import java.io.Serializable;
 public interface MessageResolver<T> {
 
     Object getRtd(T msg);
+
+    default int getSync(T msg) { return 0;}
 
     String getType(T msg);
 
@@ -46,5 +48,15 @@ public interface MessageResolver<T> {
         throw new NotImplementedException();
     }
 
+    <V> Optional<V> resolveArgs(T msg, Class<?> paramType);
+
     Class<T> getMessageClass();
+
+    void setSn(T msg, int sn);
+
+    void setAck(T msg, int ack);
+
+    void setTime(T msg, long timestamp);
+
+    void setSync(T msg, int sync);
 }

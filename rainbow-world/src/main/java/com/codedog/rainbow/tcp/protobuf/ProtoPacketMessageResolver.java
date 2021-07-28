@@ -2,12 +2,14 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.protobuf;
 
+import com.codedog.rainbow.tcp.MessageResolver;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.google.protobuf.ByteString;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * ProtoPacketMessageResolver class
@@ -24,6 +26,12 @@ public class ProtoPacketMessageResolver implements MessageResolver<ProtoPacket> 
     public String getType(ProtoPacket msg) {
         // TODO 要不要用一个 Object 类型
         return msg.getType().name();
+    }
+
+    @Override
+    public Object getPayload(ProtoPacket msg) {
+        // TODO 要不要用一个 Object 类型
+        return msg.getPayload();
     }
 
     @Override
@@ -45,7 +53,37 @@ public class ProtoPacketMessageResolver implements MessageResolver<ProtoPacket> 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public <V> Optional<V> resolveArgs(ProtoPacket msg, Class<?> paramType) {
+        if(ByteString.class.isAssignableFrom(paramType)) {
+            return Optional.ofNullable((V)getPayload(msg));
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public Class<ProtoPacket> getMessageClass() {
         return ProtoPacket.class;
+    }
+
+    @Override
+    public void setSn(ProtoPacket msg, int sn) {
+        // TODO 这里是不是有点问题
+        msg = msg.toBuilder().setSn(sn).build();
+    }
+
+    @Override
+    public void setAck(ProtoPacket msg, int ack) {
+
+    }
+
+    @Override
+    public void setTime(ProtoPacket msg, long timestamp) {
+
+    }
+
+    @Override
+    public void setSync(ProtoPacket msg, int sync) {
+
     }
 }

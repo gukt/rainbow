@@ -5,11 +5,12 @@
 package com.codedog.rainbow.world.config;
 
 import com.codedog.rainbow.tcp.*;
-import com.codedog.rainbow.util.ObjectUtils;
+import com.codedog.rainbow.tcp.json.JsonPacketMessageResolver;
+import com.codedog.rainbow.tcp.json.JsonPacketTcpServerChannelHandler;
+import com.codedog.rainbow.tcp.protobuf.ProtoPacketMessageResolver;
+import com.codedog.rainbow.tcp.protobuf.ProtoPacketTcpServerChannelHandler;
+import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.codedog.rainbow.world.net.json.JsonPacket;
-import com.codedog.rainbow.world.net.json.interceptor.KeepAliveInterceptor;
-import com.codedog.rainbow.world.net.json.interceptor.TcpSecurityInterceptor;
-import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -17,11 +18,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Controller;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,10 +32,10 @@ import java.util.List;
 @Slf4j
 public class TcpServerAutoConfiguration {
 
-    private final ApplicationContext context;
+    private final MessageHandlerFinder messageHandlerFinder;
 
-    public TcpServerAutoConfiguration(ApplicationContext context) {
-        this.context = context;
+    public TcpServerAutoConfiguration(ApplicationContext context, MessageHandlerFinder messageHandlerFinder) {
+        this.messageHandlerFinder = messageHandlerFinder;
     }
 
     @Bean
@@ -55,67 +53,86 @@ public class TcpServerAutoConfiguration {
     @ConditionalOnSingleCandidate(TcpProperties.class)
     public TcpServer tcpServer(TcpProperties properties) {
         // 获取消息协议类型
-        String messageProtocol = properties.getMessageProtocol();
-        if (ObjectUtils.isEmpty(messageProtocol)) {
-            // 如果没有指定，默认使用 json 格式。
-            log.warn("TCP: No protocol found, back to 'json'.");
-            messageProtocol = "json";
-        }
+//        MessageProtocol messageProtocol = properties.getMessageProtocol();
+//        if (ObjectUtils.isEmpty(messageProtocol)) {
+//            // 如果没有指定，默认使用 json 格式。
+//            log.warn("TCP: No protocol found, back to 'json'.");
+//            messageProtocol = "json";
+//        }
         // 创建 tcpServerHandler
-        TcpServerChannelHandler<?> tcpServerChannelHandler;
-        MessageDispatcher dispatcher;
-        switch (messageProtocol.toLowerCase()) {
-            case "protobuf":
-                tcpServerChannelHandler = new ProtoPacketTcpServerChannelHandler(properties, protoPacketMessageResolver());
-                dispatcher = new DefaultMessageDispatcher<>(properties, protoPacketMessageResolver());
-                break;
-            case "json":
-                tcpServerChannelHandler = new JsonPacketTcpServerChannelHandler(properties, jsonPacketMessageResolver());
-                dispatcher = new DefaultMessageDispatcher<>(properties, jsonPacketMessageResolver());
-                break;
-            default:
-                throw new TcpServerException("TCP: 不支持的消息协议类型: actual: " + messageProtocol + " (expected: protobuf|json)");
-        }
+//        TcpServerChannelHandler<?> tcpServerChannelHandler;
+//        MessageDispatcher dispatcher;
+//        switch (messageProtocol.toLowerCase()) {
+//            case "protobuf":
+//                tcpServerChannelHandler = new ProtoPacketTcpServerChannelHandler(properties, protoPacketMessageResolver());
+//                dispatcher = new DefaultMessageDispatcher<>(properties, protoPacketMessageResolver());
+//                break;
+//            case "json":
+//                tcpServerChannelHandler = new JsonPacketTcpServerChannelHandler(properties, jsonPacketMessageResolver());
+//                dispatcher = new DefaultMessageDispatcher<>(properties, jsonPacketMessageResolver());
+//                break;
+//            default:
+//                throw new TcpServerException("TCP: 不支持的消息协议类型: actual: " + messageProtocol + " (expected: protobuf|json)");
+//        }
         // 注册 Handlers
-        messageHandlers().forEach(dispatcher::registerHandler);
+//        messageHandlerFinder.findMessageHandlers().forEach(dispatcher::registerHandler);
         // 注册 Interceptors
-        messageInterceptors(properties).forEach(item -> tcpServerChannelHandler.getInterceptorList().add(item));
+//        messageInterceptors(properties).forEach(item -> tcpServerChannelHandler.getInterceptorList().add(item));
         // 构造一个 TcpServer 实例返回
-        return new TcpServer(properties, tcpServerChannelHandler, dispatcher);
+        return new TcpServer(properties, tcpServerChannelHandler(properties), messageDispatcher(properties));
     }
 
-    private List<MessageHandler<?>> messageHandlers() {
-        log.debug("TCP - Scanning message handlers...");
-        List<MessageHandler<?>> handlers = new ArrayList<>();
-        context.getBeansWithAnnotation(Controller.class).values().forEach(bean -> {
-            Class<?> beanType = bean.getClass();
-            if (MessageHandler.class.isAssignableFrom(beanType)) {
-                handlers.add((MessageHandler<?>) bean);
-            } else {
-                final MethodAccess methodAccess = MethodAccess.get(beanType);
-                Arrays.stream(beanType.getDeclaredMethods())
-                        // 过滤出所有标注了@HandlerMapping注解的方法
-                        .filter(m -> m.isAnnotationPresent(HandlerMapping.class))
-                        // 使用适配器模式将每个方法包装成MessageHandler
-                        .forEach(m -> {
-                            final HandlerMapping mapping = m.getAnnotation(HandlerMapping.class);
-                            handlers.add(new MessageHandlerAdapter<JsonPacket>(bean, methodAccess, m.getName()) {
-                                @Override
-                                public Serializable getType() {
-                                    return mapping.value();
-                                }
-                            });
-                        });
-            }
-        });
-        log.info("TCP - Finished message handler scanning: found {} handlers", handlers.size());
-        return handlers;
+    private MessageResolver<?> getMessageResolverByProtocol(MessageProtocol protocol) {
+        switch (protocol) {
+            case PROTOBUF:
+                return protoPacketMessageResolver();
+            case JSON:
+                return jsonPacketMessageResolver();
+            default:
+                throw new TcpConfigurationException("tcp.message.protocol: "
+                        + protocol + " (expected: json/protobuf");
+        }
+    }
+
+    @Bean
+    public TcpServerChannelHandler<?> tcpServerChannelHandler(TcpProperties properties) {
+        TcpServerChannelHandler<?> channelHandler;
+        MessageProtocol protocol = properties.getMessageProtocol();
+        switch (protocol) {
+            case PROTOBUF:
+                channelHandler = new ProtoPacketTcpServerChannelHandler(
+                        properties, protoPacketMessageResolver());
+                break;
+            case JSON:
+                channelHandler = new JsonPacketTcpServerChannelHandler(
+                        properties, jsonPacketMessageResolver());
+                break;
+            default:
+                throw new TcpConfigurationException("tcp.message.protocol: "
+                        + protocol + " (expected: json/protobuf");
+        }
+        messageInterceptors(properties).forEach(item -> channelHandler.getInterceptorList().add(item));
+        return channelHandler;
+    }
+
+    @Bean
+    public MessageDispatcher messageDispatcher(TcpProperties properties) {
+        MessageResolver<?> messageResolver = getMessageResolverByProtocol(properties.getMessageProtocol());
+        MessageDispatcher dispatcher = new DefaultMessageDispatcher<>(properties, messageResolver);
+        Class<?> supportedMessageType =properties.getMessageProtocol() == MessageProtocol.PROTOBUF
+                ? ProtoPacket.class: JsonPacket.class;
+        // 注册 Message handlers
+        for (MessageHandler<?> handler : messageHandlerFinder.findMessageHandlers(supportedMessageType)) {
+            dispatcher.registerHandler(handler);
+        }
+        return dispatcher;
     }
 
     private List<MessageInterceptor<?>> messageInterceptors(TcpProperties properties) {
         List<MessageInterceptor<?>> interceptors = new ArrayList<>();
-        interceptors.add(new TcpSecurityInterceptor(properties));
-        interceptors.add(new KeepAliveInterceptor());
+        // TODO 要根据消息类型选择性添加
+//        interceptors.add(new TcpSecurityInterceptor(properties));
+//        interceptors.add(new KeepAliveInterceptor());
         return interceptors;
     }
 }
