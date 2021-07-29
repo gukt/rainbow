@@ -11,6 +11,8 @@ import com.codedog.rainbow.tcp.protobuf.ProtoPacketMessageResolver;
 import com.codedog.rainbow.tcp.protobuf.ProtoPacketTcpServerChannelHandler;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.codedog.rainbow.world.net.json.JsonPacket;
+import com.codedog.rainbow.world.net.json.interceptor.KeepAliveMessageInterceptor;
+import com.codedog.rainbow.world.net.json.interceptor.TcpSecurityMessageInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,10 +34,10 @@ import java.util.List;
 @Slf4j
 public class TcpServerAutoConfiguration {
 
-    private final MessageHandlerFinder messageHandlerFinder;
+    private final ApplicationContext context;
 
-    public TcpServerAutoConfiguration(ApplicationContext context, MessageHandlerFinder messageHandlerFinder) {
-        this.messageHandlerFinder = messageHandlerFinder;
+    public TcpServerAutoConfiguration(ApplicationContext context) {
+        this.context = context;
     }
 
     @Bean
@@ -116,23 +118,27 @@ public class TcpServerAutoConfiguration {
     }
 
     @Bean
+    public MessageHandlerFinder messageHandlerFinder() {
+        return new MessageHandlerFinder(context);
+    }
+
+    @Bean
     public MessageDispatcher messageDispatcher(TcpProperties properties) {
         MessageResolver<?> messageResolver = getMessageResolverByProtocol(properties.getMessageProtocol());
         MessageDispatcher dispatcher = new DefaultMessageDispatcher<>(properties, messageResolver);
-        Class<?> supportedMessageType =properties.getMessageProtocol() == MessageProtocol.PROTOBUF
-                ? ProtoPacket.class: JsonPacket.class;
-        // 注册 Message handlers
-        for (MessageHandler<?> handler : messageHandlerFinder.findMessageHandlers(supportedMessageType)) {
-            dispatcher.registerHandler(handler);
-        }
+        // 支持的消息类型
+        Class<?> supportedMessageType = properties.getMessageProtocol() == MessageProtocol.PROTOBUF ? ProtoPacket.class : JsonPacket.class;
+        // 注册“消息处理器”
+        messageHandlerFinder().findMessageHandlers(supportedMessageType)
+                .forEach(dispatcher::registerHandler);
         return dispatcher;
     }
 
     private List<MessageInterceptor<?>> messageInterceptors(TcpProperties properties) {
         List<MessageInterceptor<?>> interceptors = new ArrayList<>();
         // TODO 要根据消息类型选择性添加
-//        interceptors.add(new TcpSecurityInterceptor(properties));
-//        interceptors.add(new KeepAliveInterceptor());
+       interceptors.add(new TcpSecurityMessageInterceptor(properties));
+       interceptors.add(new KeepAliveMessageInterceptor());
         return interceptors;
     }
 }

@@ -3,15 +3,16 @@
  */
 package com.codedog.rainbow.tcp;
 
+import com.codedog.rainbow.util.ObjectUtils;
+import com.codedog.rainbow.util.ReflectionUtils;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,41 +20,47 @@ import java.util.List;
  *
  * @author https://github.com/gukt
  */
-@Component
 @Slf4j
 public class MessageHandlerFinder {
 
     private final ApplicationContext context;
 
-    public MessageHandlerFinder(ApplicationContext context) {this.context = context;}
+    public MessageHandlerFinder(ApplicationContext context) {
+        this.context = context;
+    }
 
-    public <T> List<MessageHandler<T>> findMessageHandlers(Class<T> targetType) {
+    @SuppressWarnings("unchecked")
+    public <T> List<MessageHandler<T>> findMessageHandlers(Class<T> expectedTypeArg) {
         log.debug("TCP - Scanning message handlers...");
         List<MessageHandler<T>> handlers = new ArrayList<>();
-        for (Object bean : context.getBeansWithAnnotation(Controller.class).values()) {
+        Collection<?> candidates = context.getBeansWithAnnotation(Controller.class).values();
+        for (Object bean : candidates) {
             Class<?> beanType = bean.getClass();
-            // TODO 要检查 MessageHandler 的参数类型是否匹配
-            // 添加实现了 MessageHandler 接口的 Beans
+            // 是否实现了 MessageHandler 接口？
             if (MessageHandler.class.isAssignableFrom(beanType)) {
-                handlers.add((MessageHandler<T>) bean);
+                // 类型参数是否匹配？
+                if (ReflectionUtils.isTypeArgumentMatched(bean, expectedTypeArg)) {
+                    handlers.add((MessageHandler<T>) bean);
+                }
                 continue;
             }
             MethodAccess methodAccess = MethodAccess.get(beanType);
-
             for (Method m : beanType.getDeclaredMethods()) {
                 HandlerMapping mapping = m.getAnnotation(HandlerMapping.class);
                 if (mapping != null) {
-                    // 对于注解方法，使用“适配器模式”将方法包装一下
-                    handlers.add(new MessageHandlerAdapter<T>(bean, methodAccess, m.getName()) {
-                        @Override
-                        public Serializable getType() {
-                            return mapping.value();
-                        }
-                    });
+                    // 对于注解方法，使用“适配器模式“进行包装
+                    handlers.add(MessageHandlerAdapter.of(bean, methodAccess, m.getName(), mapping.value()));
                 }
             }
         }
-        log.info("TCP - Finished message handler scanning: found {} handlers.", handlers.size());
+        log.info("TCP - Finished message handler scanning: found {} handlers. {}", handlers.size(), toString(handlers));
         return handlers;
+    }
+
+    private String toString(List<?> handlers) {
+        ObjectUtils.requireNonEmpty(handlers, "handlers");
+        StringBuilder sb = new StringBuilder("\n");
+        handlers.forEach(h -> sb.append(h.toString()).append("\n"));
+        return sb.toString();
     }
 }

@@ -5,6 +5,8 @@
 package com.codedog.rainbow.util;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ import java.util.Map;
  *
  * @author https://github.com/gukt
  */
-public class ReflectUtils {
+public class ReflectionUtils {
 
     private static Map<Object[], Method> METHOD_CACHE = new HashMap<>();
 
@@ -29,5 +31,18 @@ public class ReflectUtils {
     private static Method getMethodFromCache(Class<?> type, String name, Class<?>[] argumentTypes) {
 //        METHOD_CACHE.get()
         return null;
+    }
+
+    // TODO 移到 ArgumentTypeMatcher 中
+    // TODO 考虑 -> super class - > interfaces 及多接口的情况
+    public static boolean isTypeArgumentMatched(Object obj, Class<?> expectedTypeArg) {
+        Type[] genericInterfaceTypes = obj.getClass().getGenericInterfaces();
+        if (genericInterfaceTypes.length > 0) {
+            Type[] actualTypeArgs = ((ParameterizedType) genericInterfaceTypes[0]).getActualTypeArguments();
+            if (actualTypeArgs.length > 0) {
+                return actualTypeArgs[0].equals(expectedTypeArg);
+            }
+        }
+        return false;
     }
 }

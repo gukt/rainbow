@@ -25,7 +25,7 @@ public class RoleController {
     /**
      * 灵活的参数绑定
      */
-    @HandlerMapping(value = "GameEnterRequest")
+    @HandlerMapping(value = "GameEnterRequest", accept = "json")
     public Object gameEnter(Session session,
                             DefaultSession session2,
                             ByteString payload,

@@ -14,7 +14,7 @@ import com.codedog.rainbow.world.net.json.MsgTypeEnum;
  *
  * @author https://github.com/gukt
  */
-public final class KeepAliveInterceptor implements MessageInterceptor<JsonPacket> {
+public final class KeepAliveMessageInterceptor implements MessageInterceptor<JsonPacket> {
 
     @Override
     public boolean preHandle(Session session, JsonPacket request) {

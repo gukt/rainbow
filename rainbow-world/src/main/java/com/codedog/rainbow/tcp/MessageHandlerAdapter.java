@@ -11,10 +11,12 @@ import com.esotericsoftware.reflectasm.MethodAccess;
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Objects.equal;
-import static java.util.Objects.requireNonNull;
 
 /**
  * @author https://github.com/gukt
@@ -26,7 +28,6 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
     private final MethodAccess methodAccess;
     private final String methodName;
     private final int methodIndex;
-    private MessageResolver<T> messageResolver;
 
     protected MessageHandlerAdapter(Object delegate, MethodAccess methodAccess, String methodName) {
         Assert.notNull(delegate, "delegate");
@@ -38,8 +39,13 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
         this.methodIndex = methodAccess.getIndex(methodName);
     }
 
-    public void setMessageResolver(MessageResolver<T> messageResolver) {
-        this.messageResolver = messageResolver;
+    public static <T> MessageHandler<T> of(Object delegate, MethodAccess methodAccess, String methodName, String messageType) {
+        return new MessageHandlerAdapter<T>(delegate, methodAccess, methodName) {
+            @Override
+            public Serializable getType() {
+                return messageType;
+            }
+        };
     }
 
     /**
@@ -51,9 +57,9 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
      */
     @Override
     public final Object handle(Session session, T message) {
-//        return methodAccess.invoke(delegate, methodIndex, session, message);
-        requireNonNull(session, "session: null (expected: not null)");
-        requireNonNull(message, "message: null (expected: not null)");
+        Assert.notNull(session, "session");
+        Assert.notNull(session, "message");
+
         Object[] args = resolveArgs(session, message);
         Object result = methodAccess.invoke(delegate, methodIndex, args);
         // 如果有错误直接返回错误，反之返回 result 值
@@ -112,6 +118,9 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
 
     @Override
     public final String toString() {
-        return delegate.getClass().getSimpleName() + "#" + methodName;
+        String params = Arrays.stream(methodAccess.getParameterTypes()[0])
+                .map(type -> type.getSimpleName() + ",")
+                .collect(Collectors.joining());
+        return "MessageHandlerAdapter(" + delegate.getClass().getSimpleName() + "#" + methodName + "(" + params + "))";
     }
 }

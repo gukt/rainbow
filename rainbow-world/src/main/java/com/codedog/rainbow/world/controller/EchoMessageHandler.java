@@ -8,13 +8,13 @@ import com.codedog.rainbow.tcp.MessageHandler;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import lombok.NonNull;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
 /**
  * @author https://github.com/gukt
  */
-@Controller
-public final class EchoHandler implements MessageHandler<JsonPacket> {
+@Component
+public final class EchoMessageHandler implements MessageHandler<JsonPacket> {
 
     @Override
     public String getType() {

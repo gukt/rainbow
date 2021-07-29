@@ -17,4 +17,6 @@ import java.lang.annotation.*;
 public @interface HandlerMapping {
 
     String value();
+
+    String accept() default "protobuf";
 }

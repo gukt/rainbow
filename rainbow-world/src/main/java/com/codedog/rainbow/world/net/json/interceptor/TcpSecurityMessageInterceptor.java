@@ -4,11 +4,11 @@
 
 package com.codedog.rainbow.world.net.json.interceptor;
 
-import com.codedog.rainbow.world.config.TcpProperties;
-import com.codedog.rainbow.world.net.ErrorCode;
 import com.codedog.rainbow.tcp.MessageInterceptor;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.session.SessionStore;
+import com.codedog.rainbow.world.config.TcpProperties;
+import com.codedog.rainbow.world.net.ErrorCode;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,16 +26,16 @@ import java.util.Set;
  */
 @Component
 @Slf4j
-public final class TcpSecurityInterceptor implements MessageInterceptor<JsonPacket> {
+public final class TcpSecurityMessageInterceptor implements MessageInterceptor<JsonPacket> {
 
-    private final TcpProperties tcpProperties;
+    private final TcpProperties properties;
     /**
      * IP 地址黑名单
      */
     private final Set<String> blockedRemoteAddresses = new HashSet<>();
 
-    public TcpSecurityInterceptor(TcpProperties tcpProperties) {
-        this.tcpProperties = tcpProperties;
+    public TcpSecurityMessageInterceptor(TcpProperties properties) {
+        this.properties = properties;
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class TcpSecurityInterceptor implements MessageInterceptor<JsonPack
             return false;
         }
         // 如果启用包检查
-        if (tcpProperties.isSeqCheckEnabled()) {
+        if (properties.isSeqCheckEnabled()) {
             return checkPacketSeq(session, request);
         }
         return true;
@@ -69,7 +69,7 @@ public final class TcpSecurityInterceptor implements MessageInterceptor<JsonPack
             // 累加 “收到的无效包” 计数
             store.incrBadPacketCount();
             // 检查连续发送无效包是否超出阈值。超出视为攻击服务器主动掐断连接并将该连接加入黑名单
-            if (store.getBadPacketCount() > tcpProperties.getBadPacketThreshold()) {
+            if (store.getBadPacketCount() > properties.getBadPacketThreshold()) {
                 log.warn("TCP: 检测到该连接持续发送无效包，即将关闭对方的连接: {}", session);
                 // 下发错误代码，然后关闭连接
                 JsonPacket.ofError(ErrorCode.ERR_EXCEED_CONTINUOUS_BAD_REQUEST_THRESHOLD)
