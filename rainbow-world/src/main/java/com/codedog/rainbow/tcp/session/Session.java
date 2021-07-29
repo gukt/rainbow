@@ -35,7 +35,7 @@ public interface Session extends AttributeSupport {
     PeerInfo getPeerInfo();
 
     /**
-     * 发送指定的消息给对端。消息不能为<code>null</code>，如果为 null 将什么都不做。
+     * 发送指定的消息给对端。如果 <code>message</code> 为 null 将什么都不做。
      *
      * @param message 要发送的消息。如果为 null，则什么都不做
      * @return 返回 {@link CompletableFuture } 对象，便于监听完成事件并处理回调逻辑
@@ -65,6 +65,11 @@ public interface Session extends AttributeSupport {
      */
     boolean isClosed();
 
+    /**
+     * 获取关闭连接时间戳（毫秒）
+     *
+     * @return 关闭连接时间戳
+     */
     long getCloseTimeMillis();
 
     SessionStore getStore();
@@ -77,9 +82,9 @@ public interface Session extends AttributeSupport {
     void setProcessingRequest(Object request);
 
     /**
-     * 返回当前是否有请求正在处理中
+     * 当前是否有请求正在处理中
      *
-     * @return 如果有返回true，反之false
+     * @return 如果有，返回 true；反之 false
      */
     boolean isProcessing();
 

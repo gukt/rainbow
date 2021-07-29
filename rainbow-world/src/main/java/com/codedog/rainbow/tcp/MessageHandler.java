@@ -42,14 +42,16 @@ public interface MessageHandler<T> {
     }
 
     class Error {
+        public final static Error EMPTY = new Error();
+
         private final List<Object> errors = new ArrayList<>();
 
         /** Prevents to construct an instance. */
         private Error() {}
 
-        public static Error of() {
-            return new Error();
-        }
+        // public static Error of() {
+        //     return new Error();
+        // }
 
         public static Error of(Object... errors) {
             Error instance = new Error();

@@ -79,7 +79,7 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
             if (Session.class.isAssignableFrom(paramType)) {
                 args[i] = session;
             } else if (paramType.equals(Error.class)) {
-                args[i] = Error.of();
+                args[i] = Error.EMPTY;
             } else {
                 args[i] = MessageUtils.resolveArgs(packet, paramType);
             }

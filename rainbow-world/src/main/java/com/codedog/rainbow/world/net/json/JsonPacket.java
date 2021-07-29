@@ -96,8 +96,7 @@ public class JsonPacket {
     // }
 
     public static JsonPacket ofError(Serializable code, String msg) {
-        Object[] pairs = {new Object[]{"code", code}, new Object[]{"msg", msg}};
-        return JsonPacket.of("error", Payload.of(pairs));
+        return JsonPacket.of("error", Payload.of("code", code, "msg", msg));
     }
 
     public CompletableFuture<Void> writeTo(@NonNull Session session) {

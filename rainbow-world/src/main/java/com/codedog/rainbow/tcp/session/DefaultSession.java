@@ -70,11 +70,11 @@ public class DefaultSession extends AbstractSession {
 
     @Override
     public CompletableFuture<Void> close() {
-        // double-checked locking
+        // Double-checked locking (https://en.wikipedia.org/wiki/Double-checked_locking)
         if (!isClosed()) {
             synchronized (this) {
                 if (!isClosed()) {
-                    // flush then close
+                    // Flush and close
                     delegate.flush().close().addListener((ChannelFutureListener) future ->
                             closeTimeMillis = System.currentTimeMillis());
                 }
@@ -84,7 +84,7 @@ public class DefaultSession extends AbstractSession {
         return new CompletableFuture<>();
     }
 
-    public void attachTo(DefaultSession targetSession) {
+    public void reuse(DefaultSession targetSession) {
         // 代表旧的连接
         ChannelHandlerContext old = targetSession.delegate;
         targetSession.delegate = this.delegate;

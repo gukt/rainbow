@@ -5,9 +5,9 @@
 package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.tcp.session.Session;
+import com.codedog.rainbow.util.Assert;
 import com.codedog.rainbow.world.config.TcpProperties;
 import com.codedog.rainbow.world.net.ErrorCode;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.RejectedExecutionException;
@@ -27,21 +27,20 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
 
     public DefaultMessageDispatcher(TcpProperties properties, MessageResolver<T> resolver) {
         super(properties);
-        this.resolver = resolver;
+        this.resolver = properties.getMessageResolver();
         this.supportedMessageType = resolver.getMessageClass();
     }
 
     /**
-     * 将指定session的请求提交到"业务处理线程池"中运行，
-     * 如果业务线程池当前忙导致提交任务被拒绝，应降级处理
-     * TODO 调整参数位置
-     * TODO 调整英文注释空格
+     * 将收到的指定 {@link Session 连接} 发送的请求，提交到“业务处理线程池”中运行。
+     * <p>如果业务线程池当前忙导致提交任务被拒绝，应降级处理。
      *
-     * @throws RejectedExecutionException 如果业务线程池当前已经处理不过来
-     * @throws NullPointerException       如果msg或session为null
+     * @throws RejectedExecutionException 如果提交到线程池被拒绝，此时往往意味着处理该消息的线程池处于超载状态
      */
     @Override
-    protected final void doDispatch(@NonNull T request, @NonNull Session session) {
+    protected final void dispatch0(Session session, T request) {
+        Assert.notNull(session, "session");
+        Assert.notNull(request, "request");
         if (session.isProcessing()) {
             log.error("TCP - 当前连接有请求正在处理，等待下次被调度执行: {} <- {}", request, session);
             return;
@@ -55,8 +54,8 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
             session.write(resolver.withRtd(error, rtd));
             return;
         }
-//        log.debug("TCP - Dispatching a message to handle: {}", resolver.toCompactString(request));
-        log.debug("TCP - Dispatching the message: {}", request);
+        // log.debug("TCP - Dispatching a message to handle: {}", resolver.toString(request, true));
+        log.debug("TCP - Dispatching message: {}", request);
         // 执行任务Message pumping loop error
         executor.execute(new RequestTask<T>(session, request) {
             @Override
@@ -95,6 +94,7 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
                 // 返回处理结果给客户端
                 if (response != null) {
                     // 如果请求包含有ext字段（透传信息）则响应中也原封不动的返回
+                    // TODO 判断是否有 rtd，如果没有就不要加了
                     session.write(resolver.withRtd(request, rtd));
                 }
                 // 后置处理

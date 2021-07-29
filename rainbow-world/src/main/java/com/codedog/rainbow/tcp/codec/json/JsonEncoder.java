@@ -24,8 +24,10 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
 @Slf4j
 public class JsonEncoder extends MessageToMessageEncoder<JsonPacket> {
 
-    /** 是否支持 WebSocket, 默认不支持 */
-    private boolean websocketEnabled;
+    /**
+     * 是否支持 WebSocket, 默认不支持
+     */
+    private final boolean websocketEnabled;
 
     public JsonEncoder() {
         this(false);
@@ -38,7 +40,7 @@ public class JsonEncoder extends MessageToMessageEncoder<JsonPacket> {
     @Override
     protected void encode(ChannelHandlerContext ctx, JsonPacket msg, List<Object> out) {
         if (msg == null) {
-            log.warn("TCP - You are trying to encode a null message");
+            log.warn("TCP - You are trying to encode a null message.");
             return;
         }
         String json = JsonUtils.toJson(msg);

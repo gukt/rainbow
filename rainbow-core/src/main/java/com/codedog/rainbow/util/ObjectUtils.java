@@ -729,6 +729,14 @@ public final class ObjectUtils {
 
     // Misc
 
+    // TODO 重命名为 getRequired(map, key)
+//    @SuppressWarnings("unchecked")
+//    public static <V> V safeGetValue(Map<String, Object> map, String key) {
+//        Object value = map.get(key);
+//        checkNotNull(value, ERR_BAD_PARAMETER.error("The field '" + key + "' is not present"));
+//        return (V) value;
+//    }
+
     /**
      * 将一个多值（数组类型）的 {@link Map} 对象转换为字符串，常用于对 HttpServletRequest 中所有参数的输出。
      *

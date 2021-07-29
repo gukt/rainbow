@@ -6,7 +6,7 @@ package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
-import com.codedog.rainbow.util.Encrypts;
+import com.codedog.rainbow.util.EncryptionUtils;
 import com.codedog.rainbow.world.config.TcpProperties;
 import com.codedog.rainbow.world.net.SessionManager;
 import com.codedog.rainbow.world.net.json.JsonPacket;
@@ -68,7 +68,7 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
                 msg.setTime(now);
                 msg.setSync(((JsonPacket) processingRequest).getSync());
                 // 将该消息压缩后缓存起来
-                store.getCachedResponses().write(new Object[]{seq, Encrypts.encrypt(message)});
+                store.getCachedResponses().write(new Object[]{seq, EncryptionUtils.encrypt(message)});
                 return true;
             }
         });

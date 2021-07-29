@@ -9,7 +9,6 @@ import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.config.TcpProperties;
 import com.codedog.rainbow.world.net.SessionManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
@@ -127,28 +126,33 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
         return (MessageHandler<V>) this.handlersMap.get(type);
     }
 
+    /**
+     * 打印慢处理日志（如果处理时间超出 {@link TcpProperties#getSlowProcessingThreshold()} 设定的阈值）。
+     *
+     * @param message   处理中的消息
+     * @param startTime 开始时间，单位：毫秒
+     */
     private void writeLogIfSlow(T message, long startTime) {
         if (startTime <= 0) {
             return;
         }
         long duration = System.currentTimeMillis() - startTime;
         if (duration > tcpProperties.getSlowProcessingThreshold()) {
-            log.warn("TCP - slow process: {} millis, {}", duration, message);
+            log.warn("TCP - Slow: elapsed {} millis, {}", duration, message);
         }
     }
 
     /**
-     * 处理指定Session发来的消息
+     * 分发指定 {@link Session 客户端连接} 的请求（分发消息）。
      *
-     * @param request 要出里的消息
-     * @param session Session object
+     * @param session 表示客户端连接的对象
+     * @param request 待处理的消息
+     * @throws IllegalArgumentException 如果 <code>session</code> 或 <code>request</code> 为 null
      */
-    protected abstract void doDispatch(@NonNull T request, @NonNull Session session);
+    protected abstract void dispatch0(Session session, T request);
 
     protected void postHandle(Session session, T request, long startTime) {
-        // 如果必要，打印慢处理日志
         writeLogIfSlow(request, startTime);
-        // 完成请求
         session.completeRequest();
     }
 
@@ -249,16 +253,16 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                                 break;
                             }
                         }
-                        for (Session s : SessionManager.getConnections()) {
-                            if (s.isProcessing() || s.isClosed()) {
+                        for (Session session : SessionManager.getConnections()) {
+                            if (session.isProcessing() || session.isClosed()) {
                                 continue;
                             }
                             // 检查是否有就绪的请求，如果有，取出交由线程池去处理，
                             // 因为线程池可能会拒绝该任务的执行，所以先使用peek读取请求但并不将元素出列
                             @SuppressWarnings("unchecked")
-                            T request = (T) s.getStore().getPendingRequests().peek();
+                            T request = (T) session.getStore().getPendingRequests().peek();
                             if (request != null) {
-                                doDispatch(request, s);
+                                dispatch0(session, request);
                                 // doDispatch(request, s);
                                 // doDispatch(request, s);
                             }

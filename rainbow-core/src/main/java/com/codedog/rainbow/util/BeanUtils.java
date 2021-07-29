@@ -52,16 +52,16 @@ public final class BeanUtils {
         org.springframework.beans.BeanUtils.copyProperties(source, target, ignoreList);
     }
 
-    public static Map<String, Object> toMap(Object obj, String... fields) {
-        Objects.requireNonNull(obj);
+    public static Map<String, Object> toMap(Object bean, String... fields) {
+        Objects.requireNonNull(bean);
         Map<String, Object> map = newHashMap();
-        Arrays.stream(obj.getClass().getDeclaredFields())
+        Arrays.stream(bean.getClass().getDeclaredFields())
                 .forEach(field -> Arrays.stream(fields)
                         .filter(key -> Objects.equals(field.getName(), key))
                         .forEach(key -> {
                             try {
                                 field.setAccessible(true);
-                                map.put(key, field.get(obj));
+                                map.put(key, field.get(bean));
                             } catch (IllegalAccessException e) {
                                 System.out.println("Cannot read field value: field=" + field);
                             } finally {

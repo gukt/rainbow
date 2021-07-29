@@ -66,6 +66,25 @@ public final class Payload extends HashMap<String, Object> {
     }
 
     /**
+     * 使用指定的 key, value 创建一个 Payload 实例。
+     *
+     * @param k1 键，不可为 null
+     * @param v1 值，可以为 null
+     * @param k2 键，不可为 null
+     * @param v2 值，可以为 null
+     * @return Payload 实例
+     * @throws IllegalArgumentException 如果指定的 <code>key</code> 为 null
+     */
+    public static Payload of(String k1, Object v1, String k2, Object v2) {
+        Assert.notNull(k1, "k1");
+        Assert.notNull(k2, "k2");
+        return Payload.of(new Object[]{
+                new Object[]{k1, v1},
+                new Object[]{k2, v2}
+        });
+    }
+
+    /**
      * 使用指定的键值对数组创建一个 Payload 实例。
      *
      * @param pairs 键值对数组，可以为 null，为空时相当于 {@link #EMPTY Payload.EMPTY}
@@ -102,6 +121,15 @@ public final class Payload extends HashMap<String, Object> {
     public <V> V get(String key) {
         Assert.notNull(key, "key");
         return (V) super.get(key);
+    }
+
+    public static <V> V safeGet(Map<?, ?> map, String key, V defaultValue) {
+        Object value = map.get(key);
+        if (value == null) {
+            return defaultValue;
+        } else {
+            return (V) value;
+        }
     }
 
     @SuppressWarnings("unchecked")

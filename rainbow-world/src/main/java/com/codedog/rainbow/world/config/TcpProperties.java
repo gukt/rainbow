@@ -57,6 +57,10 @@ public class TcpProperties {
 
     private MessageResolver<?> messageResolver;
 
+    public <V> MessageResolver<V> getMessageResolver() {
+        return (MessageResolver<V>) messageResolver;
+    }
+
     public boolean isWebSocketEnabled() {
         return enabled && "ws".equalsIgnoreCase(type);
     }

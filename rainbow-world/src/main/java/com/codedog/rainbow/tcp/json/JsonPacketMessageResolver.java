@@ -27,13 +27,13 @@ public class JsonPacketMessageResolver implements MessageResolver<JsonPacket> {
     }
 
     @Override
-    public String toCompactString(JsonPacket msg) {
+    public String toString(JsonPacket msg, boolean compact) {
         return String.format("JsonPacket#%d-%s-%s", msg.getSn(), msg.getType(), msg.getPayload());
     }
 
     @Override
     public JsonPacket resolveError(Serializable code, String error) {
-        return JsonPacket.ofError((int) code, error);
+        return JsonPacket.ofError(code, error);
     }
 
     @Override

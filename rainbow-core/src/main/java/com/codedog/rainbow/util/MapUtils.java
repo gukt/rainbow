@@ -4,14 +4,15 @@
 
 package com.codedog.rainbow.util;
 
+import com.google.common.collect.Sets;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Map utils
- *
- * TODO 定时清理 Map，指定 key, value, ttl, map 指定全局 ttl， key 指定局部 ttl，
+ * Map utilities
  *
  * @author https://github.com/gukt
  */
@@ -45,22 +46,15 @@ public final class MapUtils {
         return map;
     }
 
-//    public static Map<String, Object> newHashMap(Object obj, String... fields) {
-//        Objects.requireNonNull(obj);
-//        Map<String, Object> map = newHashMap();
-//        Arrays.stream(obj.getClass().getDeclaredFields())
-//                .forEach(field -> Arrays.stream(fields)
-//                        .filter(key -> Objects.equals(field.getName(), key))
-//                        .forEach(key -> {
-//                            try {
-//                                field.setAccessible(true);
-//                                map.put(key, field.get(obj));
-//                            } catch (IllegalAccessException e) {
-//                                System.out.println("Cannot read field value: field=" + field);
-//                            } finally {
-//                                field.setAccessible(false);
-//                            }
-//                        }));
-//        return map;
-//    }
+    public static <K, V> Map<K, V> include(Map<K, V> source, String... fields) {
+        Set<String> fieldSet = Sets.newHashSet(fields);
+        Map<K, V> retMap = new HashMap<>();
+        source.forEach(
+                ((k, v) -> {
+                    if (fieldSet.contains(k.toString())) {
+                        retMap.put(k, v);
+                    }
+                }));
+        return retMap;
+    }
 }

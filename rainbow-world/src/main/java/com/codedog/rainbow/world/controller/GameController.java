@@ -11,6 +11,8 @@ import com.codedog.rainbow.world.net.Payload;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import org.springframework.stereotype.Controller;
 
+import java.util.Map;
+
 /**
  * RoleController
  *
@@ -26,10 +28,16 @@ public class GameController {
     public Object gameEnter(Session session, JsonPacket packet,
                             // List<Object> list,
                             // Set<String> set1,
-                            // Map<?, ?> payload,
+                            Map<String, Object> payload,
+                            Payload payload2,
                             MessageHandler.Error error) {
         // TODO 从payload 中取出 roleId
         System.out.println(packet);
+
+        Long roleId1 = (Long) payload.getOrDefault("roleId", 1L);
+
+        long roleId = Payload.safeGet(payload, "roleId", 1L);
+        System.out.println(roleId);
 
         // System.out.println(payload);
 

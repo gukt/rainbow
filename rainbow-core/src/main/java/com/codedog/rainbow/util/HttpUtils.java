@@ -8,6 +8,9 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.lang.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,9 +46,16 @@ public final class HttpUtils {
         return realIp;
     }
 
+    public static String urlEncode(String s) {
+        try {
+            return URLEncoder.encode(s, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException ignored) {
+            return s;
+        }
+    }
+
     /**
      * 从查询字符串（Query String）中查找指定名称参数的值
-     * TODO 移到 Https 里
      *
      * @param qs    query string, can be null.
      * @param param parameter name, can be null.

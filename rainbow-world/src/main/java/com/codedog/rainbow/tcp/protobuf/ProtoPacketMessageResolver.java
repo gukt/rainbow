@@ -34,7 +34,22 @@ public class ProtoPacketMessageResolver implements MessageResolver<ProtoPacket> 
     }
 
     @Override
-    public String toCompactString(ProtoPacket msg) {
+    public void setAck(ProtoPacket msg, int ack) {
+
+    }
+
+    @Override
+    public void setTime(ProtoPacket msg, long timestamp) {
+
+    }
+
+    @Override
+    public void setSync(ProtoPacket msg, int sync) {
+
+    }
+
+    @Override
+    public String toString(ProtoPacket msg, boolean compact) {
         return String.format("ProtoPacket#%d-%s-%s", msg.getSn(), msg.getType(), msg.getPayload());
     }
 
@@ -69,20 +84,5 @@ public class ProtoPacketMessageResolver implements MessageResolver<ProtoPacket> 
     public void setSn(ProtoPacket msg, int sn) {
         // TODO 这里是不是有点问题
         msg = msg.toBuilder().setSn(sn).build();
-    }
-
-    @Override
-    public void setAck(ProtoPacket msg, int ack) {
-
-    }
-
-    @Override
-    public void setTime(ProtoPacket msg, long timestamp) {
-
-    }
-
-    @Override
-    public void setSync(ProtoPacket msg, int sync) {
-
     }
 }

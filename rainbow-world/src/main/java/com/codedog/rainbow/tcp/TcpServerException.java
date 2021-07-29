@@ -9,7 +9,7 @@ package com.codedog.rainbow.tcp;
  *
  * @author https://github.com/gukt
  */
-public class TcpServerException extends RuntimeException{
+public class TcpServerException extends RuntimeException {
 
     public TcpServerException(String message) {
         super(message);

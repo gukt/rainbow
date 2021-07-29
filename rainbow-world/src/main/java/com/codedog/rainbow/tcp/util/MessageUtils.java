@@ -25,7 +25,6 @@ import java.util.*;
 @Slf4j
 public class MessageUtils {
 
-    @SuppressWarnings("unchecked")
     public static <V> Object resolveArgs(Object source, Class<V> expectedType) {
         if (source.getClass().equals(expectedType)) {
             return source;
@@ -37,9 +36,10 @@ public class MessageUtils {
             }
             if (MessageLiteOrBuilder.class.isAssignableFrom(expectedType)) {
                 try {
-                    // 获得 parseFrom(ByteString) 静态方法
+                    // 获得静态方法
                     Method parseFrom = expectedType.getMethod("parseFrom", ByteString.class);
                     try {
+                        // 调用静态方法
                         return parseFrom.invoke(null, packet.getPayload());
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         log.warn("Cannot invoke the 'parseFrom' static method of {}", expectedType, e);
@@ -73,9 +73,5 @@ public class MessageUtils {
         GameEnterRequest request = GameEnterRequest.newBuilder().setUid(1).build();
         Object argValue = MessageUtils.resolveArgs(PacketWrapper.wrap(request), BanRequest.class);
         System.out.println("argValue:" + argValue);
-    }
-
-    private void parseFrom(MessageLiteOrBuilder msg, ByteString bytes) {
-
     }
 }
