@@ -13,25 +13,26 @@ option optimize_for = SPEED;
 */
 
 message ProtoPacket {
-  // 序号，每个包序号递增且唯一
+  // 包序，每个包的序号需递增，且每个客户端唯一
   uint32 sn = 1;
-  uint32  ack = 2;
-  uint32  sync = 3;
-  // 消息类型
-  MsgTypeEnum type = 4;
-  // 消息具体内容
-  bytes payload = 5;
-  // 透传的扩展信息，服务器会原封不动传回该字段信息，及时是返回Error
-  bytes rtd = 6;
-  // 创建包实例的时间戳，单位：毫秒
-  uint64 time = 7;
+  // 服务器已确认收到的序号
+  uint32 ack = 2;
+  // 如果客户端同步等待，可使用该字段设置一个同步 ID
+  uint32 sync = 3;
+  // 消息负载，即协议具体内容
+  bytes payload = 4;
+  // 透传信息，服务器会原封不动回发给客户端。即使是请求处理发生错误时，该透传信息也会下发
+  bytes rtd = 5;
+  // 生成包的时间戳，单位：毫秒
+  uint64 time = 6;
   // 校验和
-  bytes checksum = 8;
-
-
+  bytes checksum = 7;
+  // 消息类型，即业务协议的类型
+  MsgTypeEnum type = 8;
 }
 
-/** 消息类型 */
+// 消息类型，即“业务协议的类型”。
+// 这里内置了几个常见的消息类型
 enum MsgTypeEnum {
   Unknown = 0;
   KeepAlive = 10001;

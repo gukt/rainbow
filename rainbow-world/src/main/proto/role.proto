@@ -62,6 +62,7 @@ message RoleInfo {
 
 message GameEnterRequest {
   uint64 uid = 1;
+  uint64 role_id = 2;
 }
 
 message GameEnterResponse {

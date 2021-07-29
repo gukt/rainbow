@@ -7,7 +7,6 @@ package com.codedog.rainbow.tcp;
 import com.codedog.rainbow.lang.NotImplementedException;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 /**
  * MessageResolver class
@@ -28,7 +27,7 @@ public interface MessageResolver<T> {
 
     T withRtd(T msg, Object rtd);
 
-    default  Object getPayload(T msg) {
+    default Object getPayload(T msg) {
         throw new NotImplementedException();
     }
 
@@ -48,7 +47,13 @@ public interface MessageResolver<T> {
         throw new NotImplementedException();
     }
 
-    <V> Optional<V> resolveArgs(T msg, Class<?> paramType);
+    default T handlerNotFoundError() {throw new NotImplementedException();}
+
+    default T EXCEED_CONTINUOUS_BAD_REQUEST_THRESHOLD_ERROR() {throw new NotImplementedException();}
+
+    default T ERR_ILLEGAL_SN()  {throw new NotImplementedException();}
+
+    // <V> Optional<V> resolveArgs(T msg, Class<?> paramType);
 
     Class<T> getMessageClass();
 
@@ -59,4 +64,6 @@ public interface MessageResolver<T> {
     void setTime(T msg, long timestamp);
 
     void setSync(T msg, int sync);
+
+
 }

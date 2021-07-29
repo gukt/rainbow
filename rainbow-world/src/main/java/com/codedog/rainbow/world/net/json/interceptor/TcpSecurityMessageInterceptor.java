@@ -5,10 +5,10 @@
 package com.codedog.rainbow.world.net.json.interceptor;
 
 import com.codedog.rainbow.tcp.MessageInterceptor;
+import com.codedog.rainbow.tcp.MessageResolver;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.session.SessionStore;
 import com.codedog.rainbow.world.config.TcpProperties;
-import com.codedog.rainbow.world.net.ErrorCode;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,11 +24,11 @@ import java.util.Set;
  *
  * @author https://github.com/gukt
  */
-@Component
 @Slf4j
 public final class TcpSecurityMessageInterceptor implements MessageInterceptor<JsonPacket> {
 
     private final TcpProperties properties;
+    private final MessageResolver<?> messageResolver;
     /**
      * IP 地址黑名单
      */
@@ -36,6 +36,7 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
 
     public TcpSecurityMessageInterceptor(TcpProperties properties) {
         this.properties = properties;
+        messageResolver = properties.getMessageResolver();
     }
 
     @Override
@@ -71,25 +72,32 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
             // 检查连续发送无效包是否超出阈值。超出视为攻击服务器主动掐断连接并将该连接加入黑名单
             if (store.getBadPacketCount() > properties.getBadPacketThreshold()) {
                 log.warn("TCP: 检测到该连接持续发送无效包，即将关闭对方的连接: {}", session);
+                Object errorPacket = messageResolver.EXCEED_CONTINUOUS_BAD_REQUEST_THRESHOLD_ERROR();
                 // 下发错误代码，然后关闭连接
-                JsonPacket.ofError(ErrorCode.ERR_EXCEED_CONTINUOUS_BAD_REQUEST_THRESHOLD)
-                        .writeTo(session)
-                        .whenComplete((v, e) -> {
-                            log.warn("TCP: 已经关闭持续发送无效包的连接: {}", session);
-                            session.close();
-                        });
+                session.write(errorPacket).whenComplete((v, e) -> {
+                    log.warn("TCP: 已经关闭持续发送无效包的连接: {}", session);
+                    session.close();
+                });
+                //
+                // JsonPacket.ofError(ErrorCode.ERR_EXCEED_CONTINUOUS_BAD_REQUEST_THRESHOLD)
+                //         .writeTo(session)
+                //         .whenComplete((v, e) -> {
+                //             log.warn("TCP: 已经关闭持续发送无效包的连接: {}", session);
+                //             session.close();
+                //         });
                 // 将攻击IP地址加入黑名单
                 blockedRemoteAddresses.add(session.getPeerInfo().getRemoteAddress().getHostString());
             }
             // 下发错误代码
-            JsonPacket.ofError(ErrorCode.ERR_ILLEGAL_SN).writeTo(session);
-            return false;
+            Object errorPacket = messageResolver.ERR_ILLEGAL_SN();
+            // 下发错误代码，然后关闭连接
+            session.write(errorPacket);
         } else {
             // 如果收到一个已经处理过的包，则判断是否需要把缓存中的消息下发给客户端
             final int peerAck = request.getAck();
             List<Object> retrieved = store.retrieveResponsesSince(peerAck);
             retrieved.forEach(session::write);
-            return false;
         }
+        return false;
     }
 }

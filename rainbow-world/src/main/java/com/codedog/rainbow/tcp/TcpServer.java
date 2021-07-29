@@ -13,18 +13,30 @@ import com.codedog.rainbow.tcp.codec.protobuf.ProtobufEncoder;
 import com.codedog.rainbow.tcp.codec.protobuf.ProtobufFixed32FrameDecoder;
 import com.codedog.rainbow.tcp.codec.protobuf.ProtobufFixed32LengthFieldPrepender;
 import com.codedog.rainbow.world.config.TcpProperties;
+import com.codedog.rainbow.world.config.TcpProperties.WebSocketProperties;
 import com.codedog.rainbow.world.generated.CommonProto;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.codec.json.JsonObjectDecoder;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
+import java.security.cert.CertificateException;
 
 /**
  * TcpServer表示一个Tcp服务
@@ -66,31 +78,48 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
         if (messageProtocol == null) {
             fail("TCP - Message protocol: null (expected: json/protobuf)");
         }
-        final EventLoopGroup bossGroup = new NioEventLoopGroup(1, new ThreadFactoryBuilder()
-                .setNameFormat(properties.getBossThreadName()).build());
-        final EventLoopGroup workerGroup = new NioEventLoopGroup(0, new ThreadFactoryBuilder()
-                .setNameFormat(properties.getWorkerThreadPattern()).build());
+        final EventLoopGroup bossGroup = new NioEventLoopGroup(1,
+                new ThreadFactoryBuilder().setNameFormat(properties.getBossThreadName()).build());
+        final EventLoopGroup workerGroup = new NioEventLoopGroup(0,
+                new ThreadFactoryBuilder().setNameFormat(properties.getWorkerThreadPattern()).build());
         serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                // TODO 了解并添加其他TCP控制选项
+                .option(ChannelOption.SO_BACKLOG, 1024)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
-                // .handler(new LoggingHandler(LogLevel.INFO))
+                .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ChannelInitializer<Channel>() {
                     @Override
-                    protected void initChannel(Channel ch) {
+                    protected void initChannel(Channel ch) throws CertificateException, SSLException {
                         ChannelPipeline p = ch.pipeline();
+                        p.addLast(new IdleStateHandler(properties.getKeepAliveTimeout(), 0, 0));
+                        // WebSocket enabled?
+                        if (properties.isWebSocketEnabled()) {
+                            WebSocketProperties wsConfig = properties.getWebsocket();
+                            // 配置 SSL
+                            if (wsConfig.isSslEnabled()) {
+                                SelfSignedCertificate ssc = new SelfSignedCertificate();
+                                SslContext sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+                                p.addLast(sslCtx.newHandler(ch.alloc()));
+                            }
+                            p.addLast(new HttpServerCodec());
+                            p.addLast(new HttpObjectAggregator(wsConfig.getMaxContentLen()));
+                            //      pipeline.addLast(new ChunkedWriteHandler());
+                            p.addLast(new WebSocketServerCompressionHandler());
+                            p.addLast(new WebSocketServerProtocolHandler(wsConfig.getPath(), null, true, wsConfig.getMaxFrameSize()));
+                            p.addLast(new WebSocketFrameHandler());
+                        }
+
                         if (messageProtocol == MessageProtocol.JSON) {
                             p.addLast(new JsonObjectDecoder());
                             p.addLast(new JsonDecoder());
-                            p.addLast(new JsonEncoder());
+                            p.addLast(new JsonEncoder(properties.isWebSocketEnabled()));
                         } else if (messageProtocol == MessageProtocol.PROTOBUF) {
                             p.addLast(new ProtobufFixed32FrameDecoder());
                             p.addLast(new ProtobufDecoder(CommonProto.ProtoPacket.getDefaultInstance()));
                             p.addLast(new ProtobufFixed32LengthFieldPrepender());
                             p.addLast(new ProtobufEncoder());
                         }
-                        // 心跳设置
-                        p.addLast(new IdleStateHandler(properties.getKeepAliveTimeout(), 0, 0));
                         p.addLast(channelHandler);
                     }
                 });
@@ -106,9 +135,7 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
                     // 启动 Message dispatcher
                     // TODO 是否需要返回 Future，根据 Future 设定 channelHandler.active
                     dispatcher.start();
-                    // 允许接收请求
                     channelHandler.setActive(true);
-                    // 设状态为 Running
                     setState(State.RUNNING);
 
                     log.info("TCP - Started TcpServer in {} seconds , listening on {}.",
@@ -124,11 +151,11 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
 
     /**
      * 停止 TcpServer，如果停止成功，则可以保证如下几点:
-     * <li>拒绝接收新连接</li>
-     * <li>拒绝接收新连接发来的请求</li>
-     * <li>停止 MessagePumper，积压的后续请求不再处理</li>
-     * <li>停止业务线程池，并且等待所有正在执行的任务执行完毕</li>
-     * <li>退出 Netty 网络服务</li>
+     * <p> 1. 拒绝接收新连接
+     * <p> 2. 拒绝接收新连接发来的请求
+     * <p> 3. 停止 MessagePumper，积压的后续请求不再处理
+     * <p> 4. 停止业务线程池，并且等待所有正在执行的任务执行完毕
+     * <p> 5. 退出 Netty 网络服务
      */
     @Override
     public void stop() {

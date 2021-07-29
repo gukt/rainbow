@@ -5,6 +5,7 @@
 package com.codedog.rainbow.world.config;
 
 import com.codedog.rainbow.tcp.MessageProtocol;
+import com.codedog.rainbow.tcp.MessageResolver;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,10 @@ import org.springframework.stereotype.Component;
 public class TcpProperties {
 
     private boolean enabled = false;
+    /**
+     * TCP 传输协议的类型：Socket/Web Socket(ws)
+     */
+    private String type = "ws";
     /**
      * 消息的协议类型
      */
@@ -48,6 +53,13 @@ public class TcpProperties {
 
     private SessionProperties session;
     private ExecutorProperties executor;
+    private WebSocketProperties websocket;
+
+    private MessageResolver<?> messageResolver;
+
+    public boolean isWebSocketEnabled() {
+        return enabled && "ws".equalsIgnoreCase(type);
+    }
 
     @Configuration
     @ConfigurationProperties(prefix = "app.tcp.session")
@@ -68,5 +80,28 @@ public class TcpProperties {
         int keepAliveTimeoutSeconds = 60;
         int queueCapacity = 1;
         String threadPattern = "biz-%d";
+    }
+
+    @Configuration
+    @ConfigurationProperties(prefix = "app.tcp.websocket")
+    @Data
+    public static class WebSocketProperties {
+
+        /**
+         * The path of web socket endpoint
+         */
+        String path = "/ws";
+        /**
+         * SSL Enabled?
+         */
+        boolean sslEnabled = false;
+        /**
+         * Max web frame size in bytes
+         */
+        int maxFrameSize = 40960; // bytes
+        /**
+         * the maximum length of the aggregated content in bytes
+         */
+        int maxContentLen = 65536;
     }
 }

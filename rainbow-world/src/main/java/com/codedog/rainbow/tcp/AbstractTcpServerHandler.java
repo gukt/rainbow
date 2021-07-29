@@ -40,6 +40,9 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
      * TODO 初始化完成后，需要是不可变的？？？ 可以动态添加是不是更好？考虑一下
      */
     @Getter private final List<MessageInterceptor<?>> interceptorList = new ArrayList<>();
+    /**
+     * 活跃状态，一旦设置为 true，就表示可以接受请求了。
+     */
     @Setter protected volatile boolean active;
     /**
      * 消息拦截器列表，内部循环使用的

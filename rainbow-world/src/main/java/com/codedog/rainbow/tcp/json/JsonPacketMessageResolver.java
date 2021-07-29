@@ -8,7 +8,6 @@ import com.codedog.rainbow.tcp.MessageResolver;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 
 import java.io.Serializable;
-import java.util.*;
 
 /**
  * JsonPacketMessageResolver class
@@ -34,7 +33,7 @@ public class JsonPacketMessageResolver implements MessageResolver<JsonPacket> {
 
     @Override
     public JsonPacket resolveError(Serializable code, String error) {
-        return null;
+        return JsonPacket.ofError((int) code, error);
     }
 
     @Override
@@ -42,17 +41,17 @@ public class JsonPacketMessageResolver implements MessageResolver<JsonPacket> {
         return msg.withRtd(rtd);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <V> Optional<V> resolveArgs(JsonPacket msg, Class<?> paramType) {
-        V value = null;
-        if (Set.class.isAssignableFrom(paramType)) {
-            value = (V) new HashSet<>((Collection<V>) getPayload(msg));
-        } else if (List.class.isAssignableFrom(paramType)) {
-            value = (V) new ArrayList<>((Collection<V>) getPayload(msg));
-        }
-        return Optional.ofNullable(value);
-    }
+    // @Override
+    // @SuppressWarnings("unchecked")
+    // public <V> Optional<V> resolveArgs(JsonPacket msg, Class<?> paramType) {
+    //     V value = null;
+    //     if (Set.class.isAssignableFrom(paramType)) {
+    //         value = (V) new HashSet<>((Collection<V>) getPayload(msg));
+    //     } else if (List.class.isAssignableFrom(paramType)) {
+    //         value = (V) new ArrayList<>((Collection<V>) getPayload(msg));
+    //     }
+    //     return Optional.ofNullable(value);
+    // }
 
     @Override
     public Class<JsonPacket> getMessageClass() {

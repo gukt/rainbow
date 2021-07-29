@@ -4,15 +4,15 @@
 
 package com.codedog.rainbow.world.net;
 
-import com.codedog.rainbow.util.Sessions;
 import com.codedog.rainbow.tcp.session.Session;
+import com.codedog.rainbow.util.Sessions;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author https://github.com/gukt
@@ -27,7 +27,7 @@ public class SessionManager {
     /**
      * 当前所有已接收的连接
      */
-    private static final List<Session> CONNECTIONS = new ArrayList<>();
+    private static final List<Session> CONNECTIONS = new CopyOnWriteArrayList<>();
 
     public static Optional<Session> getSessionById(Serializable key) {
         return Optional.ofNullable(SESSIONS_BY_ROLE_ID.get(key));

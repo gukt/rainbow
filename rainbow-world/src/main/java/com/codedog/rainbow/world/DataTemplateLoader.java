@@ -5,39 +5,34 @@
 package com.codedog.rainbow.world;
 
 import com.codedog.rainbow.tcp.TcpServer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * TcpServerBootstrap class
+ * 游戏配置数据加载器
  *
  * @author https://github.com/gukt
  */
 @Component
-@Order(1)
-public class TcpServerBootstrap implements ApplicationRunner {
+@Order(0)
+@Slf4j
+public class DataTemplateLoader implements ApplicationRunner {
 
     private final GameWorld world;
     private final TcpServer tcpServer;
 
-    public TcpServerBootstrap(GameWorld world, TcpServer tcpServer) {
+    public DataTemplateLoader(GameWorld world, TcpServer tcpServer) {
         this.world = world;
         this.tcpServer = tcpServer;
     }
 
     @Override
-    public void run(ApplicationArguments args) {
-        if (tcpServer != null) {
-            world.getWaitGroup().run(() -> {
-                try {
-                    // 启动并阻塞，直到有错误发生
-                    tcpServer.start();
-                } catch (Exception e) {
-                    world.exit(e);
-                }
-            }, "tcp-server");
-        }
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("正在加载游戏配置数据...");
+        // TODO 加载游戏配置数据
+        log.info("游戏配置数据加载完毕");
     }
 }

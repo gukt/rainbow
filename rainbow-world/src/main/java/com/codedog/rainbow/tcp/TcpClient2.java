@@ -150,7 +150,7 @@ public class TcpClient2<T> {
 
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, T response) {
-            log.debug("CLIENT: Receiving: {}", response);
+            log.debug("CLIENT: Receiving a message: {}", response);
             // 递增ack序号
             nextAck.incrementAndGet();
             int syncId = messageResolver.getSync(response);

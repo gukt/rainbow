@@ -4,12 +4,12 @@
 
 package com.codedog.rainbow.world.net.json;
 
-import com.codedog.rainbow.util.ObjectUtils;
-import com.codedog.rainbow.world.net.ErrorCode;
-import com.codedog.rainbow.world.net.Payload;
 import com.codedog.rainbow.tcp.session.Session;
+import com.codedog.rainbow.world.net.Payload;
 import lombok.*;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -60,8 +60,13 @@ public class JsonPacket {
      */
     private byte[] checksum;
 
-    public static JsonPacket empty(String type) {
-        return of(type, new Payload());
+    public JsonPacket withRtd(Object ext) {
+        this.rtd = ext;
+        return this;
+    }
+
+    public static JsonPacket of(String type) {
+        return of(type, new HashMap<>());
     }
 
     public static JsonPacket of(String type, Object payload) {
@@ -82,24 +87,17 @@ public class JsonPacket {
                 .build();
     }
 
-    public static JsonPacket ofError(@NonNull ErrorCode errCode) {
-        return ofError(errCode, null);
-    }
+    // public static JsonPacket ofError(@NonNull ErrorCode errCode) {
+    //     return ofError(errCode, null);
+    // }
+    //
+    // public static JsonPacket ofError(@NonNull ErrorCode errCode, String text) {
+    //     return ofError(errCode.getCode(), ObjectUtils.nullToDefault(text, errCode.getError()));
+    // }
 
-    public static JsonPacket ofError(@NonNull ErrorCode errCode, String text) {
-        return ofError(errCode.getCode(), ObjectUtils.nullToDefault(text, errCode.getError()));
-    }
-
-    public static JsonPacket ofError(int code, String msg) {
-        return JsonPacket.of(MsgTypeEnum.ERROR.getText(), Payload.empty()
-                .put("code", code)
-                .put("msg", msg)
-        );
-    }
-
-    public JsonPacket withRtd(Object ext) {
-        this.rtd = ext;
-        return this;
+    public static JsonPacket ofError(Serializable code, String msg) {
+        Object[] pairs = {new Object[]{"code", code}, new Object[]{"msg", msg}};
+        return JsonPacket.of("error", Payload.of(pairs));
     }
 
     public CompletableFuture<Void> writeTo(@NonNull Session session) {

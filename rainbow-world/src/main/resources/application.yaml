@@ -46,9 +46,15 @@ app:
     catalog: rainbow_game
   # TCP Server properties
   tcp:
-    enabled: false
+    enabled: true
+    type: ws
+    websocket:
+      path: /ws
+      ssl-enabled: false
+      max-frame-size: 40960
+      max-content-len: 65536
     port: 5000
-    message-protocol: protobuf
+    message-protocol: json
     # TODO 改为 Duration
     keep-alive-timeout: 300
     max-connections: 30000

@@ -7,7 +7,6 @@ package com.codedog.rainbow.tcp;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.config.TcpProperties;
 import com.codedog.rainbow.world.net.ErrorCode;
-import com.codedog.rainbow.world.net.json.JsonPacket;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,13 +51,12 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
         final Object rtd = resolver.getRtd(request);
         final MessageHandler<Object> handler = getHandlerByType(resolver.getType(request));
         if (handler == null) {
-            JsonPacket.ofError(ErrorCode.ERR_HANDLER_NOT_FOUND)
-                    .withRtd(rtd)
-                    .writeTo(session);
+            T error = resolver.handlerNotFoundError();
+            session.write(resolver.withRtd(error, rtd));
             return;
         }
 //        log.debug("TCP - Dispatching a message to handle: {}", resolver.toCompactString(request));
-        log.debug("TCP - Dispatching a message to handle: {}", request);
+        log.debug("TCP - Dispatching the message: {}", request);
         // 执行任务Message pumping loop error
         executor.execute(new RequestTask<T>(session, request) {
             @Override
@@ -78,9 +76,6 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
                     if (result instanceof ErrorCode) {
                         // TODO 简化
                         response = resolver.resolveError(((ErrorCode) result).getCode(), ((ErrorCode) result).getError());
-//                   // TODO fix it ASAP
-//                    } else if (result instanceof packetType) {
-//                        response = (T) result;
                     } else {
                         // 对于返回了不支持的处理结果类型，此时仍需要返回响应给客户端，
                         // 不能默默的吞掉，否则可能会导致客户端因收不到响应而等待

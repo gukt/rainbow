@@ -4,10 +4,11 @@
 
 package com.codedog.rainbow.world.net;
 
+import com.codedog.rainbow.world.net.json.JsonPacket;
 import lombok.Getter;
 
 /**
- * 错误代码枚举类
+ * 业务层定义的“错误代码枚举类”
  *
  * @author https://github.com/gukt
  */
@@ -69,5 +70,9 @@ public enum ErrorCode {
     ErrorCode(int code, String error) {
         this.code = code;
         this.error = error;
+    }
+
+    public JsonPacket toJsonPaket() {
+        return JsonPacket.ofError(code, error);
     }
 }

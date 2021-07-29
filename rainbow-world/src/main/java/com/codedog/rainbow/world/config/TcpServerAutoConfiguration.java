@@ -80,6 +80,10 @@ public class TcpServerAutoConfiguration {
 //        messageHandlerFinder.findMessageHandlers().forEach(dispatcher::registerHandler);
         // 注册 Interceptors
 //        messageInterceptors(properties).forEach(item -> tcpServerChannelHandler.getInterceptorList().add(item));
+
+        MessageResolver<?> messageResolver = getMessageResolverByProtocol(properties.getMessageProtocol());
+        properties.setMessageResolver(messageResolver);
+
         // 构造一个 TcpServer 实例返回
         return new TcpServer(properties, tcpServerChannelHandler(properties), messageDispatcher(properties));
     }

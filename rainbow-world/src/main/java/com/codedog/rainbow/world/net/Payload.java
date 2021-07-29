@@ -4,91 +4,110 @@
 
 package com.codedog.rainbow.world.net;
 
-import lombok.NonNull;
+import com.codedog.rainbow.util.Assert;
+import com.codedog.rainbow.util.MapUtils;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author https://github.com/gukt
  */
-public class Payload extends HashMap<String, Object> {
+public final class Payload extends HashMap<String, Object> {
 
-//    /**
-//     * 私有构造函数，目的是阻止使用new来构造对象实例
-//     */
-//    @SuppressWarnings("unused")
-//    private Payload() {
-//        throw new AssertionError("No Payload instances for you.");
-//    }
+    public static final Payload EMPTY = new Payload();
 
-    public Payload() {
+    private Payload() {
         super(8);
     }
 
-    public Payload(int capacity) {
+    private Payload(int capacity) {
         super(capacity);
     }
 
-    /**
-     * 拷贝指定的map中的映射到实例的内部数据中
-     *
-     * @throws NullPointerException 如果指定的map为null
-     */
-    public Payload(@NonNull Map<String, Object> map) {
+    private Payload(Map<String, ?> map) {
         super(map);
     }
 
-    public static Payload of(@NonNull String key, Object value) {
-        return new Payload().put(key, value);
+    /**
+     * 创建一个 Payload 实例，并指定初始 <code>capacity</code>。
+     *
+     * @param capacity 初始容量
+     * @return Payload 实例
+     */
+    public static Payload of(int capacity) {
+        return new Payload(capacity);
     }
 
     /**
-     * An convenience method of new Payload()
+     * 创建一个 Payload 实例，并使用指定的 {@link Map map} 初始化数据。
      *
-     * @return A payload object with empty content
+     * @param map map 对象
+     * @return Payload 实例
+     * @throws IllegalArgumentException 如果指定的 <code>map</code> 为 null
      */
-    public static Payload empty() {
-        return new Payload();
+    public static Payload of(final Map<String, ?> map) {
+        Assert.notNull(map, "map");
+        return new Payload(map);
     }
 
-    public static Payload of(Object... kvs) {
-        if (kvs == null) {
-            throw new IllegalArgumentException("v should not be null.");
-        }
-        int even = 2;
-        int len = kvs.length;
-        if (len % even != 0) {
-            throw new IllegalArgumentException("The length of kvs is not even");
-        }
-        Payload payload = new Payload();
-        Object key, value;
-        for (int i = 0; i < len; i += even) {
-            key = kvs[i];
-            value = kvs[i + 1];
-            String k = key instanceof String ? (String) key : key.toString();
-            payload.put(k, value);
-        }
-        return payload;
+    /**
+     * 使用指定的 key, value 创建一个 Payload 实例。
+     *
+     * @param key   键，不可为 null
+     * @param value 值，可以为 null
+     * @return Payload 实例
+     * @throws IllegalArgumentException 如果指定的 <code>key</code> 为 null
+     */
+    public static Payload of(String key, Object value) {
+        Assert.notNull(key, "key");
+        return new Payload(8).put(key, value);
     }
 
+    /**
+     * 使用指定的键值对数组创建一个 Payload 实例。
+     *
+     * @param pairs 键值对数组，可以为 null，为空时相当于 {@link #EMPTY Payload.EMPTY}
+     * @return Payload 实例
+     */
+    public static Payload of(Object[] pairs) {
+        return Payload.of(MapUtils.newHashMap(pairs));
+    }
+
+    /**
+     * 向当前对象中存放一组 key，value 值。
+     *
+     * @param key   键，不能为 null
+     * @param value 值，可以为 null
+     * @return 返回当前对象自身
+     * @throws IllegalArgumentException 如果 key 为 null
+     */
     @Override
-    public Payload put(@NonNull String key, Object value) {
+    public Payload put(String key, Object value) {
+        Assert.notNull(key, "key");
         super.put(key, value);
         return this;
     }
 
     /**
-     * Returns the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the
-     * key.
+     * 返回与指定的 key 对应的 value，如果 key 不存在，返回 null。
+     *
+     * @param key 键，不能为 null
+     * @param <V> 返回值类型，内部会自动类型转换
+     * @return 返回与指定的 key 对应的 value，如果 key 不存在，返回 null。
      */
     @SuppressWarnings("unchecked")
-    public <V> V get(@NonNull String key) {
+    @Nullable
+    public <V> V get(String key) {
+        Assert.notNull(key, "key");
         return (V) super.get(key);
     }
 
     @SuppressWarnings("unchecked")
-    public <V> V getOrDefault(@NonNull String key, @NonNull V defaultValue) {
+    public <V> V getOrDefault(String key, V defaultValue) {
+        Assert.notNull(key, "key");
+        Assert.notNull(defaultValue, "defaultValue");
         return (V) super.getOrDefault(key, defaultValue);
     }
 }

@@ -9,7 +9,6 @@ import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.google.protobuf.ByteString;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 /**
  * ProtoPacketMessageResolver class
@@ -52,14 +51,14 @@ public class ProtoPacketMessageResolver implements MessageResolver<ProtoPacket> 
         return msg;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <V> Optional<V> resolveArgs(ProtoPacket msg, Class<?> paramType) {
-        if(ByteString.class.isAssignableFrom(paramType)) {
-            return Optional.ofNullable((V)getPayload(msg));
-        }
-        return Optional.empty();
-    }
+    // @Override
+    // @SuppressWarnings("unchecked")
+    // public <V> Optional<V> resolveArgs(ProtoPacket msg, Class<?> paramType) {
+    //     if(ByteString.class.isAssignableFrom(paramType)) {
+    //         return Optional.ofNullable((V)getPayload(msg));
+    //     }
+    //     return Optional.empty();
+    // }
 
     @Override
     public Class<ProtoPacket> getMessageClass() {

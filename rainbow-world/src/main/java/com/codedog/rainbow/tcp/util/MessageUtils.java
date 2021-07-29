@@ -51,13 +51,20 @@ public class MessageUtils {
             }
         } else if (source instanceof JsonPacket) {
             JsonPacket packet = (JsonPacket) source;
-            Object value = null;
-            if (Set.class.isAssignableFrom(expectedType)) {
-                value = new HashSet<>((Collection<V>) packet.getPayload());
-            } else if (List.class.isAssignableFrom(expectedType)) {
-                value = new ArrayList<>((Collection<V>) packet.getPayload());
+            try {
+                if (Set.class.isAssignableFrom(expectedType)) {
+                    return packet.getPayload();
+                    // return new HashSet<>((Collection<V>) packet.getPayload());
+                } else if (List.class.isAssignableFrom(expectedType)) {
+                    return packet.getPayload();
+                    // return new ArrayList<>((Collection<V>) packet.getPayload());
+                } else if (Map.class.isAssignableFrom(expectedType)) {
+                    return packet.getPayload();
+                    // return new HashMap<>((Map<?,?>) packet.getPayload());
+                }
+            } catch (Exception e) {
+                log.warn("Cannot convert the payload to type {}: {}", expectedType.getSimpleName(), packet.getPayload());
             }
-            return value;
         }
         return null;
     }

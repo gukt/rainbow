@@ -4,19 +4,12 @@
 
 package com.codedog.rainbow.world.controller;
 
+import com.codedog.rainbow.tcp.HandlerMapping;
 import com.codedog.rainbow.tcp.MessageHandler;
-import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
-import com.codedog.rainbow.world.generated.CommonProto;
-import com.codedog.rainbow.world.generated.GameEnterRequest;
-import com.codedog.rainbow.world.generated.GameEnterResponse;
+import com.codedog.rainbow.world.net.Payload;
 import com.codedog.rainbow.world.net.json.JsonPacket;
-import com.google.protobuf.ByteString;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * RoleController
@@ -24,26 +17,30 @@ import java.util.Set;
  * @author https://github.com/gukt
  */
 @Controller
-public class RoleController {
+public class GameController {
 
     /**
      * 灵活的参数绑定
      */
-    // @HandlerMapping(value = "TestRequest")
-    public Object gameEnter(Session session,
-                            DefaultSession session2,
-                            ByteString payload,
-                            CommonProto.ProtoPacket packet,
-                            GameEnterRequest request,
-                            GameEnterResponse response,
-                            JsonPacket jsonPacket,
-                            List<Object> list,
-                            Set<String> set1,
-                            Map<String,Object> payload2,
+    @HandlerMapping(value = "GameEnterRequest")
+    public Object gameEnter(Session session, JsonPacket packet,
+                            // List<Object> list,
+                            // Set<String> set1,
+                            // Map<?, ?> payload,
                             MessageHandler.Error error) {
+        // TODO 从payload 中取出 roleId
+        System.out.println(packet);
+
+        // System.out.println(payload);
+
+//         Sessions.setRoleId(session, roleId);
+//         SessionManager.addSession(session);
+
+        return JsonPacket.of("GameEnterResponse", Payload.of("foo", "bar"));
+
         // 灵活的参数绑定
-        error.add("出错了");
-        return null;
+        // error.add("出错了");
+        // return null;
 
         // System.out.println(session);
         // return null;
