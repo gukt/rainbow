@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.LongAdder;
 /**
  * @author https://github.com/gukt
  */
+@Deprecated
 public class GameAppStats {
 
     @Getter

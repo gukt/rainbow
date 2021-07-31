@@ -4,8 +4,8 @@
 
 package com.codedog.rainbow.tcp;
 
-import com.codedog.rainbow.tcp.codec.json.JsonDecoder;
-import com.codedog.rainbow.tcp.codec.json.JsonEncoder;
+import com.codedog.rainbow.tcp.json.codec.JsonDecoder;
+import com.codedog.rainbow.tcp.json.codec.JsonEncoder;
 import com.codedog.rainbow.tcp.json.JsonPacketMessageResolver;
 import com.codedog.rainbow.tcp.protobuf.ProtoPacketMessageResolver;
 import com.codedog.rainbow.world.generated.CommonProto;

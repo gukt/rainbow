@@ -2,7 +2,7 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp.codec.json;
+package com.codedog.rainbow.tcp.json.codec;
 
 import com.codedog.rainbow.util.JsonUtils;
 import com.codedog.rainbow.world.net.json.JsonPacket;

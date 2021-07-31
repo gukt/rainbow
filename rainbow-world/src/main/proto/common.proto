@@ -43,6 +43,8 @@ enum MsgTypeEnum {
 
   GameEnterRequest = 20001;
   GameEnterResponse = 20002;
+  ReconnectRequest = 1001;
+  ReconnectResponse = 1002;
 }
 
 //message KeepAlive {

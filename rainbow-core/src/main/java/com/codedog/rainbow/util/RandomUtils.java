@@ -32,4 +32,13 @@ public class RandomUtils {
         }
         return sb.toString();
     }
+
+    public static final int nextInt(int min, int max) {
+        // TODO TODO 使用一个随机qujiang
+        return min;
+    }
+    public static final int nextLong(int min, int max) {
+        // TODO TODO 使用一个随机qujiang
+        return min;
+    }
 }

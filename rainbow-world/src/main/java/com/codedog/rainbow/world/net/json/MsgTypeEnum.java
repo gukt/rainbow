@@ -28,6 +28,7 @@ public enum MsgTypeEnum {
 
     @Getter
     private final int value;
+    // TODO 改成 text()
     @Getter
     private final String text;
 
@@ -35,4 +36,14 @@ public enum MsgTypeEnum {
         this.value = value;
         this.text = text;
     }
+
+    // JsonPacket toJsonPacket() {
+    //     return JsonPacket.of(text);
+    // }
+    //
+    // public JsonPacket toJsonPacket(Object payload) {
+    //     JsonPacket packet = JsonPacket.of(text);
+    //     packet.setPayload(payload);
+    //     return packet;
+    // }
 }

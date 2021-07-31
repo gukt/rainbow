@@ -51,7 +51,8 @@ public enum ErrorCode {
      */
     ERR_SERVER_UNAVAILABLE(1, "服务器当前不可用"),
     ERR_UNSUPPORTED_MESSAGE_HANDLE_RESULT(1, "ERR_UNSUPPORTED_MESSAGE_HANDLE_RESULT"),
-    ERR_SESSION_EXPIRED(1, "重连过期"),
+    ERR_SESSION_NOT_FOUND(1, "连接不存在"),
+    // ERR_SESSION_EXPIRED(1, "重连过期"),
     ERR_ILLEGAL_SN(1, "不正确的包序"),
 
     // more

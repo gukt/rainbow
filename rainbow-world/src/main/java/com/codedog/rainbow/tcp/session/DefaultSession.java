@@ -84,16 +84,19 @@ public class DefaultSession extends AbstractSession {
         return new CompletableFuture<>();
     }
 
-    public void reuse(Session targetSession) {
-        DefaultSession session = (DefaultSession) targetSession;
-        // 代表旧的连接
-        ChannelHandlerContext old = session.delegate;
-        session.delegate = this.delegate;
+    /**
+     * 重用此连接
+     *
+     * @param session
+     */
+    public void reuseBy(Session session) {
+        DefaultSession currentSession = (DefaultSession) session;
         // 将旧的连接关闭，防止对端在第一条连接没有关闭的情况下又发起一条
         // 确保之前的连接是断开的非常重要，因为在那条连接上服务器可能关联监听器，比如存档逻辑
         // 两条连接各自取自己Session中的数据进行存档，会造成数据相互覆盖
-        old.flush().close();
-        targetSession.reopen();
+        this.delegate.flush().close();
+        this.delegate = currentSession.delegate;
+        this.reopen();
     }
 
     public boolean beforeWrite(Object message) {

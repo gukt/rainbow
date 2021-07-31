@@ -4,9 +4,9 @@
 
 package com.codedog.rainbow.tcp;
 
-import com.codedog.rainbow.tcp.codec.protobuf.ProtobufEncoder;
-import com.codedog.rainbow.tcp.codec.protobuf.ProtobufFixed32FrameDecoder;
-import com.codedog.rainbow.tcp.codec.protobuf.ProtobufFixed32LengthFieldPrepender;
+import com.codedog.rainbow.tcp.protobuf.codec.ProtobufEncoder;
+import com.codedog.rainbow.tcp.protobuf.codec.ProtobufFixed32FrameDecoder;
+import com.codedog.rainbow.tcp.protobuf.codec.ProtobufFixed32LengthFieldPrepender;
 import com.codedog.rainbow.tcp.util.ProtoUtils;
 import com.codedog.rainbow.world.generated.CommonProto;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;

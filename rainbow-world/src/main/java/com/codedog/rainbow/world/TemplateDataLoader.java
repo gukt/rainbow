@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(0)
 @Slf4j
-public class DataTemplateLoader implements ApplicationRunner {
+public class TemplateDataLoader implements ApplicationRunner {
 
     private final GameWorld world;
     private final TcpServer tcpServer;
 
-    public DataTemplateLoader(GameWorld world, TcpServer tcpServer) {
+    public TemplateDataLoader(GameWorld world, TcpServer tcpServer) {
         this.world = world;
         this.tcpServer = tcpServer;
     }

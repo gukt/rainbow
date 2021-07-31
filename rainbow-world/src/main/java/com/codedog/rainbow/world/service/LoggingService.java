@@ -18,17 +18,17 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class LoggingService {
 
-    // Inject other services here.
+    // Inject some services here.
 
     public void recordRoleCreating(Role role, GameEnterRequest request) {
         // Code goes here.
     }
 
-    public void recordRoleEntering(Role role, GameEnterRequest request) {
+    public void writeRoleEnteringLog(Role role, GameEnterRequest request) {
         // Code goes here.
     }
 
-    public void recordRoleInfo(Role role) {
+    public void writeRoleInfoLog(Role role) {
         // Code goes here.
     }
 }

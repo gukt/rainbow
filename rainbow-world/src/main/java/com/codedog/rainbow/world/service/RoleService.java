@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,7 +68,11 @@ public class RoleService extends RoleServiceImplBase {
 
     public Role findByOpenIdOrCreate(String openId, GameEnterRequest request) {
         Assert.notNull(request, "request");
-
+        Role role = findByOpenId(openId);
+        if(role == null) {
+            role = create(request);
+            log.info("已成功创建角色: {}", role);
+        }
         // Role role = findByOpenId(openId);
         // if (role == null) {
         //     // TODO 这里抛出异常是不是可以去掉？
@@ -83,7 +84,17 @@ public class RoleService extends RoleServiceImplBase {
         //         // throw new ExecutionException(ErrorCode.CreateRoleFaild, "创建角色失败，请稍后重试");
         //         // }
         //     }
-        return null;
+        return role;
+    }
+
+    public Role findByOpenIdOrCreate2(String openId, Map<String,Object> payload) {
+        Assert.notNull(payload, "payload");
+        Role role = findByOpenId(openId);
+        if(role == null) {
+            role = create2(payload);
+            log.info("已成功创建角色: {}", role);
+        }
+        return role;
     }
 
     /**
@@ -98,6 +109,18 @@ public class RoleService extends RoleServiceImplBase {
         role.setId(IdGenerator.nextId());
         role.setUid(request.getUid());
         role.setOpenId(request.getOpenId());
+        role.setCreatedAt(now);
+        role.setUpdatedAt(now);
+        role.setLoginTime(now);
+        return roleRepository.save(role);
+    }
+
+    public Role create2(Map<String,Object> payload) {
+        Date now = new Date();
+        Role role = new Role();
+        role.setId(IdGenerator.nextId());
+        role.setUid((Long) payload.get("uid"));
+        role.setOpenId((String) payload.get("openId"));
         role.setCreatedAt(now);
         role.setUpdatedAt(now);
         role.setLoginTime(now);

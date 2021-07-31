@@ -76,3 +76,11 @@ message GameEnterResponse {
   uint64 created_at = 7;
   uint64 server_time = 8;
 }
+
+message ReconnectRequest {
+  uint64 role_id = 1;
+}
+
+message ReconnectResponse {
+  uint64 role_id = 1;
+}

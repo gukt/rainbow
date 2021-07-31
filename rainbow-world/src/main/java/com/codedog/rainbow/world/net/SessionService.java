@@ -58,9 +58,9 @@ public class SessionService {
     }
 
     /**
-     * 获取当前处于 {@link State#ACTIVE ACTIVE} 状态的所有 {@link Session} 的集合。
+     * 获取当前处于 {@link State#ACTIVE} 状态的所有 {@link Session} 的集合。
      *
-     * @return 当前处于 {@link State#ACTIVE ACTIVE} 状态的所有 {@link Session} 的集合
+     * @return 当前处于 {@link State#ACTIVE} 状态的所有 {@link Session} 的集合
      * @apiNote 因为会不断有新连接的产生、以及旧连接的过期清理，所以这里返回的是一个近似值。
      */
     public static Collection<Session> getActiveSessions() {
@@ -68,9 +68,9 @@ public class SessionService {
     }
 
     /**
-     * 获取当前处于某 {@link State#DISCONNECTED DISCONNECTED} 状态的所有 {@link Session} 个数。
+     * 获取当前处于某 {@link State#DISCONNECTED} 状态的所有 {@link Session} 个数。
      *
-     * @return 当前处于某 {@link State#DISCONNECTED DISCONNECTED} 状态的所有 {@link Session} 个数
+     * @return 当前处于某 {@link State#DISCONNECTED} 状态的所有 {@link Session} 个数
      * @apiNote 因为会不断有新连接的产生、以及旧连接的过期清理，所以这里返回的是一个近似值。
      */
     public static Collection<Session> getDisconnectedSessions() {
@@ -110,9 +110,9 @@ public class SessionService {
     }
 
     /**
-     * 获取当前处于 {@link State#ACTIVE ACTIVE} 状态的所有 {@link Session} 个数。
+     * 获取当前处于 {@link State#ACTIVE} 状态的所有 {@link Session} 个数。
      *
-     * @return 当前处于 {@link State#ACTIVE ACTIVE} 状态的所有 {@link Session} 个数
+     * @return 当前处于 {@link State#ACTIVE} 状态的所有 {@link Session} 个数
      * @apiNote 因为会不断有新连接的产生、以及旧连接的过期清理，所以这里返回的是一个近似值。
      */
     public static long getActiveSessionCount() {
@@ -120,9 +120,9 @@ public class SessionService {
     }
 
     /**
-     * 获取当前处于某 {@link State#DISCONNECTED DISCONNECTED} 状态的所有 {@link Session} 个数。
+     * 获取当前处于某 {@link State#DISCONNECTED} 状态的所有 {@link Session} 个数。
      *
-     * @return 当前处于某 {@link State#DISCONNECTED DISCONNECTED} 状态的所有 {@link Session} 个数
+     * @return 当前处于某 {@link State#DISCONNECTED} 状态的所有 {@link Session} 个数
      * @apiNote 因为会不断有新连接的产生、以及旧连接的过期清理，所以这里返回的是一个近似值。
      */
     public static long getDisconnectedSessionCount() {
@@ -132,7 +132,7 @@ public class SessionService {
     /**
      * 添加一个 Session 对象到集合中。
      *
-     * @param session session 对象，不可为 null
+     * @param session session 对象，不能为 null
      * @throws IllegalArgumentException 如果 session 为 null
      */
     public static void add(Session session) {
@@ -145,7 +145,7 @@ public class SessionService {
     /**
      * 从 {@link #SESSIONS Session 集合} 中移除指定的 {@link Session} 对象。
      *
-     * @param session Session 对象，不可为 null
+     * @param session Session 对象，不能为 null
      * @throws IllegalArgumentException 如果 session 为 null
      */
     public static void remove(Session session) {
@@ -157,6 +157,11 @@ public class SessionService {
 
     public static Optional<Session> findById2(Serializable key) {
         return Optional.ofNullable(SESSIONS_BY_ROLE_ID.get(key));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <E extends Session> E findById3(Serializable key) {
+        return (E) SESSIONS_BY_ROLE_ID.get(key);
     }
 
     @Nullable
