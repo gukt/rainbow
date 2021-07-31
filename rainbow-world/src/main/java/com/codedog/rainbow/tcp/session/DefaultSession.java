@@ -37,7 +37,7 @@ public class DefaultSession extends AbstractSession {
         if (beforeWrite(message)) {
             log.debug("TCP - Writing: {} -> {}", message, this);
             if (isClosed()) {
-                log.warn("TCP - You are writing a message to the closed session: message={}, session={}", message, this);
+                log.warn("TCP - You are writing message to a closed session: message={}, session={}", message, this);
             }
             if (flush) {
                 delegate.writeAndFlush(message);

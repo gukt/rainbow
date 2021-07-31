@@ -2,7 +2,7 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.util;
 
 import com.codedog.rainbow.util.Assert;
 import com.codedog.rainbow.util.ObjectUtils;
@@ -17,14 +17,12 @@ import java.util.Map;
  */
 public class AttributeSupport implements AttributeAware {
 
-    private final static String ROLE = "role";
-    private final static String ROLE_ID = "role_id";
-
     private final Map<Object, Object> attrs = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
     public <V> V get(Object key) {
+        Assert.notNull(key, "key");
         return (V) attrs.get(key);
     }
 
@@ -33,14 +31,14 @@ public class AttributeSupport implements AttributeAware {
         return ObjectUtils.nullToDefault(get(key), defaultValue);
     }
 
-    // TODO ifPresent, ifAbsent
-    // TODO has(Object key)
-    // TODO putIfAbsent
-
     @Override
     public AttributeSupport put(Object key, Object value) {
         Assert.notNull(key, "key");
         attrs.put(key, value);
         return this;
     }
+
+    // TODO ifPresent, ifAbsent
+    // TODO has(Object key)
+    // TODO putIfAbsent
 }

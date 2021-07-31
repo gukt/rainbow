@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.tcp.session;
 
-import com.codedog.rainbow.tcp.AttributeAware;
+import com.codedog.rainbow.tcp.util.AttributeAware;
 import com.codedog.rainbow.tcp.util.PeerInfo;
 import io.netty.util.AttributeKey;
 

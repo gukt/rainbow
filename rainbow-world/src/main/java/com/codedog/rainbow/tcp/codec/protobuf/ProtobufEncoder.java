@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.tcp.codec.protobuf;
 
-import com.codedog.rainbow.tcp.ProtoUtils;
+import com.codedog.rainbow.tcp.util.ProtoUtils;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.google.protobuf.MessageLiteOrBuilder;
 import io.netty.buffer.ByteBuf;

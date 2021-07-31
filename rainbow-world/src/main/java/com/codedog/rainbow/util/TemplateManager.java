@@ -9,7 +9,6 @@ import com.codedog.rainbow.world.excel.ExcelParser;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +19,9 @@ import java.util.stream.Collectors;
 /**
  * @author https://github.com/gukt
  */
-@Slf4j
 @Component
 @SuppressWarnings("unused")
+@Slf4j
 public class TemplateManager {
 
     private final LoadingCache<Class<?>, List<?>> cache;
@@ -33,25 +32,25 @@ public class TemplateManager {
                 .build(new CacheLoader<Class<?>, List<?>>() {
                     @SuppressWarnings("NullableProblems")
                     @Override
-                    public List<?> load(@NonNull Class<?> key) throws Exception {
+                    public List<?> load(Class<?> key) {
                         return parser.parse(key);
                     }
                 });
     }
 
     @SuppressWarnings("unchecked")
-    public <V> List<V> findAll(Class<V> clazz) {
+    public <V> List<V> find(Class<V> clazz) {
         return (List<V>) cache.getUnchecked(clazz);
     }
 
-    public <V> List<V> findAll(Class<V> clazz, Predicate<V> predicate) {
-        return findAll(clazz).stream()
+    public <V> List<V> find(Class<V> clazz, Predicate<V> predicate) {
+        return find(clazz).stream()
                 .filter(predicate)
                 .collect(Collectors.toList());
     }
 
     public <V> Optional<V> findOne(Class<V> clazz, Predicate<V> predicate) {
-        return findAll(clazz).stream().filter(predicate).findFirst();
+        return find(clazz).stream().filter(predicate).findFirst();
     }
 
     private void invalidate(Class<?> clazz) {
@@ -62,14 +61,15 @@ public class TemplateManager {
         cache.getUnchecked(clazz);
     }
 
-    public void reload(Class<?> clazz) {
+    public void reload(Class<?> targetType) {
+        String targetTypeName = targetType.getSimpleName();
         try {
-            log.debug("Reloading template data: {}", clazz.getSimpleName());
-            invalidate(clazz);
-            touch(clazz);
-            log.debug("Template data reloaded: {}", clazz.getSimpleName());
+            log.info("Template - Reloading {}", targetTypeName);
+            invalidate(targetType);
+            touch(targetType);
+            log.info("Template - Reloaded {}", targetTypeName);
         } catch (Exception e) {
-            log.error("Failed to reload template: {}", clazz.getSimpleName(), e);
+            log.error("Template - Failed to reload {}", targetTypeName, e);
         }
     }
 

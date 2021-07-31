@@ -8,7 +8,7 @@ import com.codedog.rainbow.tcp.session.Session;
 
 import java.io.Serializable;
 
-import static com.codedog.rainbow.tcp.util.SessionConstants.ATTR_ROLE_ID;
+import static com.codedog.rainbow.tcp.session.SessionConstants.ATTR_ROLE_ID;
 
 /**
  * SessionUtils class

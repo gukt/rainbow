@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.tcp.session;
 
-import com.codedog.rainbow.tcp.AttributeSupport;
+import com.codedog.rainbow.tcp.util.AttributeSupport;
 import com.codedog.rainbow.tcp.util.PeerInfo;
 import com.codedog.rainbow.world.config.TcpProperties.SessionProperties;
 import lombok.Getter;
@@ -31,12 +31,15 @@ public abstract class AbstractSession extends AttributeSupport implements Sessio
      */
     @Getter protected volatile long closeTimeMillis;
     /**
-     * 表示与此连接关联 {@link PeerInfo 对端} 信息。
+     * 与此连接关联 {@link PeerInfo 对端（客户端）} 信息。
      */
     @Getter protected PeerInfo peerInfo;
+    /**
+     * 连接的状态，默认为 {@link com.codedog.rainbow.tcp.session.Session.State#NEW}
+     */
     @Getter
     @Setter
-    private State state;
+    private State state = State.NEW;
     /**
      * 当前正在处理的请求。
      */
