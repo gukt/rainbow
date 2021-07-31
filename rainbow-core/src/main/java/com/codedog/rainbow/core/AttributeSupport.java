@@ -10,6 +10,7 @@ import java.util.Map;
  * @author https://github.com/gukt
  */
 @SuppressWarnings("unused, unchecked")
+@Deprecated
 public interface AttributeSupport {
 
     Map<String, Object> getAttrsMap();

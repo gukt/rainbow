@@ -32,7 +32,6 @@ public class DataTemplateLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("正在加载游戏配置数据...");
-        // TODO 加载游戏配置数据
         log.info("游戏配置数据加载完毕");
     }
 }

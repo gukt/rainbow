@@ -40,6 +40,9 @@ public class Role {
     @Column(nullable = false, columnDefinition = "mediumint default 0")
     private Integer sid;
 
+    @Column(nullable = false, columnDefinition = "varchar(25) default ''")
+    private String openId;
+
     @Column(nullable = false, columnDefinition = "varchar(50) default ''")
     private String nick;
 
@@ -63,6 +66,9 @@ public class Role {
 
     @Column(nullable = false, columnDefinition = "tinyint default 0")
     private Integer state;
+
+    @Column(nullable = false)
+    private Date loginTime;
 
     @Column(nullable = false)
     private Date createdAt;

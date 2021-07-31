@@ -138,4 +138,16 @@ public final class Payload extends HashMap<String, Object> {
         Assert.notNull(defaultValue, "defaultValue");
         return (V) super.getOrDefault(key, defaultValue);
     }
+
+    int intValue(String key) {
+        return 0;
+    }
+
+    long longValue(String key) {
+        return 0L;
+    }
+
+    String textValue(String key) {
+        return "";
+    }
 }

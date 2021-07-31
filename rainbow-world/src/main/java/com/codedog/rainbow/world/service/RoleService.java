@@ -4,9 +4,10 @@
 
 package com.codedog.rainbow.world.service;
 
-import com.codedog.rainbow.util.IdGenerator;
 import com.codedog.rainbow.domain.Role;
 import com.codedog.rainbow.repository.RoleRepository;
+import com.codedog.rainbow.util.Assert;
+import com.codedog.rainbow.util.IdGenerator;
 import com.codedog.rainbow.world.generated.Number;
 import com.codedog.rainbow.world.generated.*;
 import com.codedog.rainbow.world.generated.RoleInfo.Builder;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +61,47 @@ public class RoleService extends RoleServiceImplBase {
         }
         roleRepository.save(entity);
         return entity;
+    }
+
+    @Nullable
+    public Role findByOpenId(String openId) {
+        Assert.notNull(openId, "openId");
+        return roleRepository.findByOpenId(openId);
+    }
+
+    public Role findByOpenIdOrCreate(String openId, GameEnterRequest request) {
+        Assert.notNull(request, "request");
+
+        // Role role = findByOpenId(openId);
+        // if (role == null) {
+        //     // TODO 这里抛出异常是不是可以去掉？
+        //     try {
+        //         role = create(request);
+        //     } catch (Exception e) {
+        //         log.error("创建角色失败，请稍后重试", e);
+        //         throw new RuntimeException("YYY");
+        //         // throw new ExecutionException(ErrorCode.CreateRoleFaild, "创建角色失败，请稍后重试");
+        //         // }
+        //     }
+        return null;
+    }
+
+    /**
+     * 使用指定的 {@link GameEnterRequest GameEnterRequest} 请求对象，创建一个角色对象。
+     *
+     * @param request GameEnterRequest object, must not be null.
+     * @return 新创建的角色对象
+     */
+    public Role create(GameEnterRequest request) {
+        Date now = new Date();
+        Role role = new Role();
+        role.setId(IdGenerator.nextId());
+        role.setUid(request.getUid());
+        role.setOpenId(request.getOpenId());
+        role.setCreatedAt(now);
+        role.setUpdatedAt(now);
+        role.setLoginTime(now);
+        return roleRepository.save(role);
     }
 
     public Role getOne(Long id) {

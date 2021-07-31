@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.tcp.session;
 
-import com.codedog.rainbow.core.AbstractAttributeSupport;
+import com.codedog.rainbow.tcp.AttributeSupport;
 import com.codedog.rainbow.tcp.util.PeerInfo;
 import com.codedog.rainbow.world.config.TcpProperties.SessionProperties;
 import lombok.Getter;
@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
  * @author https://github.com/gukt
  */
 @Slf4j
-public abstract class AbstractSession extends AbstractAttributeSupport implements Session {
+public abstract class AbstractSession extends AttributeSupport implements Session {
 
     @Getter protected final SessionStore store;
     @Getter protected Serializable id;
@@ -34,6 +34,9 @@ public abstract class AbstractSession extends AbstractAttributeSupport implement
      * 表示与此连接关联 {@link PeerInfo 对端} 信息。
      */
     @Getter protected PeerInfo peerInfo;
+    @Getter
+    @Setter
+    private State state;
     /**
      * 当前正在处理的请求。
      */
@@ -53,11 +56,6 @@ public abstract class AbstractSession extends AbstractAttributeSupport implement
     @Override
     public boolean isClosed() {
         return closeTimeMillis > 0;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "#" + id + (isClosed() ? " [closed]" : "");
     }
 
     /**
@@ -104,5 +102,10 @@ public abstract class AbstractSession extends AbstractAttributeSupport implement
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "#" + id + (isClosed() ? " [closed]" : "");
     }
 }

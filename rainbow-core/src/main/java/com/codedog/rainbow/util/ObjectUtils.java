@@ -37,6 +37,11 @@ public final class ObjectUtils {
         return obj == null ? defaultValue : obj;
     }
 
+    public static <T extends Iterable<E>, E> T nullToDefault(T obj, T defaultValue) {
+        requireNonNull(defaultValue, "defaultValue");
+        return obj == null ? defaultValue : obj;
+    }
+
     // requireNonNull
 
     public static <E> E requireNonNull(E obj, String name) {

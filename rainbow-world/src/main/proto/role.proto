@@ -63,6 +63,7 @@ message RoleInfo {
 message GameEnterRequest {
   uint64 uid = 1;
   uint64 role_id = 2;
+  string open_id = 3;
 }
 
 message GameEnterResponse {
@@ -71,4 +72,7 @@ message GameEnterResponse {
   string nick = 3;
   string avatar = 4;
   uint32 gold = 5;
+  string open_id = 6;
+  uint64 created_at = 7;
+  uint64 server_time = 8;
 }

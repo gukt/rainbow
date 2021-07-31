@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  * @author https://github.com/gukt
  */
+@Deprecated
 public abstract class AbstractAttributeSupport implements AttributeSupport {
 
     @Getter

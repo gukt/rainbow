@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.tcp.session;
 
-import com.codedog.rainbow.core.AttributeSupport;
+import com.codedog.rainbow.tcp.AttributeAware;
 import com.codedog.rainbow.tcp.util.PeerInfo;
 import io.netty.util.AttributeKey;
 
@@ -16,8 +16,9 @@ import java.util.concurrent.CompletableFuture;
  *
  * @author https://github.com/gukt
  */
-public interface Session extends AttributeSupport {
+public interface Session extends AttributeAware {
 
+    // TODO 这里访问比较简便，但和 Netty 耦合了
     AttributeKey<Session> KEY = AttributeKey.newInstance("session");
 
     /**
@@ -105,4 +106,39 @@ public interface Session extends AttributeSupport {
     // default <V> void beforeWrite(V message) {}
     //
     // default <V> void afterWrite(V message) {}
+
+    void setState(State state);
+
+    State getState() ;
+
+    default boolean isActive() {
+        return getState() == State.ACTIVE;
+    }
+
+    default boolean isDisconnected() {
+        return getState() == State.DISCONNECTED;
+    }
+
+    /**
+     * 表示 {@link Session} 的状态枚举。
+     */
+    enum State {
+
+        /**
+         * 已创建，但还没进入游戏
+         */
+        NEW,
+        /**
+         * 已创建，进入了游戏
+         */
+        ACTIVE,
+        /**
+         * 已掉线
+         */
+        DISCONNECTED,
+        /**
+         * 已过期
+         */
+        EXPIRED
+    }
 }

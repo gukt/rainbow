@@ -5,37 +5,16 @@
 package com.codedog.rainbow;
 
 import com.codedog.rainbow.domain.User;
-import com.codedog.rainbow.util.BeanUtils;
 import com.codedog.rainbow.util.JsonUtils;
-import com.codedog.rainbow.util.MapUtils;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
-
 /**
- * ApplicaitonIndependentTests class
+ * ApplicationIndependentTests class
  *
  * @author https://github.com/gukt
  */
 public class ApplicationIndependentTests {
 
-    @Test
-    void testMapUtils() {
-        // 测试四种方式创建 HashMap
-        //
-        Map<String, String> map1 = MapUtils.newHashMap();
-        Map<String, String> map2 = MapUtils.newHashMap("k1", "v1");
-
-        Map<String, String> map31 = MapUtils.newHashMap(new Object[][]{
-                {"k1"},
-                {"k2", "v2"}
-        });
-
-        User user = new User();
-        user.setName("foo");
-        user.setPassword("bar");
-        Map<String, Object> map4 = BeanUtils.toMap(user, "name", "password");
-    }
 
     @Test
     void test111() {

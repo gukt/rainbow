@@ -8,7 +8,7 @@ import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.util.EncryptionUtils;
 import com.codedog.rainbow.world.config.TcpProperties;
-import com.codedog.rainbow.world.net.SessionManager;
+import com.codedog.rainbow.world.net.SessionService;
 import com.codedog.rainbow.world.net.json.JsonPacket;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -35,6 +35,7 @@ import java.util.List;
 public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHandler<T> {
 
     protected final TcpProperties properties;
+
     /**
      * 消息拦截器列表,供外部调用，动态添加interceptors用的
      * TODO 初始化完成后，需要是不可变的？？？ 可以动态添加是不是更好？考虑一下
@@ -74,8 +75,8 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
         });
         super.channelActive(ctx);
 
-        // add active connection
-        SessionManager.getConnections().add(ctx.channel().attr(Session.KEY).get());
+        // Add session to collection
+        SessionService.add(ctx.channel().attr(Session.KEY).get());
     }
 
     boolean isOverload() {
@@ -84,9 +85,7 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
     }
 
     boolean isConnectionsExceeded() {
-        // 获取当前所有的连接总数(包括暂时离线的）
-        int connCount = SessionManager.getConnectionCount() + SessionManager.getOfflineRoleCount();
-        return connCount >= properties.getMaxConnections();
+        return SessionService.getSessionCount() >= properties.getMaxConnections();
     }
 
     @Override
@@ -107,8 +106,7 @@ public abstract class AbstractTcpServerHandler<T> extends SimpleChannelInboundHa
         // TODO Fix it ASAP
         // fire event
 //        eventPublisher.fireAsync(new SessionClosingEvent(session), true);
-        // remove session from SessionManager
-        SessionManager.getConnections().remove(session);
+        SessionService.remove(session);
     }
 
     @Override

@@ -6,10 +6,13 @@ package com.codedog.rainbow.util;
 
 import com.google.common.collect.Sets;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import static com.codedog.rainbow.util.ObjectUtils.nullToDefault;
 
 /**
  * Map utilities
@@ -57,4 +60,5 @@ public final class MapUtils {
                 }));
         return retMap;
     }
+
 }

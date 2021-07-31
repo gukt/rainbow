@@ -81,7 +81,12 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
             } else if (paramType.equals(Error.class)) {
                 args[i] = Error.EMPTY;
             } else {
-                args[i] = MessageUtils.resolveArgs(packet, paramType);
+                try {
+                    args[i] = MessageUtils.resolveArgs(packet, paramType);
+                } catch (Exception e) {
+                    log.warn("Cannot resolve argument value: #{}, paramType: {}, method: {}", i, paramType, methodAccess);
+                    args[i] = null;
+                }
             }
         }
         return args;

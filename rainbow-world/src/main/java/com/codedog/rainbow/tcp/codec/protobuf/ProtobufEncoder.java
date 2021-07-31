@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.tcp.codec.protobuf;
 
-import com.codedog.rainbow.util.ProtoPackets;
+import com.codedog.rainbow.tcp.ProtoUtils;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.google.protobuf.MessageLiteOrBuilder;
 import io.netty.buffer.ByteBuf;
@@ -24,7 +24,7 @@ public class ProtobufEncoder extends MessageToMessageEncoder<MessageLiteOrBuilde
     @Override
     protected void encode(ChannelHandlerContext ctx, MessageLiteOrBuilder msg, List<Object> out) throws Exception {
         try {
-            ProtoPacket packet = ProtoPackets.wrap(msg);
+            ProtoPacket packet = ProtoUtils.wrap(msg);
             if (packet != null) {
                 ByteBuf buf = Unpooled.wrappedBuffer(packet.toByteArray());
                 out.add(buf);

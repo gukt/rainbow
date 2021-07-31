@@ -16,9 +16,6 @@ import java.util.concurrent.CountDownLatch;
 /**
  * 表示一个游戏服务器进程，它可以不依赖 Spring 独立启动
  *
- * TODO Add RpcServer, 用以接受RPC请求
- * TODO Add HttpServer
- *
  * @author https://github.com/gukt
  */
 @Component
@@ -47,7 +44,7 @@ public class GameWorld extends AbstractLifecycle {
         super.start();
 
         log.info("🚀 Starting GameWorld.");
-        log.debug("GameWorld configuration: {}", properties);
+        log.debug("{}", properties);
 
         // 初始化 GameContext 对象，并设置相关配置属性
 //        GameWorldContext context = new GameWorldContext();

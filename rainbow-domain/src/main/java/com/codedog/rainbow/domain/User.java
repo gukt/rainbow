@@ -35,7 +35,6 @@ public class User {
     /** 主键，由程序提供，需保证全局唯一 */
     @Id
     @JsonView(IdOnly.class)
-    // TODO 全局控制，并根据接口对外服务的对象不同，自动决定要不要自动转换为字符串类型
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 

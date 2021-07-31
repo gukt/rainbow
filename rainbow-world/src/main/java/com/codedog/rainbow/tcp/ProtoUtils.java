@@ -17,12 +17,12 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * PacketWrapper class
+ * ProtoUtils class
  *
  * @author https://github.com/gukt
  */
 @Slf4j
-public class PacketWrapper {
+public class ProtoUtils {
 
     private static Map<String, MsgTypeEnum> messageTypesByName = new HashMap<>();
     private static AtomicInteger SEQUENCE = new AtomicInteger(0);

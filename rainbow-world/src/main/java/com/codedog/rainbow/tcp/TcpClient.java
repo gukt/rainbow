@@ -106,7 +106,7 @@ public class TcpClient {
     public void send(MessageLiteOrBuilder request) {
         ensureConnected();
         log.info("TCP CLIENT - 正在发送请求: {} - {}", request.getClass().getSimpleName(), request);
-        channel.writeAndFlush(PacketWrapper.wrap(request));
+        channel.writeAndFlush(ProtoUtils.wrap(request));
     }
 
     // TODO 以后放开

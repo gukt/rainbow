@@ -7,7 +7,7 @@ package com.codedog.rainbow.tcp;
 import com.codedog.rainbow.lang.NotImplementedException;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.config.TcpProperties;
-import com.codedog.rainbow.world.net.SessionManager;
+import com.codedog.rainbow.world.net.SessionService;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 
@@ -138,7 +138,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
         }
         long duration = System.currentTimeMillis() - startTime;
         if (duration > tcpProperties.getSlowProcessingThreshold()) {
-            log.warn("TCP - Slow: elapsed {} millis, {}", duration, message);
+            log.warn("TCP - Found a slow process, it takes {} millis, {}", duration, message);
         }
     }
 
@@ -234,7 +234,6 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
          * 将轮询得到的消息交由"业务处理线程池"去处理
          * 循环内部也可以响应暂停和中断
          * 如果外部设置了暂停，则pumping工作线程会等待指定的暂停时间后再继续遍历轮询
-         * TODO 移除日志前缀TCP:
          */
         private void start() {
             log.info("TCP - Starting message pumper.");
@@ -253,7 +252,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                                 break;
                             }
                         }
-                        for (Session session : SessionManager.getConnections()) {
+                        for (Session session : SessionService.getSessions()) {
                             if (session.isProcessing() || session.isClosed()) {
                                 continue;
                             }
