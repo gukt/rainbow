@@ -17,6 +17,4 @@ dependencies {
     implementation 'org.springframework.data:spring-data-commons:2.5.3'
     implementation 'org.springframework:spring-webmvc:5.3.9'
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
-
-    //    implementation 'ch.qos.logback:logback-classic:1.2.3'
 }

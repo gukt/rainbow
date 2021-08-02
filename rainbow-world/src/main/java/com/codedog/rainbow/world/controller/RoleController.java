@@ -10,7 +10,7 @@ import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.generated.CommonProto;
 import com.codedog.rainbow.world.generated.GameEnterRequest;
 import com.codedog.rainbow.world.generated.GameEnterResponse;
-import com.codedog.rainbow.world.net.json.JsonPacket;
+import com.codedog.rainbow.tcp.JsonPacket;
 import com.google.protobuf.ByteString;
 import org.springframework.stereotype.Controller;
 

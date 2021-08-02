@@ -6,15 +6,15 @@ package com.codedog.rainbow.world.controller;
 
 import com.codedog.rainbow.domain.Role;
 import com.codedog.rainbow.tcp.HandlerMapping;
+import com.codedog.rainbow.tcp.JsonPacket;
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.session.Session.State;
 import com.codedog.rainbow.util.RandomUtils;
+import com.codedog.rainbow.world.SessionService;
 import com.codedog.rainbow.world.generated.GameEnterRequest;
 import com.codedog.rainbow.world.generated.GameEnterResponse;
 import com.codedog.rainbow.world.net.Payload;
-import com.codedog.rainbow.world.net.SessionService;
-import com.codedog.rainbow.world.net.json.JsonPacket;
 import com.codedog.rainbow.world.service.LoggingService;
 import com.codedog.rainbow.world.service.RedisService;
 import com.codedog.rainbow.world.service.RoleService;
@@ -25,8 +25,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.Map;
 
-import static com.codedog.rainbow.world.net.ErrorCode.ERR_SESSION_NOT_FOUND;
-import static com.codedog.rainbow.world.net.json.MsgTypeEnum.RECONNECT_RESPONSE;
+import static com.codedog.rainbow.world.net.json.JsonMsgType.RECONNECT_RESPONSE;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -65,7 +64,7 @@ public class GameController {
         // TODO 之前这个 attach 是做什么的？
         // roleService.attach(role);
         session.put("role", role);
-        SessionService.add(session);
+        // SessionService.add(session);
 
         // TODO
         // doGameEnter(role, session, request);
@@ -98,13 +97,13 @@ public class GameController {
      * 进入游戏
      */
     @HandlerMapping(value = "GameEnterRequest")
-    public Object gameEnter2(Session session, Map<String,Object> payload) {
+    public Object gameEnter2(Session session, Map<String, Object> payload) {
         String openId = (String) payload.get("openId");
         Role role = roleService.findByOpenIdOrCreate2(openId, payload);
         // 阻塞直到数据同步完成
         waitIfDataSyncRequired();
         session.put("role", role);
-        SessionService.add(session);
+        // SessionService.add(session);
         session.setState(State.ACTIVE);
 
         // TODO 记录玩家所在服务器
@@ -133,7 +132,8 @@ public class GameController {
         DefaultSession prev = SessionService.findById3(roleId);
         if (prev == null) {
             // 给当前连接发送消息，完成后关闭该连接
-            ERR_SESSION_NOT_FOUND.toJsonPaket().writeTo(session).whenComplete((unused, throwable) -> session.close());
+            // TODO
+            // ERR_SESSION_NOT_FOUND.toJsonPaket().writeTo(session).whenComplete((unused, throwable) -> session.close());
             return null;
         }
         // 如果找到旧的连接（Session），则重用它

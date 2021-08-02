@@ -6,7 +6,7 @@ package com.codedog.rainbow;
 
 import com.codedog.rainbow.tcp.util.MessageUtils;
 import com.codedog.rainbow.util.MapUtils;
-import com.codedog.rainbow.world.net.json.JsonPacket;
+import com.codedog.rainbow.tcp.JsonPacket;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

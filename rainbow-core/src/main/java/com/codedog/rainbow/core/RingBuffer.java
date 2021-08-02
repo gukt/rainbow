@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.core;
 
-import lombok.NonNull;
+import com.codedog.rainbow.util.Assert;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class RingBuffer<T> {
     }
 
     /**
-     * 清空buffer，并重置读写指针
+     * 清空 buffer，并重置读写指针。
      */
     public void purge() {
         Arrays.fill(data, null);
@@ -51,9 +51,13 @@ public class RingBuffer<T> {
     }
 
     /**
-     * 向buffer中写入一个元素，如果写入成功返回true,反之false
+     * 写入一个元素，成功返回 true; 反之 false。
+     *
+     * @param value 被写入的元素，不能为 null
+     * @return 如果写入成功返回 true; 反之 false
      */
-    public boolean write(@NonNull T value) {
+    public boolean write(T value) {
+        Assert.notNull(value, "value");
         if (isFull()) {
             return false;
         }

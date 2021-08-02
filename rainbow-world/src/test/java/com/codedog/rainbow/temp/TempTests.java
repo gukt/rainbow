@@ -41,7 +41,7 @@ public class TempTests {
         // sun.reflect.annotation.AnnotatedTypeFactory$AnnotatedParameterizedTypeImpl@58129ba5
         System.out.println(cat.getClass().getAnnotatedSuperclass());
 
-        Animal<String> dog1 = new Animal<String>(){};
+        Animal<String> dog1 = new Animal<String>() {};
         // 匿名对象实例
         // class com.codedog.rainbow.temp.TempTests$1
         System.out.println(dog1.getClass());
@@ -58,11 +58,11 @@ public class TempTests {
 
         // 通过泛型接口获取 dog 对象的类型参数
         Type[] genericInterfaces = dog.getClass().getGenericInterfaces();
-        if (genericInterfaces.length > 0){
-           Type[] actualTypeArgs =  ((ParameterizedType)genericInterfaces[0]).getActualTypeArguments();
-           if(actualTypeArgs.length > 0){
-               System.out.println(actualTypeArgs[0]);
-           }
+        if (genericInterfaces.length > 0) {
+            Type[] actualTypeArgs = ((ParameterizedType) genericInterfaces[0]).getActualTypeArguments();
+            if (actualTypeArgs.length > 0) {
+                System.out.println(actualTypeArgs[0]);
+            }
         }
 
         WildDog<String> wildDog = new WildDog<>();

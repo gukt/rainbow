@@ -6,7 +6,7 @@ package com.codedog.rainbow.world.controller;
 
 import com.codedog.rainbow.tcp.MessageHandler;
 import com.codedog.rainbow.tcp.session.Session;
-import com.codedog.rainbow.world.net.json.JsonPacket;
+import com.codedog.rainbow.tcp.JsonPacket;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
