@@ -122,11 +122,4 @@ public final class Payload extends HashMap<String, Object> {
         Assert.notNull(key, "key");
         return (V) super.get(key);
     }
-
-    @SuppressWarnings("unchecked")
-    public <V> V getOrDefault(String key, V defaultValue) {
-        Assert.notNull(key, "key");
-        Assert.notNull(defaultValue, "defaultValue");
-        return (V) super.getOrDefault(key, defaultValue);
-    }
 }

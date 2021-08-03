@@ -52,7 +52,7 @@ public class SessionTests {
         Session session = newSession();
 
         Object error = new BaseError(1, "some error");
-        session.write(error);
+        session.write(error).whenComplete((v, e) -> System.out.println("完成了"));
 
         MessageHandlerException ex = new MessageHandlerException(1, "some error");
         session.write(ex);
