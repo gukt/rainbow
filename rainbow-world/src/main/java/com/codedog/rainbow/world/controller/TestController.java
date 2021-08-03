@@ -4,10 +4,10 @@
 
 package com.codedog.rainbow.world.controller;
 
-import com.codedog.rainbow.tcp.HandlerMapping;
-import com.codedog.rainbow.tcp.JsonPacket;
-import com.codedog.rainbow.tcp.MessageHandler.Error;
-import com.codedog.rainbow.tcp.MessageHandlerException;
+import com.codedog.rainbow.tcp.message.HandlerMapping;
+import com.codedog.rainbow.tcp.message.JsonPacket;
+import com.codedog.rainbow.tcp.message.MessageHandler.Error;
+import com.codedog.rainbow.tcp.message.MessageHandlerException;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.generated.GameEnterRequest;
 import com.codedog.rainbow.tcp.util.Payload;

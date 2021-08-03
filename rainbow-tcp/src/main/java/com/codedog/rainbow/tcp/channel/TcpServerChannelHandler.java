@@ -2,8 +2,10 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.channel;
 
+import com.codedog.rainbow.tcp.TcpProperties;
+import com.codedog.rainbow.tcp.TcpServer;
 import com.codedog.rainbow.tcp.interceptor.MessageInterceptor;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.util.BaseError;

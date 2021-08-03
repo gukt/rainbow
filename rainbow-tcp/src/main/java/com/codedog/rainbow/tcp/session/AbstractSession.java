@@ -6,7 +6,6 @@ package com.codedog.rainbow.tcp.session;
 
 import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.util.AttributeSupport;
-import com.codedog.rainbow.tcp.util.PeerInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

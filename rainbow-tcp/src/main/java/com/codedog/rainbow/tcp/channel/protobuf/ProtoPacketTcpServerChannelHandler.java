@@ -2,10 +2,10 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp.protobuf;
+package com.codedog.rainbow.tcp.channel.protobuf;
 
 import com.codedog.rainbow.tcp.TcpProperties;
-import com.codedog.rainbow.tcp.TcpServerChannelHandler;
+import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.util.ProtoUtils;

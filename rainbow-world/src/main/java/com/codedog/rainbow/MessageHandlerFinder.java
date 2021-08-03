@@ -3,9 +3,9 @@
  */
 package com.codedog.rainbow;
 
-import com.codedog.rainbow.tcp.HandlerMapping;
-import com.codedog.rainbow.tcp.MessageHandler;
-import com.codedog.rainbow.tcp.MessageHandlerAdapter;
+import com.codedog.rainbow.tcp.message.HandlerMapping;
+import com.codedog.rainbow.tcp.message.MessageHandler;
+import com.codedog.rainbow.tcp.message.MessageHandlerAdapter;
 import com.codedog.rainbow.util.ObjectUtils;
 import com.codedog.rainbow.util.ReflectionUtils;
 import com.esotericsoftware.reflectasm.MethodAccess;

@@ -6,10 +6,15 @@ package com.codedog.rainbow.world.config;
 
 import com.codedog.rainbow.MessageHandlerFinder;
 import com.codedog.rainbow.tcp.*;
+import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
 import com.codedog.rainbow.tcp.interceptor.MessageInterceptor;
 import com.codedog.rainbow.tcp.interceptor.json.JsonKeepAliveMessageInterceptor;
-import com.codedog.rainbow.tcp.json.JsonPacketTcpServerChannelHandler;
-import com.codedog.rainbow.tcp.protobuf.ProtoPacketTcpServerChannelHandler;
+import com.codedog.rainbow.tcp.channel.json.JsonPacketTcpServerChannelHandler;
+import com.codedog.rainbow.tcp.message.DefaultMessageDispatcher;
+import com.codedog.rainbow.tcp.message.JsonPacket;
+import com.codedog.rainbow.tcp.message.MessageDispatcher;
+import com.codedog.rainbow.tcp.channel.protobuf.ProtoPacketTcpServerChannelHandler;
+import com.codedog.rainbow.tcp.message.MessageProtocol;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -74,7 +79,7 @@ public class TcpServerAutoConfiguration {
     @Bean
     @ConditionalOnSingleCandidate(TcpProperties.class)
     public MessageDispatcher messageDispatcher(TcpProperties properties) {
-        MessageDispatcher dispatcher = new DefaultMessageDispatcher<>(properties);
+        MessageDispatcher dispatcher = new DefaultMessageDispatcher(properties);
         // 支持的消息类型
         Class<?> supportedMessageType = properties.getMessageProtocol() == MessageProtocol.PROTOBUF ? ProtoPacket.class : JsonPacket.class;
         // 注册“消息处理器”

@@ -4,8 +4,8 @@
 
 package com.codedog.rainbow;
 
-import com.codedog.rainbow.tcp.JsonPacket;
-import com.codedog.rainbow.tcp.MessageHandlerException;
+import com.codedog.rainbow.tcp.message.JsonPacket;
+import com.codedog.rainbow.tcp.message.MessageHandlerException;
 import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.session.DummySession;
 import com.codedog.rainbow.tcp.session.Session;

@@ -2,7 +2,7 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.message;
 
 /**
  * 支持的消息协议类型枚举

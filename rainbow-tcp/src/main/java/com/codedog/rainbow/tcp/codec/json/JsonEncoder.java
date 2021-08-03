@@ -5,7 +5,7 @@
 package com.codedog.rainbow.tcp.codec.json;
 
 import com.codedog.rainbow.util.JsonUtils;
-import com.codedog.rainbow.tcp.JsonPacket;
+import com.codedog.rainbow.tcp.message.JsonPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;

@@ -5,7 +5,6 @@
 package com.codedog.rainbow.tcp.session;
 
 import com.codedog.rainbow.tcp.TcpProperties;
-import com.codedog.rainbow.tcp.util.PeerInfo;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;

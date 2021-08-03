@@ -1,7 +1,7 @@
 /*
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.message;
 
 /**
  * 消息分发器，用以派发消息到指定的 {@link MessageHandler 消息处理器} 进行处理。

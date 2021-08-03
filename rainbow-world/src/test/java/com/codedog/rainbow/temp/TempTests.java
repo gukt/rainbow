@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.temp;
 
-import com.codedog.rainbow.tcp.MessageHandler;
+import com.codedog.rainbow.tcp.message.MessageHandler;
 import com.codedog.rainbow.world.controller.EchoMessageHandler;
 import io.netty.util.internal.TypeParameterMatcher;
 import org.junit.jupiter.api.Test;

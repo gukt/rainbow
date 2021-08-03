@@ -2,11 +2,11 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp.json;
+package com.codedog.rainbow.tcp.channel.json;
 
-import com.codedog.rainbow.tcp.JsonPacket;
+import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.TcpProperties;
-import com.codedog.rainbow.tcp.TcpServerChannelHandler;
+import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
 import io.netty.channel.ChannelHandlerContext;

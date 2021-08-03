@@ -5,7 +5,6 @@
 package com.codedog.rainbow.tcp.session;
 
 import com.codedog.rainbow.tcp.TcpProperties;
-import com.codedog.rainbow.tcp.util.PeerInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;

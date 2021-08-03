@@ -2,33 +2,41 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.message;
 
 import com.codedog.rainbow.lang.NotImplementedException;
+import com.codedog.rainbow.tcp.TcpProperties;
+import com.codedog.rainbow.tcp.TcpServer;
+import com.codedog.rainbow.tcp.message.MessageHandler.Error;
 import com.codedog.rainbow.tcp.session.Session;
+import com.codedog.rainbow.tcp.util.BaseError;
+import com.codedog.rainbow.tcp.util.MessageUtils;
+import com.codedog.rainbow.tcp.util.ProtoUtils;
 import com.codedog.rainbow.util.Assert;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.MessageLiteOrBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
  * {@inheritDoc}
  *
- * @param <T> 分发的消息的类型
  * @author https://github.com/gukt
  */
 @Slf4j
-public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher {
+public final class DefaultMessageDispatcher implements MessageDispatcher {
 
     /**
-     * Tcp server properties
+     * TCP 相关配置
      */
     protected final TcpProperties properties;
     /**
@@ -45,7 +53,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
      */
     private final Map<Serializable, MessageHandler<?>> handlersMap = new HashMap<>(16);
 
-    public AbstractMessageDispatcher(TcpProperties properties) {
+    public DefaultMessageDispatcher(TcpProperties properties) {
         Assert.notNull(properties, "properties");
         this.properties = properties;
         this.pumper = new MessagePumper();
@@ -133,7 +141,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
      * @param message   处理中的消息
      * @param startTime 开始时间，单位：毫秒
      */
-    private void writeLogIfSlow(T message, long startTime) {
+    private void writeLogIfSlow(Object message, long startTime) {
         if (startTime <= 0) {
             return;
         }
@@ -143,26 +151,84 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
         }
     }
 
-    /**
-     * 分发指定 {@link Session 客户端连接} 的请求（分发消息）。
-     *
-     * @param session 表示客户端连接的对象
-     * @param request 待处理的消息
-     * @throws IllegalArgumentException 如果 <code>session</code> 或 <code>request</code> 为 null
-     */
-    protected abstract void dispatch0(Session session, T request);
-
-    protected void postHandle(Session session, T request, long startTime) {
+    protected void postHandle(Session session, Object request, long startTime) {
         writeLogIfSlow(request, startTime);
         session.completeRequest();
     }
 
-    protected static class RequestTask<T> implements Runnable {
+    /**
+     * 将收到的指定 {@link Session 连接} 发送的请求，提交到“业务处理线程池”中运行。
+     * <p>如果业务线程池当前忙导致提交任务被拒绝，应降级处理。
+     *
+     * @throws RejectedExecutionException 如果提交到线程池被拒绝，此时往往意味着处理该消息的线程池处于超载状态
+     */
+    private void dispatch0(Session session, Object request) {
+        Assert.notNull(session, "session");
+        Assert.notNull(request, "request");
+
+        if (session.isProcessing()) {
+            log.error("TCP - 当前连接有请求正在处理，等待下次被调度执行: {} <- {}", request, session);
+            return;
+        } else {
+            session.setProcessingRequest(request);
+        }
+        final MessageHandler<Object> handler = getHandlerByType(MessageUtils.getType(request));
+        if (handler == null) {
+            Object error = MessageUtils.errorOf(BaseError.HANDLER_NOT_FOUND);
+            session.write(error);
+            return;
+        }
+        log.debug("TCP - Dispatching: {}", request);
+        executor.execute(new RequestTask(session, request) {
+            @Override
+            public void run() {
+                // 记录开始处理请求的时间
+                final long startTime = System.currentTimeMillis();
+                Object response;
+                try {
+                    Object result = handler.handle(session, request);
+                    if (result == null) {
+                        response = null;
+                    } else if (request.getClass().isAssignableFrom(result.getClass())) {
+                        // 如果是和请求对象类型相同直接返回
+                        response = result;
+                    } else if (MessageLiteOrBuilder.class.isAssignableFrom(result.getClass())) {
+                        // NOTE：只有在使用 Protobuf 协议时，才支持返回值不是完整的 ProtoPacket 对象，
+                        response = ProtoUtils.wrap(result);
+                    } else if (result instanceof BaseError) {
+                        response = result;
+                    } else if (result instanceof MessageHandlerException) {
+                        response = MessageUtils.errorOf((MessageHandlerException) result);
+                    } else if (result instanceof MessageHandler.Error) {
+                        List<Object> errors = ((Error) result).getErrors();
+                        response = MessageUtils.errorOf(BaseError.HANDLER_MULTI_RESULT.getCode(), errors.toString());
+                    } else {
+                        // 其他不支持的返回类型
+                        response = MessageUtils.errorOf(BaseError.UNKNOWN_HANDLER_RESULT);
+                    }
+                } catch (Exception e) {
+                    if (e instanceof MessageHandlerException) {
+                        response = MessageUtils.errorOf((MessageHandlerException) e);
+                    } else {
+                        response = MessageUtils.errorOf(BaseError.SERVER_INTERNAL_ERROR);
+                    }
+                }
+                // 返回处理结果给客户端
+                if (response != null) {
+                    session.write(response);
+                }
+                // 后置处理
+                postHandle(session, request, startTime);
+            }
+        });
+    }
+
+    protected static class RequestTask implements Runnable {
 
         private final Session session;
-        private final T request;
+        private final Object request;
 
-        protected RequestTask(Session session, T request) {
+        protected RequestTask(Session session, Object request) {
             this.session = session;
             this.request = request;
         }
@@ -209,11 +275,11 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                 pumper.pause(properties.getPumperWaitMillisOnRejected());
 
                 // 更新processing状态，以便下一轮循环可以被调度
-                RequestTask<?> task = (RequestTask<?>) r;
+                RequestTask task = (RequestTask) r;
                 task.session.setProcessingRequest(null);
                 log.info("TCP - Task rejected by biz executor: {}, session:{}", task.request, task.session);
             } catch (Exception e) {
-                // TODO refines the log
+                // TODO Refines the log
                 log.error("exception:", e);
             }
         }
@@ -246,6 +312,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                                 long timeout = pauseUntil - System.currentTimeMillis();
                                 if (timeout > spinForTimeoutThreshold) {
                                     log.info("TCP - Message pumper was suspended for {} millis", timeout);
+                                    //noinspection BusyWait
                                     Thread.sleep(timeout);
                                 }
                                 log.info("TCP - Message pumper awake.");
@@ -259,12 +326,9 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
                             }
                             // 检查是否有就绪的请求，如果有，取出交由线程池去处理，
                             // 因为线程池可能会拒绝该任务的执行，所以先使用peek读取请求但并不将元素出列
-                            @SuppressWarnings("unchecked")
-                            T request = (T) session.getStore().getPendingRequests().peek();
+                            Object request = session.getStore().getPendingRequests().peek();
                             if (request != null) {
                                 dispatch0(session, request);
-                                // doDispatch(request, s);
-                                // doDispatch(request, s);
                             }
                             // 如果上面提交的任务失败，则立即跳出循环，因为此时若连续提交新任务会连续失败
                             if (needPause()) {

@@ -8,13 +8,18 @@ import com.codedog.rainbow.core.AbstractLifecycle;
 import com.codedog.rainbow.core.LifecycleException;
 import com.codedog.rainbow.core.NetworkService;
 import com.codedog.rainbow.tcp.TcpProperties.WebSocketProperties;
+import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
 import com.codedog.rainbow.tcp.codec.WebSocketFrameHandler;
 import com.codedog.rainbow.tcp.codec.json.JsonDecoder;
 import com.codedog.rainbow.tcp.codec.json.JsonEncoder;
 import com.codedog.rainbow.tcp.codec.protobuf.ProtobufEncoder;
 import com.codedog.rainbow.tcp.codec.protobuf.ProtobufFixed32FrameDecoder;
 import com.codedog.rainbow.tcp.codec.protobuf.ProtobufFixed32LengthFieldPrepender;
-import com.codedog.rainbow.tcp.json.JsonPacketTcpServerChannelHandler;
+import com.codedog.rainbow.tcp.channel.json.JsonPacketTcpServerChannelHandler;
+import com.codedog.rainbow.tcp.message.DefaultMessageDispatcher;
+import com.codedog.rainbow.tcp.message.JsonPacket;
+import com.codedog.rainbow.tcp.message.MessageDispatcher;
+import com.codedog.rainbow.tcp.message.MessageProtocol;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.util.Assert;
 import com.codedog.rainbow.world.generated.CommonProto;
@@ -318,7 +323,7 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
         // TODO 是不是应该将 MessageResolver 弄到 TcpServerContext 中去？
         // properties.setMessageResolver(new JsonPacketMessageResolver());
         TcpServerChannelHandler<JsonPacket> channelHandler = new JsonPacketTcpServerChannelHandler(properties);
-        MessageDispatcher dispatcher = new DefaultMessageDispatcher<>(properties);
+        MessageDispatcher dispatcher = new DefaultMessageDispatcher(properties);
         TcpServer tcpServer = new TcpServer(properties, channelHandler, dispatcher);
         tcpServer.start();
     }

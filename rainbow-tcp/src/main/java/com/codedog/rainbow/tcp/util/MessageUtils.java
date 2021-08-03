@@ -4,8 +4,8 @@
 
 package com.codedog.rainbow.tcp.util;
 
-import com.codedog.rainbow.tcp.JsonPacket;
-import com.codedog.rainbow.tcp.MessageHandlerException;
+import com.codedog.rainbow.tcp.message.JsonPacket;
+import com.codedog.rainbow.tcp.message.MessageHandlerException;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacketOrBuilder;
 import com.google.protobuf.ByteString;

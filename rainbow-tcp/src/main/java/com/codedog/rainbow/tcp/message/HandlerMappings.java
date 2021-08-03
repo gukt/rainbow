@@ -2,7 +2,7 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp;
+package com.codedog.rainbow.tcp.message;
 
 import java.lang.annotation.*;
 
@@ -13,10 +13,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Repeatable(value = HandlerMappings.class)
-public @interface HandlerMapping {
+public @interface HandlerMappings {
 
-    String value();
-
-    String accept() default "protobuf";
+    HandlerMapping[] value() default {};
 }

@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.tcp;
 
+import com.codedog.rainbow.tcp.message.MessageProtocol;
 import lombok.Data;
 
 /**

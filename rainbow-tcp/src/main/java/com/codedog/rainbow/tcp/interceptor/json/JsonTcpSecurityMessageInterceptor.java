@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.tcp.interceptor.json;
 
-import com.codedog.rainbow.tcp.JsonPacket;
+import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.interceptor.TcpSecurityMessageInterceptor;
 

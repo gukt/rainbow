@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow;
 
-import com.codedog.rainbow.tcp.JsonPacket;
+import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.util.MessageUtils;
 import com.codedog.rainbow.tcp.util.ProtoUtils;
 import com.codedog.rainbow.util.MapUtils;

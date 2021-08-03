@@ -5,8 +5,8 @@
 package com.codedog.rainbow.world.controller;
 
 import com.codedog.rainbow.domain.Role;
-import com.codedog.rainbow.tcp.HandlerMapping;
-import com.codedog.rainbow.tcp.JsonPacket;
+import com.codedog.rainbow.tcp.message.HandlerMapping;
+import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.session.Session.State;
