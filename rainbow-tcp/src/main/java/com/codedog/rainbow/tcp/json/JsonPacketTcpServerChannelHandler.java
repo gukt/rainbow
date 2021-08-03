@@ -28,7 +28,7 @@ public final class JsonPacketTcpServerChannelHandler extends TcpServerChannelHan
     protected Session newSession(ChannelHandlerContext delegate) {
         return new DefaultSession(delegate, properties) {
             @Override
-            public boolean beforeWrite( Object message) {
+            public Object beforeWrite( Object message) {
                 if(message == null) return false;
                 if (!(message instanceof JsonPacket)) {
                     log.warn("Unsupported message type: {} (expected: {}), message={}", message.getClass(), JsonPacket.class, message);

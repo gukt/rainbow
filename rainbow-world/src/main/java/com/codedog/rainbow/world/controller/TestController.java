@@ -10,7 +10,7 @@ import com.codedog.rainbow.tcp.MessageHandler.Error;
 import com.codedog.rainbow.tcp.MessageHandlerException;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.generated.GameEnterRequest;
-import com.codedog.rainbow.world.net.Payload;
+import com.codedog.rainbow.tcp.util.Payload;
 import com.codedog.rainbow.world.service.LoggingService;
 import com.codedog.rainbow.world.service.RedisService;
 import com.codedog.rainbow.world.service.RoleService;

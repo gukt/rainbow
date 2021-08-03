@@ -5,6 +5,7 @@
 package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.tcp.session.Session;
+import com.codedog.rainbow.tcp.util.BaseError;
 import com.codedog.rainbow.util.Assert;
 import lombok.*;
 
@@ -92,6 +93,13 @@ public class JsonPacket {
         payload.put("code", code);
         payload.put("msg", msg);
         return JsonPacket.of("Error", payload);
+    }
+
+    public static JsonPacket errorOf(BaseError error) {
+        return errorOf(error.getCode(), error.getMsg());
+    }
+    public static JsonPacket errorOf(MessageHandlerException ex) {
+        return errorOf(ex.getErrorCode(), ex.getErrorMessage());
     }
 
     /**

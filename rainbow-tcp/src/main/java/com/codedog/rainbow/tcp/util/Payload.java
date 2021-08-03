@@ -2,7 +2,7 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.world.net;
+package com.codedog.rainbow.tcp.util;
 
 import com.codedog.rainbow.util.Assert;
 import com.codedog.rainbow.util.MapUtils;
@@ -123,31 +123,10 @@ public final class Payload extends HashMap<String, Object> {
         return (V) super.get(key);
     }
 
-    public static <V> V safeGet(Map<?, ?> map, String key, V defaultValue) {
-        Object value = map.get(key);
-        if (value == null) {
-            return defaultValue;
-        } else {
-            return (V) value;
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public <V> V getOrDefault(String key, V defaultValue) {
         Assert.notNull(key, "key");
         Assert.notNull(defaultValue, "defaultValue");
         return (V) super.getOrDefault(key, defaultValue);
-    }
-
-    int intValue(String key) {
-        return 0;
-    }
-
-    long longValue(String key) {
-        return 0L;
-    }
-
-    String textValue(String key) {
-        return "";
     }
 }

@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author https://github.com/gukt
  */
 @Slf4j
-public final class DummySession extends AbstractSession {
+public class DummySession extends AbstractSession {
 
     private static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
@@ -29,7 +29,13 @@ public final class DummySession extends AbstractSession {
     }
 
     @Override
+    protected Object beforeWrite(Object message) {
+        return message;
+    }
+
+    @Override
     public CompletableFuture<Session> write(Object message, boolean flush) {
+        message = beforeWrite(message);
         if (message != null) {
             log.debug("TCP - Writing: {} -> {}", message, this);
         }

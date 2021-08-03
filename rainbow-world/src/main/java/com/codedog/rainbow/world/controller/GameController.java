@@ -14,7 +14,7 @@ import com.codedog.rainbow.util.RandomUtils;
 import com.codedog.rainbow.world.SessionService;
 import com.codedog.rainbow.world.generated.GameEnterRequest;
 import com.codedog.rainbow.world.generated.GameEnterResponse;
-import com.codedog.rainbow.world.net.Payload;
+import com.codedog.rainbow.tcp.util.Payload;
 import com.codedog.rainbow.world.service.LoggingService;
 import com.codedog.rainbow.world.service.RedisService;
 import com.codedog.rainbow.world.service.RoleService;

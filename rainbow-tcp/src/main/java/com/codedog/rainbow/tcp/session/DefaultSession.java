@@ -31,7 +31,8 @@ public class DefaultSession extends AbstractSession {
 
     @Override
     public CompletableFuture<Session> write(Object message, boolean flush) {
-        if (beforeWrite(message)) {
+        message = beforeWrite(message);
+        if (message != null) {
             log.debug("TCP - Writing: {} -> {}", message, this);
             if (isClosed()) {
                 log.warn("TCP - You are writing message to a closed session: message={}, session={}", message, this);
@@ -96,7 +97,8 @@ public class DefaultSession extends AbstractSession {
         this.reopen();
     }
 
-    public boolean beforeWrite(Object message) {
-        return true;
+    @Override
+    protected Object beforeWrite(Object message) {
+        return message;
     }
 }

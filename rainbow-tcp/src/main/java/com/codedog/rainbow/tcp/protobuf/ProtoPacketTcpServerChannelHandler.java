@@ -34,7 +34,7 @@ public final class ProtoPacketTcpServerChannelHandler extends TcpServerChannelHa
     protected Session newSession(ChannelHandlerContext delegate) {
         return new DefaultSession(delegate, properties) {
             @Override
-            public boolean beforeWrite(@NonNull Object message) {
+            public Object beforeWrite(@NonNull Object message) {
                 /**
                  * 可以直接进返回 GameEnterResponse 这种已经 build 过了的对象，类型为 Message
                  */

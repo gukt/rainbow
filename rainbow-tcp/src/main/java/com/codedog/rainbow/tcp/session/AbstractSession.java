@@ -84,6 +84,8 @@ public abstract class AbstractSession extends AttributeSupport implements Sessio
         processingRequest = null;
     }
 
+    protected abstract Object beforeWrite(Object message);
+
     @Override
     public void completeRequestExceptionally() {
         // 更新标记位，以便MessagePumper可以继续调度下一条请求，该机制保证了单个Session请求的串行执行
