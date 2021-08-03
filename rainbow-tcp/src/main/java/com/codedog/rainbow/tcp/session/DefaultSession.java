@@ -8,6 +8,7 @@ import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.util.PeerInfo;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
@@ -29,52 +30,36 @@ public class DefaultSession extends AbstractSession {
         this.id = peerInfo.getAddressString();
     }
 
+    @SneakyThrows
     @Override
     public CompletableFuture<Session> write(Object message, boolean flush) {
         message = beforeWrite(message);
         if (message != null) {
+            CompletableFuture<Session> future = new CompletableFuture<>();
+            ChannelFutureListener channelFutureListener = f -> future.complete(this);
             log.debug("TCP - Writing: {} -> {}", message, this);
             if (isClosed()) {
                 log.warn("TCP - You are writing message to a closed session: message={}, session={}", message, this);
             }
             if (flush) {
-                delegate.writeAndFlush(message);
+                Thread.sleep(3000);
+                delegate.writeAndFlush(message).addListener(channelFutureListener);
             } else {
                 delegate.write(message);
             }
+            return future;
+        } else {
+            return CompletableFuture.completedFuture(this);
         }
-        // TODO FIX IT
-        return new CompletableFuture<>();
     }
-
-    // /**
-    //  * 主要做以下工作:
-    //  * 1. 递增seq以及给time字段赋值
-    //  * 2. 缓存消息
-    //  *
-    //  * @param message 要发送的message
-    //  */
-    // @Override
-    // protected boolean beforeWrite(@NonNull Object message) {
-    //     int seq = store.incrementSeq();
-    //     long now = System.currentTimeMillis();
-    //     message.setSeq(seq);
-    //     message.setTime(now);
-    //     message.setSync(processingRequest.getSync());
-    //     // 将该消息压缩后缓存起来
-    //     store.getCachedResponses().write(new Object[]{seq, Encrypts.encrypt(message)});
-    //     return true;
-    // }
 
     @Override
     public CompletableFuture<Void> close() {
-        // Double-checked locking (https://en.wikipedia.org/wiki/Double-checked_locking)
+        // Double-checked locking
         if (!isClosed()) {
             synchronized (this) {
                 if (!isClosed()) {
-                    // Flush and close
-                    delegate.flush().close().addListener((ChannelFutureListener) future ->
-                            closeTimeMillis = System.currentTimeMillis());
+                    delegate.flush().close().addListener(f -> closeTimeMillis = System.currentTimeMillis());
                 }
             }
         }

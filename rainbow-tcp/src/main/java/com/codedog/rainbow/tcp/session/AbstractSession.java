@@ -8,7 +8,6 @@ import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.util.AttributeSupport;
 import com.codedog.rainbow.tcp.util.PeerInfo;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +24,9 @@ import java.util.concurrent.CompletableFuture;
 public abstract class AbstractSession extends AttributeSupport implements Session {
 
     @Getter protected final SessionStore store;
+    /**
+     * 会话标识
+     */
     @Getter protected Serializable id;
     /**
      * 掉线时间（单位：毫秒）。默认为 0，表示正常连接，断线重连时应该将该值重置为 0。
@@ -57,7 +59,7 @@ public abstract class AbstractSession extends AttributeSupport implements Sessio
     }
 
     @Override
-    public CompletableFuture<Session> write(@NonNull Object message) {
+    public CompletableFuture<Session> write(Object message) {
         return write(message, true);
     }
 

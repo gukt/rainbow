@@ -24,9 +24,9 @@ public interface Session extends AttributeAware {
     BiConsumer<? super Session, ? super Throwable> CLOSE = (BiConsumer<Session, Throwable>) (session, throwable) -> session.close();
 
     /**
-     * Session 的唯一标记，一般使用 <code>Remote Address</code> 表示。
+     * Session 唯一标识，一般使用 <code>Remote Address</code> 表示。
      *
-     * @return Session 的唯一标记
+     * @return Session 唯一标识
      */
     Serializable getId();
 

@@ -39,12 +39,12 @@ public class DummySession extends AbstractSession {
         if (message != null) {
             log.debug("TCP - Writing: {} -> {}", message, this);
         }
-        return new CompletableFuture<>();
+        return CompletableFuture.completedFuture(this);
     }
 
     @Override
     public CompletableFuture<Void> close() {
         closeTimeMillis = System.currentTimeMillis();
-        return new CompletableFuture<>();
+        return CompletableFuture.completedFuture(null);
     }
 }
