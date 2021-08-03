@@ -112,7 +112,7 @@ public class MessageUtils {
     }
 
     public static BaseError errorOf(int code, String msg) {
-        return new BaseError(code, msg);
+        return BaseError.of(code, msg);
     }
 
     public static BaseError errorOf(MessageHandlerException e) {

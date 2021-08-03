@@ -5,21 +5,23 @@
 package com.codedog.rainbow.world.config;
 
 import com.codedog.rainbow.MessageHandlerFinder;
-import com.codedog.rainbow.tcp.*;
+import com.codedog.rainbow.tcp.TcpConfigurationException;
+import com.codedog.rainbow.tcp.TcpProperties;
+import com.codedog.rainbow.tcp.TcpServer;
 import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
+import com.codedog.rainbow.tcp.channel.json.JsonPacketTcpServerChannelHandler;
+import com.codedog.rainbow.tcp.channel.protobuf.ProtoPacketTcpServerChannelHandler;
 import com.codedog.rainbow.tcp.interceptor.MessageInterceptor;
 import com.codedog.rainbow.tcp.interceptor.json.JsonKeepAliveMessageInterceptor;
-import com.codedog.rainbow.tcp.channel.json.JsonPacketTcpServerChannelHandler;
 import com.codedog.rainbow.tcp.message.DefaultMessageDispatcher;
 import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.message.MessageDispatcher;
-import com.codedog.rainbow.tcp.channel.protobuf.ProtoPacketTcpServerChannelHandler;
 import com.codedog.rainbow.tcp.message.MessageProtocol;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,14 +47,14 @@ public class TcpServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TcpServer.class)
-    @ConditionalOnSingleCandidate(TcpProperties.class)
+    // @ConditionalOnSingleCandidate(TcpProperties.class)
     public TcpServer tcpServer(TcpProperties properties) {
         // 创建 TcpServer 实例
         return new TcpServer(properties, tcpServerChannelHandler(properties), messageDispatcher(properties));
     }
 
     @Bean
-    @ConditionalOnSingleCandidate(TcpProperties.class)
+    // @ConditionalOnSingleCandidate(TcpProperties.class)
     public TcpServerChannelHandler<?> tcpServerChannelHandler(TcpProperties properties) {
         TcpServerChannelHandler<?> channelHandler;
         MessageProtocol protocol = properties.getMessageProtocol();
@@ -71,13 +73,29 @@ public class TcpServerAutoConfiguration {
         return channelHandler;
     }
 
+    @Configuration(proxyBeanMethods = false)
+    public static class ThirdPartyConfiguration {
+
+        @Bean
+        @ConfigurationProperties(prefix = "app.tcp")
+        public TcpProperties tcpProperties() {
+            return new TcpProperties();
+        }
+    }
+
+    // @Bean
+    // @ConfigurationProperties(prefix = "app.tcp")
+    // public TcpProperties tcpProperties() {
+    //     return new TcpProperties();
+    // }
+
     @Bean
     public MessageHandlerFinder messageHandlerFinder() {
         return new MessageHandlerFinder(context);
     }
 
     @Bean
-    @ConditionalOnSingleCandidate(TcpProperties.class)
+    // @ConditionalOnSingleCandidate(TcpProperties.class)
     public MessageDispatcher messageDispatcher(TcpProperties properties) {
         MessageDispatcher dispatcher = new DefaultMessageDispatcher(properties);
         // 支持的消息类型

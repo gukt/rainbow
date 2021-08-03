@@ -111,7 +111,7 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
                     @Override
                     protected void initChannel(Channel ch) throws CertificateException, SSLException {
                         ChannelPipeline p = ch.pipeline();
-                        p.addLast(new IdleStateHandler(properties.getKeepAliveTimeout(), 0, 0));
+                        p.addLast(new IdleStateHandler((int) properties.getKeepAliveTimeout().getSeconds(), 0, 0));
                         // WebSocket enabled?
                         if (properties.isWebSocketEnabled()) {
                             WebSocketProperties wsConfig = properties.getWebsocket();

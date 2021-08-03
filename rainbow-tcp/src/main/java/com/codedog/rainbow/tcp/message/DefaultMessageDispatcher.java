@@ -74,7 +74,7 @@ public final class DefaultMessageDispatcher implements MessageDispatcher {
         this.executor = new ThreadPoolExecutor(
                 bizExecProperties.getCorePoolSize(),
                 bizExecProperties.getMaxPoolSize(),
-                bizExecProperties.getKeepAliveTimeoutSeconds(), TimeUnit.SECONDS,
+                bizExecProperties.getKeepAliveTimeout().getSeconds(), TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(bizExecProperties.getQueueCapacity()),
                 // new SynchronousQueue<>(),
                 new ThreadFactoryBuilder().setNameFormat(bizExecProperties.getThreadPattern()).build(),
@@ -102,7 +102,7 @@ public final class DefaultMessageDispatcher implements MessageDispatcher {
         executor.shutdown();
         try {
             // 等待线程池现有任务全部执行完成
-            if (!executor.awaitTermination(properties.getWaitTerminationTimeoutMillis(), TimeUnit.MILLISECONDS)) {
+            if (!executor.awaitTermination(properties.getWaitTerminationTimeout().toMillis(), TimeUnit.MILLISECONDS)) {
                 log.info("TCP - 等待业务处理线程池关闭超时，将强制关闭！");
                 // 如果等待超时，强制关闭
                 executor.shutdownNow();

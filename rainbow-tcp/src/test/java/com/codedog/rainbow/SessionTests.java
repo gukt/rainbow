@@ -51,7 +51,7 @@ public class SessionTests {
     void testSessionWrite() {
         Session session = newSession();
 
-        Object error = new BaseError(1, "some error");
+        Object error = BaseError.of(1, "some error");
         session.write(error).whenComplete((v, e) -> System.out.println("完成了"));
 
         MessageHandlerException ex = new MessageHandlerException(1, "some error");

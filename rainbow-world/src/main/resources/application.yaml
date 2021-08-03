@@ -47,19 +47,18 @@ app:
   # TCP Server properties
   tcp:
     enabled: true
-    type: ws
+    type: WebSocket
     websocket:
       path: /ws
       ssl-enabled: false
       max-frame-size: 40960
       max-content-len: 65536
-    port: 5000
+    port: 50001
     message-protocol: json
-    # TODO 改为 Duration
-    keep-alive-timeout: 300
+    keep-alive-timeout: 3m
     max-connections: 30000
     seq-check-enabled: false
-    bad-packet-threshold: 100
+    bad-request-threshold: 100
     boss-thread-name: tcp-boss
     bootstrap-thread-name: tcp-bootstrap
     worker-thread-pattern: tcp-%d
@@ -67,15 +66,13 @@ app:
     pumper-exec-thread-pattern: message-pumper
     pumper-wait-millis-on-idle: 300
     pumper-wait-millis-on-rejected: 300
-    # TODO 改为 Duration
-    wait-termination-timeout-millis: 5000
+    wait-termination-timeout: 5m
     session:
       max-pending-request-size: 10
       max-cache-response-size: 10
     executor:
       core-pool-size: 5
       max-pool-size: 50
-      # TODO 改为 Duration
-      keep-alive-timeout-seconds: 60000
+      keep-alive-timeout: 60s
       queue-capacity: 100
       thread-pattern: biz-%d

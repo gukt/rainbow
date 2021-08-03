@@ -2,14 +2,9 @@
  * Copyright 2018-2021 codedog996.com, The rainbow Project.
  */
 
-package com.codedog.rainbow.tcp.util;
+package com.codedog.rainbow.util;
 
-import com.codedog.rainbow.tcp.session.Session;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.Serializable;
-import java.util.Set;
 
 /**
  * @author https://github.com/gukt
@@ -38,14 +33,13 @@ public class MessageBroadcaster {
     //     }
     // }
     //
-    // public static void broadcast(Object message,
-    //                              Iterable<Serializable> roleIds,
-    //                              boolean flush) {
+    // public static void broadcast(Object message, Iterable<Serializable> roleIds,  boolean flush) {
     //     roleIds.forEach(roleId -> SessionService.findById2(roleId)
     //             .ifPresent(value -> value.write(message, flush)));
     // }
     //
-    // public static void broadcast(Object message, boolean flush, Iterable<Serializable> roleIds,
+    // public static void broadcast(Object message, boolean flush,
+    //                              Iterable<Serializable> roleIds,
     //                              Serializable... except) {
     //     if (except == null) {
     //         roleIds.forEach(id -> SessionService.findById2(id)

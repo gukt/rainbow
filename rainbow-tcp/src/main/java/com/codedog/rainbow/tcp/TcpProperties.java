@@ -7,6 +7,8 @@ package com.codedog.rainbow.tcp;
 import com.codedog.rainbow.tcp.message.MessageProtocol;
 import lombok.Data;
 
+import java.time.Duration;
+
 /**
  * {@link com.codedog.rainbow.tcp.TcpServer} 相关配置
  *
@@ -36,7 +38,7 @@ public class TcpProperties {
     /**
      * 心跳超时时间，单位：秒
      */
-    private Integer keepAliveTimeout = 30;
+    private Duration keepAliveTimeout = Duration.ofMinutes(3);
     private boolean seqCheckEnabled = false;
     /**
      * 服务器允许的最大连接数
@@ -46,7 +48,7 @@ public class TcpProperties {
     private String bootstrapThreadName = "tcp-bootstrap";
     private String bossThreadName = "tcp-boss";
     private String workerThreadPattern = "tcp-worker-%d";
-    private Integer waitTerminationTimeoutMillis = 5_000;
+    private Duration waitTerminationTimeout = Duration.ofMinutes(5);
     private Integer slowProcessingThreshold = 1000;
     private String pumperExecThreadPattern = "message-pumper";
     private Integer pumperWaitMillisOnIdle = 300;
@@ -57,7 +59,7 @@ public class TcpProperties {
     private WebSocketProperties websocket = new WebSocketProperties();
 
     public boolean isWebSocketEnabled() {
-        return enabled && "ws".equalsIgnoreCase(type);
+        return enabled && "WebSocket".equalsIgnoreCase(type);
     }
 
     // @Configuration
@@ -76,7 +78,7 @@ public class TcpProperties {
 
         int corePoolSize = 0;
         int maxPoolSize = 1;
-        int keepAliveTimeoutSeconds = 60;
+        Duration keepAliveTimeout = Duration.ofSeconds(60);
         int queueCapacity = 1;
         String threadPattern = "biz-%d";
     }

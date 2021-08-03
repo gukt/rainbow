@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.codedog.rainbow.tcp.util.BaseError.EXCEED_BAD_REQUEST_THRESHOLD;
-import static com.codedog.rainbow.tcp.util.BaseError.ILLEGAL_SEQUENCE_NUMBER;
+import static com.codedog.rainbow.tcp.util.BaseError.BAD_SEQUENCE_NUMBER;
 
 /**
  * 对每个发来的包做一些安全检查
@@ -86,7 +86,7 @@ public abstract class TcpSecurityMessageInterceptor<T> implements MessageInterce
             blockedAddresses.add(session.getPeerInfo().getAddressString());
         }
         // 下发错误代码，然后关闭连接
-        session.write(MessageUtils.errorOf(ILLEGAL_SEQUENCE_NUMBER)).whenComplete(Session.CLOSE);
+        session.write(MessageUtils.errorOf(BAD_SEQUENCE_NUMBER)).whenComplete(Session.CLOSE);
     }
 
     protected abstract int getSn(T message);
