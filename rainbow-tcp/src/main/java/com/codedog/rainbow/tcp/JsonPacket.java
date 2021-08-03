@@ -36,10 +36,8 @@ public class JsonPacket {
     private int ack;
     /**
      * 同步标记，供客户端使用，当客户端需要同步等待服务器响应时，客户端界面阻塞，直到收到带有该标记位的响应
-     * // TODO 换成int型
      */
-    @Builder.Default
-    private int sync = 0;
+    private Integer sync;
     /**
      * 消息类型
      */

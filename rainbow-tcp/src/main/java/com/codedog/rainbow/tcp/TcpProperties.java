@@ -55,13 +55,6 @@ public class TcpProperties {
     private ExecutorProperties executor = new ExecutorProperties();
     private WebSocketProperties websocket = new WebSocketProperties();
 
-    private MessageResolver<?> messageResolver;
-
-    @SuppressWarnings("unckecked")
-    public <V> MessageResolver<V> getMessageResolver() {
-        return (MessageResolver<V>) messageResolver;
-    }
-
     public boolean isWebSocketEnabled() {
         return enabled && "ws".equalsIgnoreCase(type);
     }

@@ -5,7 +5,7 @@
 package com.codedog.rainbow.tcp.codec.protobuf;
 
 import com.codedog.rainbow.tcp.util.ProtoUtils;
-import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
+import com.codedog.rainbow.world.generated.CommonProto.ProtoPacketOrBuilder;
 import com.google.protobuf.MessageLiteOrBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -24,9 +24,9 @@ public class ProtobufEncoder extends MessageToMessageEncoder<MessageLiteOrBuilde
     @Override
     protected void encode(ChannelHandlerContext ctx, MessageLiteOrBuilder msg, List<Object> out) throws Exception {
         try {
-            ProtoPacket packet = ProtoUtils.wrap(msg);
+            ProtoPacketOrBuilder packet = ProtoUtils.wrap(msg);
             if (packet != null) {
-                ByteBuf buf = Unpooled.wrappedBuffer(packet.toByteArray());
+                ByteBuf buf = Unpooled.wrappedBuffer(ProtoUtils.buildIfPossible(packet).toByteArray());
                 out.add(buf);
             } else {
                 log.warn("TCP - a null packet wrapped, is this correct?");

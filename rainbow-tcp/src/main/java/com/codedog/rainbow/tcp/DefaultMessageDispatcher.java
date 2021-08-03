@@ -7,6 +7,7 @@ package com.codedog.rainbow.tcp;
 import com.codedog.rainbow.tcp.MessageHandler.Error;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.util.BaseError;
+import com.codedog.rainbow.tcp.util.MessageUtils;
 import com.codedog.rainbow.tcp.util.ProtoUtils;
 import com.codedog.rainbow.util.Assert;
 import com.google.protobuf.MessageLiteOrBuilder;
@@ -46,14 +47,14 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
         } else {
             session.setProcessingRequest(request);
         }
-        final MessageHandler<Object> handler = getHandlerByType(messageResolver.getType(request).toString());
+        final MessageHandler<Object> handler = getHandlerByType(MessageUtils.getType(request));
         if (handler == null) {
-            T error = messageResolver.errorOf(BaseError.HANDLER_NOT_FOUND);
-            session.write(messageResolver.withRtd(error, messageResolver.getRtd(request)));
+            Object error = MessageUtils.errorOf(BaseError.HANDLER_NOT_FOUND);
+            session.write(error);
             return;
         }
         // log.debug("TCP - Dispatching a message to handle: {}", resolver.toString(request, true));
-        log.debug("TCP - Dispatching message: {}", request);
+        log.debug("TCP - Dispatching: {}", request);
         executor.execute(new RequestTask<T>(session, request) {
             @Override
             public void run() {
@@ -61,44 +62,36 @@ public class DefaultMessageDispatcher<T> extends AbstractMessageDispatcher<T> {
                 final long startTime = System.currentTimeMillis();
                 Object response;
                 try {
-                    // 处理请求
                     Object result = handler.handle(session, request);
                     if (result == null) {
                         response = null;
                     } else if (request.getClass().isAssignableFrom(result.getClass())) {
-                        // TODO 需要测试
-                        // 如果是和请求对象类型相同（表示是 *Packet 对象，而不是 Payload），直接返回
+                        // 如果是和请求对象类型相同直接返回
                         response = result;
                     } else if (MessageLiteOrBuilder.class.isAssignableFrom(result.getClass())) {
                         // NOTE：只有在使用 Protobuf 协议时，才支持返回值不是完整的 ProtoPacket 对象，
-                        // 因为 Protobuf 可以根据 Payload 类型推导出 type；而 JsonPacket 不可以。
-                        response = ProtoUtils.wrap((MessageLiteOrBuilder) result);
+                        response = ProtoUtils.wrap(result);
                     } else if (result instanceof BaseError) {
-                        response = messageResolver.errorOf((BaseError) result);
-                    } else if (result instanceof MessageHandler.Error) {
-                        // TODO 需要测试
-                        List<Object> errors = ((Error) result).getErrors();
-                        response = messageResolver.errorOf(BaseError.HANDLER_MULTI_RESULT.getCode(), errors.toString());
+                        response = result;
                     } else if (result instanceof MessageHandlerException) {
-                        response = messageResolver.errorOf((MessageHandlerException) result);
+                        response = MessageUtils.errorOf((MessageHandlerException) result);
+                    } else if (result instanceof MessageHandler.Error) {
+                        List<Object> errors = ((Error) result).getErrors();
+                        response = MessageUtils.errorOf(BaseError.HANDLER_MULTI_RESULT.getCode(), errors.toString());
                     } else {
                         // 其他不支持的返回类型
-                        response = messageResolver.errorOf(BaseError.UNKNOWN_HANDLER_RESULT);
+                        response = MessageUtils.errorOf(BaseError.UNKNOWN_HANDLER_RESULT);
                     }
                 } catch (Exception e) {
                     if (e instanceof MessageHandlerException) {
-                        response = messageResolver.errorOf((MessageHandlerException) e);
+                        response = MessageUtils.errorOf((MessageHandlerException) e);
                     } else {
-                        response = messageResolver.errorOf(BaseError.UNKNOWN_HANDLER_RESULT);
+                        response = MessageUtils.errorOf(BaseError.SERVER_INTERNAL_ERROR);
                     }
                 }
                 // 返回处理结果给客户端
                 if (response != null) {
-                    // 如果请求包含有 rtd 数据（透传信息）则响应时，也原封不动的返回
-                    Object rtd = messageResolver.getRtd(request);
-                    if (rtd != null) {
-                        session.write(messageResolver.withRtd(request, messageResolver.getRtd(request)));
-                    }
+                    session.write(response);
                 }
                 // 后置处理
                 postHandle(session, request, startTime);

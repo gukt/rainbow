@@ -4,8 +4,10 @@
 
 package com.codedog.rainbow.tcp.util;
 
-import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
 import com.codedog.rainbow.tcp.JsonPacket;
+import com.codedog.rainbow.tcp.MessageHandlerException;
+import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
+import com.codedog.rainbow.world.generated.CommonProto.ProtoPacketOrBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLiteOrBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -96,10 +98,26 @@ public class MessageUtils {
         return null;
     }
 
-    // public static Object errorOf(MessageResolver<?> resolver, ErrorEnum err) {
-    //     Assert.notNull(resolver, "resolver");
-    //     return resolver.errorOf(err.getCode(), err.getMsg());
-    // }
+    public static String getType(Object message) {
+        if (message instanceof JsonPacket) {
+            return ((JsonPacket) message).getType();
+        } else if (message instanceof ProtoPacketOrBuilder) {
+            return ((ProtoPacketOrBuilder) message).getType().toString();
+        }
+        return "unknown";
+    }
+
+    public static BaseError errorOf(BaseError error) {
+        return errorOf(error.getCode(), error.getMsg());
+    }
+
+    public static BaseError errorOf(int code, String msg) {
+        return new BaseError(code, msg);
+    }
+
+    public static BaseError errorOf(MessageHandlerException e) {
+        return errorOf(e.getErrorCode(), e.getErrorMessage());
+    }
 
     // @SuppressWarnings("unchecked")
     // private static <V extends Collection<V>> V castCollection(Object payload, Class<V> expectedType) {

@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.util;
 
+import com.codedog.rainbow.lang.TypeMismatchException;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -144,7 +145,7 @@ public final class MapHelper {
         if (value == null) return null;
         Assert.notNull(expectedType, "expectedType");
         if (!expectedType.isAssignableFrom(value.getClass())) {
-            RuntimeException e = new TypeMismatchException("Actual: " + value.getClass() + " (expected: " + expectedType + "), value: " + value);
+            RuntimeException e = new TypeMismatchException(value, expectedType);
             if (throwsOnTypeMismatch) {
                 throw e;
             } else {
@@ -155,12 +156,5 @@ public final class MapHelper {
             }
         }
         return (T) value;
-    }
-
-    static class TypeMismatchException extends RuntimeException {
-
-        public TypeMismatchException(String message) {
-            super(message);
-        }
     }
 }

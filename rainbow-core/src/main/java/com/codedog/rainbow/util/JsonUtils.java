@@ -1,6 +1,6 @@
 package com.codedog.rainbow.util;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -33,7 +33,7 @@ public final class JsonUtils {
                     .registerModule(new Jdk8Module())
                     .registerModule(new JavaTimeModule())
                     .registerModule(new GuavaModule())
-                    .setSerializationInclusion(JsonInclude.Include.NON_NULL) // null 不参与转换
+                    .setSerializationInclusion(Include.NON_NULL)
                     .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                     .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 

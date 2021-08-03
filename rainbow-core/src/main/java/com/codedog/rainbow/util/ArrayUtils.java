@@ -4,7 +4,9 @@
 
 package com.codedog.rainbow.util;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * ArrayUtils class
@@ -24,20 +26,26 @@ public final class ArrayUtils {
      *
      * @param first first array
      * @param rest  other arrays
-     * @param <T>   type of array element
+     * @param <E>   type of array element
      * @return an new array
      */
-    public static <T> T[] concat(T[] first, T[]... rest) {
+    public static <E> E[] concat(E[] first, E[]... rest) {
         int len = first.length;
-        for (T[] arr : rest) {
+        for (E[] arr : rest) {
             len += arr.length;
         }
-        T[] result = Arrays.copyOf(first, len);
+        E[] result = Arrays.copyOf(first, len);
         int offset = first.length;
-        for (T[] array : rest) {
+        for (E[] array : rest) {
             System.arraycopy(array, 0, result, offset, array.length);
             offset += array.length;
         }
         return result;
+    }
+
+    // @SuppressWarnings("unchecked")
+    public static <E> E[] toArray(Collection<?> collection, Class<E> elementType) {
+        E[] arr = (E[]) Array.newInstance(elementType, collection.size());
+        return collection.toArray(arr);
     }
 }

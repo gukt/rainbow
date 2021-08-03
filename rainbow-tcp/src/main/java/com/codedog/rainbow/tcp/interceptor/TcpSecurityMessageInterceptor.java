@@ -5,15 +5,14 @@
 package com.codedog.rainbow.tcp.interceptor;
 
 import com.codedog.rainbow.tcp.JsonPacket;
-import com.codedog.rainbow.tcp.MessageResolver;
 import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.session.SessionStore;
+import com.codedog.rainbow.tcp.util.MessageUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static com.codedog.rainbow.tcp.util.BaseError.EXCEED_BAD_REQUEST_THRESHOLD;
@@ -29,7 +28,6 @@ import static com.codedog.rainbow.tcp.util.BaseError.ILLEGAL_SEQUENCE_NUMBER;
 public final class TcpSecurityMessageInterceptor implements MessageInterceptor<JsonPacket> {
 
     private final TcpProperties properties;
-    private final MessageResolver<?> messageResolver;
     /**
      * IP 地址黑名单
      */
@@ -37,14 +35,12 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
 
     public TcpSecurityMessageInterceptor(TcpProperties properties) {
         this.properties = properties;
-        messageResolver = properties.getMessageResolver();
     }
 
     @Override
     public boolean preHandle(Session session, JsonPacket request) {
         // 检查是否在黑名单中
-        final InetSocketAddress remoteAddress = session.getPeerInfo().getRemoteAddress();
-        if (blockedAddresses.contains(remoteAddress.getHostString())) {
+        if (blockedAddresses.contains(session.getPeerInfo().getAddressString())) {
             session.close();
             return false;
         }
@@ -67,7 +63,7 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
         // 收到的包序比期望的序号小，表示该请求之前已经处理过了，可以直接从缓存中返回。
         if (sn < expectedSn) {
             final int peerAck = request.getAck();
-            List<Object> cached = store.retrieveResponsesSince(peerAck);
+            Collection<Object> cached = store.getCachedResponsesFrom(peerAck);
             cached.forEach(session::write);
             return false;
         }
@@ -81,16 +77,16 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
         // 检查连续发送无效包是否超出阈值。超出视为攻击服务器主动掐断连接并将该连接加入黑名单
         if (store.getBadCount().get() > properties.getBadRequestThreshold()) {
             log.warn("TCP: 检测到该连接持续发送无效包，即将关闭对方的连接: {}", session);
-            Object err = messageResolver.errorOf(EXCEED_BAD_REQUEST_THRESHOLD);
+            Object err = MessageUtils.errorOf(EXCEED_BAD_REQUEST_THRESHOLD);
             // 下发错误代码，然后关闭连接
             session.write(err).whenComplete((v, e) -> {
                 log.warn("TCP: 已经关闭持续发送无效包的连接: {}", session);
                 session.close();
             });
             // 将攻击IP地址加入黑名单
-            blockedAddresses.add(session.getPeerInfo().getRemoteAddress().getHostString());
+            blockedAddresses.add(session.getPeerInfo().getAddressString());
         }
         // 下发错误代码，然后关闭连接
-        session.write(messageResolver.errorOf(ILLEGAL_SEQUENCE_NUMBER)).whenComplete(Session.CLOSE);
+        session.write(MessageUtils.errorOf(ILLEGAL_SEQUENCE_NUMBER)).whenComplete(Session.CLOSE);
     }
 }

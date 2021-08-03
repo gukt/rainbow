@@ -20,8 +20,8 @@ import java.util.TreeMap;
  */
 public class EncryptionUtils {
 
-    public static Object encrypt(Object message) {
-        // TODO 压缩
+    // TODO 压缩
+    public static Object zip(Object message) {
         return message;
     }
 

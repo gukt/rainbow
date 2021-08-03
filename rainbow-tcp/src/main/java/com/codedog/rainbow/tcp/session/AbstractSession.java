@@ -4,9 +4,9 @@
 
 package com.codedog.rainbow.tcp.session;
 
+import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.util.AttributeSupport;
 import com.codedog.rainbow.tcp.util.PeerInfo;
-import com.codedog.rainbow.tcp.TcpProperties.SessionProperties;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -47,8 +47,13 @@ public abstract class AbstractSession extends AttributeSupport implements Sessio
     @Setter
     protected volatile Object processingRequest;
 
-    AbstractSession(SessionProperties properties) {
-        this.store = new SessionStore(properties);
+    /**
+     * 构造函数
+     *
+     * @param properties SessionProperties
+     */
+    AbstractSession(TcpProperties properties) {
+        this.store = new SessionStore(properties.getSession());
     }
 
     @Override

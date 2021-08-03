@@ -38,7 +38,7 @@ message ProtoPacket {
     Ping = 10003;
     Pong = 10004;
     Notice = 10005;
-    ECHO = 10006;
+    Echo = 10006;
 
     GameEnterRequest = 20001;
     GameEnterResponse = 20002;

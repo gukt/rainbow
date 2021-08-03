@@ -6,9 +6,6 @@ package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.tcp.codec.json.JsonDecoder;
 import com.codedog.rainbow.tcp.codec.json.JsonEncoder;
-import com.codedog.rainbow.tcp.json.JsonPacketMessageResolver;
-import com.codedog.rainbow.tcp.protobuf.ProtoPacketMessageResolver;
-import com.codedog.rainbow.world.generated.CommonProto;
 import com.google.common.math.IntMath;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -47,16 +44,16 @@ public class TcpClient2<T> {
     private Channel channel;
     private final AtomicInteger nextSync = new AtomicInteger(0);
     private final AtomicInteger nextAck = new AtomicInteger(1);
-    private final MessageResolver<T> messageResolver;
+    // private final MessageResolver<T> messageResolver;
 
     public TcpClient2(String host, int port, Class<T> messageType) {
         this.host = host;
         this.port = port;
-        if (messageType.equals(CommonProto.ProtoPacket.class)) {
-            messageResolver = (MessageResolver<T>) new ProtoPacketMessageResolver();
-        } else {
-            messageResolver = (MessageResolver<T>) new JsonPacketMessageResolver();
-        }
+        // if (messageType.equals(CommonProto.ProtoPacket.class)) {
+        //     messageResolver = (MessageResolver<T>) new ProtoPacketMessageResolver();
+        // } else {
+        //     messageResolver = (MessageResolver<T>) new JsonPacketMessageResolver();
+        // }
         this.init();
     }
 
@@ -108,9 +105,9 @@ public class TcpClient2<T> {
     public void write(T request) {
         requireConnected();
 
-        messageResolver.setSn(request, nextSeq.incrementAndGet());
-        messageResolver.setAck(request, nextAck.get());
-        messageResolver.setTime(request, System.currentTimeMillis());
+        // messageResolver.setSn(request, nextSeq.incrementAndGet());
+        // messageResolver.setAck(request, nextAck.get());
+        // messageResolver.setTime(request, System.currentTimeMillis());
 
         log.debug("TCP CLIENT - Sending: {}", request);
         channel.writeAndFlush(request);
@@ -120,11 +117,11 @@ public class TcpClient2<T> {
         requireConnected();
 
         CompletableFuture<T> future = new CompletableFuture<>();
-        messageResolver.setSn(request, nextSeq.incrementAndGet());
-        messageResolver.setAck(request, nextAck.get());
-        messageResolver.setTime(request, System.currentTimeMillis());
-        messageResolver.setSync(request, nextSync.incrementAndGet());
-        futuresBySyncId.put(messageResolver.getSync(request), future);
+        // messageResolver.setSn(request, nextSeq.incrementAndGet());
+        // messageResolver.setAck(request, nextAck.get());
+        // messageResolver.setTime(request, System.currentTimeMillis());
+        // messageResolver.setSync(request, nextSync.incrementAndGet());
+        // futuresBySyncId.put(messageResolver.getSync(request), future);
         log.debug("CLIENT: Sending: {}", request);
         channel.writeAndFlush(request);
         return future;
@@ -153,12 +150,12 @@ public class TcpClient2<T> {
             log.debug("CLIENT: Receiving a message: {}", response);
             // 递增ack序号
             nextAck.incrementAndGet();
-            int syncId = messageResolver.getSync(response);
-            CompletableFuture<T> future = futuresBySyncId.get(syncId);
-            if (future != null) {
-                futuresBySyncId.remove(syncId);
-                future.complete(response);
-            }
+            // int syncId = messageResolver.getSync(response);
+            // CompletableFuture<T> future = futuresBySyncId.get(syncId);
+            // if (future != null) {
+            //     futuresBySyncId.remove(syncId);
+            //     future.complete(response);
+            // }
         }
     }
 }

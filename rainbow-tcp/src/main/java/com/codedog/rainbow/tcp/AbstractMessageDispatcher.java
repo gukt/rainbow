@@ -31,7 +31,6 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
      * Tcp server properties
      */
     protected final TcpProperties properties;
-    protected final MessageResolver<T> messageResolver;
     /**
      * 业务处理线程池
      */
@@ -48,9 +47,7 @@ public abstract class AbstractMessageDispatcher<T> implements MessageDispatcher 
 
     public AbstractMessageDispatcher(TcpProperties properties) {
         Assert.notNull(properties, "properties");
-        Assert.notNull(properties.getMessageResolver(), "properties.getMessageResolver()");
         this.properties = properties;
-        this.messageResolver = properties.getMessageResolver();
         this.pumper = new MessagePumper();
 
         // TODO 将bizExec通过外部传入？

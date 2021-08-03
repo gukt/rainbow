@@ -4,8 +4,8 @@
 
 package com.codedog.rainbow.tcp.session;
 
+import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.util.PeerInfo;
-import com.codedog.rainbow.tcp.TcpProperties.SessionProperties;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -22,9 +22,9 @@ public final class DummySession extends AbstractSession {
 
     private static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
-    public DummySession(SessionProperties properties) {
+    public DummySession(TcpProperties properties) {
         super(properties);
-        this.peerInfo = PeerInfo.builder().remoteAddress(new InetSocketAddress(0)).build();
+        this.peerInfo = PeerInfo.of(new InetSocketAddress(0));
         this.id = "Dummy Session - " + NEXT_ID.incrementAndGet();
     }
 

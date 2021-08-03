@@ -4,13 +4,12 @@
 
 package com.codedog.rainbow.tcp.session;
 
+import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.util.PeerInfo;
-import com.codedog.rainbow.tcp.TcpProperties.SessionProperties;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -23,13 +22,11 @@ public class DefaultSession extends AbstractSession {
 
     private ChannelHandlerContext delegate;
 
-    protected DefaultSession(ChannelHandlerContext delegate, SessionProperties properties) {
+    protected DefaultSession(ChannelHandlerContext delegate, TcpProperties properties) {
         super(properties);
         this.delegate = delegate;
-        this.peerInfo = PeerInfo.builder()
-                .remoteAddress((InetSocketAddress) delegate.channel().remoteAddress())
-                .build();
-        this.id = peerInfo.getRemoteAddress().toString();
+        this.peerInfo = PeerInfo.of(delegate.channel().remoteAddress());
+        this.id = peerInfo.getAddressString();
     }
 
     @Override

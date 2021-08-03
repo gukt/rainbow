@@ -8,8 +8,7 @@ import com.codedog.rainbow.core.RingBuffer;
 import com.codedog.rainbow.tcp.TcpProperties.SessionProperties;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -21,23 +20,31 @@ public class SessionStore {
      * 待处理的请求
      */
     @Getter private final RingBuffer<Object> pendingRequests;
+    // @Getter private final RingBuffer<Object[]> cachedResponses;
     /**
-     * 缓存的响应，存入该buffer的内容为[seq, response],
-     * response应该经过压缩以节约内存空间，由于response需要压缩，因此当需要按序号删除buffer中的节点元素时没法取得序号
-     * 因此buffer中的元素保存为[包序, 压缩过的下发消息
+     * 用以缓存“响应消息”
      */
-    @Getter private final RingBuffer<Object[]> cachedResponses;
+    private final SortedMap<Integer, Object> responseCache = new TreeMap<>();
+
+    public void cacheResponse(Integer sn, Object message) {
+        responseCache.put(sn, message);
+    }
+
+    public Collection<Object> getCachedResponsesFrom(Integer from) {
+        SortedMap<Integer, Object> map = responseCache.subMap(from, responseCache.lastKey());
+        return map.values();
+    }
 
     private final SessionProperties properties;
 
     SessionStore(SessionProperties properties) {
         this.properties = properties;
         this.pendingRequests = new RingBuffer<>(properties.getMaxPendingRequestSize());
-        this.cachedResponses = new RingBuffer<>(properties.getMaxCacheResponseSize());
     }
 
     /**
-     * 用以生成确认序号（Acknowledgement Number）。比如服务器接受了 SN=100 的消息，则回发消息时 ACK 会设置为 101，表示期望接受的下一个包的序号。
+     * 用以生成确认序号（Acknowledgement Number）。
+     * <p>比如服务器接受了 SN=100 的消息，则回发消息时 ACK 会设置为 101，表示期望接受的下一个包的序号。
      */
     @Getter private final AtomicInteger ackNumber = new AtomicInteger(1);
     /**
@@ -48,15 +55,6 @@ public class SessionStore {
     int getAck() {
         return ackNumber.get();
     }
-
-    // /**
-    //  * "连续接收到的无效包个数"计数器，一旦消息被接受该字段会被清零
-    //  */
-    // @Getter private int badPacketCount = 0;
-    // /**
-    //  * 总计"连续接收到的无效包个数"
-    //  */
-    // @Getter private int badPacketAmount = 0;
 
     public int incrSequenceNumberAndGet() {
         badCount.set(0);
@@ -69,59 +67,20 @@ public class SessionStore {
     @Getter private final AtomicInteger badCount = new AtomicInteger(0);
 
     // /**
-    //  * 一般在单线程中调用，因此不用同步。
+    //  * 获取从某个一序号开始往后的所有已缓存的响应
+    //  *
+    //  * @param fromAck 确认序号
+    //  * @return 返回自指定确认序号（包含）及以后的所有缓存的消息
     //  */
-    // public static class Counter {
-    //
-    //     int count = 0;
-    //
-    //     /**
-    //      * 重置计数器
-    //      */
-    //     void reset() {
-    //         this.count = 0;
+    // public List<Object> retrieveResponsesSince(int fromAck) {
+    //     List<Object> retList = new ArrayList<>();
+    //     Object[] elements = cachedResponses.toArray();
+    //     for (Object element : elements) {
+    //         Object[] pair = (Object[]) element;
+    //         if ((int) pair[0] >= fromAck) {
+    //             retList.add(pair[1]);
+    //         }
     //     }
-    //
-    //     /**
-    //      * 累加计数
-    //      */
-    //     public void incr() {
-    //         this.count++;
-    //     }
-    //
-    //     /**
-    //      * 获得计数器当前值
-    //      */
-    //     int get() {
-    //         return count;
-    //     }
+    //     return retList;
     // }
-
-    // /**
-    //  * 递增"持续非法请求数"，该方法一般在单线程中调用，因此不用同步
-    //  */
-    // public void incrBadPacketCount() {
-    //     // 递增持续非法请求
-    //     badPacketCount++;
-    //     // 递增累计非法请求数
-    //     badPacketAmount++;
-    // }
-
-    /**
-     * 获取从某个一序号开始往后的所有已缓存的响应
-     *
-     * @param fromAck 确认序号
-     * @return 返回自指定确认序号（包含）及以后的所有缓存的消息
-     */
-    public List<Object> retrieveResponsesSince(int fromAck) {
-        List<Object> retList = new ArrayList<>();
-        Object[] elements = cachedResponses.toArray();
-        for (Object element : elements) {
-            Object[] pair = (Object[]) element;
-            if ((int) pair[0] >= fromAck) {
-                retList.add(pair[1]);
-            }
-        }
-        return retList;
-    }
 }

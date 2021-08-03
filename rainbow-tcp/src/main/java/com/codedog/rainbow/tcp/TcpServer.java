@@ -14,7 +14,6 @@ import com.codedog.rainbow.tcp.codec.json.JsonEncoder;
 import com.codedog.rainbow.tcp.codec.protobuf.ProtobufEncoder;
 import com.codedog.rainbow.tcp.codec.protobuf.ProtobufFixed32FrameDecoder;
 import com.codedog.rainbow.tcp.codec.protobuf.ProtobufFixed32LengthFieldPrepender;
-import com.codedog.rainbow.tcp.json.JsonPacketMessageResolver;
 import com.codedog.rainbow.tcp.json.JsonPacketTcpServerChannelHandler;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.util.Assert;
@@ -86,7 +85,7 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
     public void start() {
         requireStateNew();
 
-        log.info("TCP - 🚀 Starting TcpServer");
+        log.info("TCP - Starting TcpServer");
         startTime = System.currentTimeMillis();
         setState(State.STARTING);
         MessageProtocol messageProtocol = properties.getMessageProtocol();
@@ -317,7 +316,7 @@ public class TcpServer extends AbstractLifecycle implements NetworkService {
     public static void main(String[] args) {
         TcpProperties properties = new TcpProperties();
         // TODO 是不是应该将 MessageResolver 弄到 TcpServerContext 中去？
-        properties.setMessageResolver(new JsonPacketMessageResolver());
+        // properties.setMessageResolver(new JsonPacketMessageResolver());
         TcpServerChannelHandler<JsonPacket> channelHandler = new JsonPacketTcpServerChannelHandler(properties);
         MessageDispatcher dispatcher = new DefaultMessageDispatcher<>(properties);
         TcpServer tcpServer = new TcpServer(properties, channelHandler, dispatcher);
