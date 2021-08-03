@@ -4,7 +4,6 @@
 
 package com.codedog.rainbow.tcp.interceptor;
 
-import com.codedog.rainbow.tcp.JsonPacket;
 import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.session.SessionStore;
@@ -25,7 +24,7 @@ import static com.codedog.rainbow.tcp.util.BaseError.ILLEGAL_SEQUENCE_NUMBER;
  * @author https://github.com/gukt
  */
 @Slf4j
-public final class TcpSecurityMessageInterceptor implements MessageInterceptor<JsonPacket> {
+public abstract class TcpSecurityMessageInterceptor<T> implements MessageInterceptor<T> {
 
     private final TcpProperties properties;
     /**
@@ -38,7 +37,7 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
     }
 
     @Override
-    public boolean preHandle(Session session, JsonPacket request) {
+    public boolean preHandle(Session session, T request) {
         // 检查是否在黑名单中
         if (blockedAddresses.contains(session.getPeerInfo().getAddressString())) {
             session.close();
@@ -51,10 +50,10 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
         return true;
     }
 
-    private boolean checkSequenceNumber(Session session, JsonPacket request) {
+    private boolean checkSequenceNumber(Session session, T request) {
         final SessionStore store = session.getStore();
         final int expectedSn = store.getAckNumber().get();
-        final int sn = request.getSn();
+        final int sn = getSn(request);
         // 包序和期望的序号一致，放行并递增 ACK
         if (sn == expectedSn) {
             store.getAckNumber().incrementAndGet();
@@ -62,17 +61,17 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
         }
         // 收到的包序比期望的序号小，表示该请求之前已经处理过了，可以直接从缓存中返回。
         if (sn < expectedSn) {
-            final int peerAck = request.getAck();
+            final int peerAck = getAck(request);
             Collection<Object> cached = store.getCachedResponsesFrom(peerAck);
             cached.forEach(session::write);
             return false;
         }
         // 包序比期望的大
-        reject(session);
+        incrementBadCountOrReject(session);
         return false;
     }
 
-    private void reject(Session session) {
+    private void incrementBadCountOrReject(Session session) {
         SessionStore store = session.getStore();
         // 检查连续发送无效包是否超出阈值。超出视为攻击服务器主动掐断连接并将该连接加入黑名单
         if (store.getBadCount().get() > properties.getBadRequestThreshold()) {
@@ -89,4 +88,8 @@ public final class TcpSecurityMessageInterceptor implements MessageInterceptor<J
         // 下发错误代码，然后关闭连接
         session.write(MessageUtils.errorOf(ILLEGAL_SEQUENCE_NUMBER)).whenComplete(Session.CLOSE);
     }
+
+    protected abstract int getSn(T message);
+
+    protected abstract int getAck(T message);
 }

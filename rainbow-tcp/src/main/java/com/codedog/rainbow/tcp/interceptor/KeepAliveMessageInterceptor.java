@@ -15,11 +15,9 @@ public abstract class KeepAliveMessageInterceptor<T> implements MessageIntercept
 
     @Override
     public boolean preHandle(Session session, T request) {
-        // KeepAlive 也占用一个包序
+        // 占用一个序号
         session.getStore().getAckNumber().incrementAndGet();
-
-        // 如果是 KeepAlive, 返回 false，表示不继续往后传播了
-        // 如果不是 KeepAlive，则继续放行
+        // 如果是 KeepAlive, 返回 false，表示不继续往后传播；反之返回 true 继续
         return !isKeepAlive(request);
     }
 
