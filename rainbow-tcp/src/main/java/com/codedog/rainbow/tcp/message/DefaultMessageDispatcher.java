@@ -7,11 +7,10 @@ package com.codedog.rainbow.tcp.message;
 import com.codedog.rainbow.lang.NotImplementedException;
 import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.TcpServer;
-import com.codedog.rainbow.tcp.message.MessageHandler.Error;
+import com.codedog.rainbow.tcp.message.MessageHandler.BindingResult;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.util.BaseError;
 import com.codedog.rainbow.tcp.util.MessageUtils;
-import com.codedog.rainbow.tcp.util.ProtoUtils;
 import com.codedog.rainbow.util.Assert;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.MessageLiteOrBuilder;
@@ -26,6 +25,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static com.codedog.rainbow.tcp.util.BaseError.SERVER_INTERNAL_ERROR;
+import static com.codedog.rainbow.tcp.util.MessageUtils.errorOf;
 
 /**
  * {@inheritDoc}
@@ -117,7 +119,7 @@ public final class DefaultMessageDispatcher implements MessageDispatcher {
     @Override
     public final void registerHandler(MessageHandler<?> handler) {
         if (handlersMap.containsKey(handler.getType())) {
-            throw new RuntimeException("Could not register the message handler, key exists: " + handler.getType());
+            throw new RuntimeException("Could not register handler: " + handler.getType() + ", It is already exists.");
         }
         handlersMap.put(handler.getType(), handler);
     }
@@ -147,7 +149,7 @@ public final class DefaultMessageDispatcher implements MessageDispatcher {
         }
         long duration = System.currentTimeMillis() - startTime;
         if (duration > properties.getSlowProcessingThreshold()) {
-            log.warn("TCP - Found a slow process, it takes {} millis, {}", duration, message);
+            log.warn("TCP - [Slow Process] It takes {} millis, message=\n{}", duration, message);
         }
     }
 
@@ -174,7 +176,7 @@ public final class DefaultMessageDispatcher implements MessageDispatcher {
         }
         final MessageHandler<Object> handler = getHandlerByType(MessageUtils.getType(request));
         if (handler == null) {
-            Object error = MessageUtils.errorOf(BaseError.HANDLER_NOT_FOUND);
+            Object error = errorOf(BaseError.HANDLER_NOT_FOUND);
             session.write(error);
             return;
         }
@@ -189,29 +191,34 @@ public final class DefaultMessageDispatcher implements MessageDispatcher {
                     Object result = handler.handle(session, request);
                     if (result == null) {
                         response = null;
-                    } else if (request.getClass().isAssignableFrom(result.getClass())) {
-                        // 如果是和请求对象类型相同直接返回
+                    }
+                    // 如果返回值类型和请求对象类型相同，直接返回
+                    else if (request.getClass().isAssignableFrom(result.getClass())) {
                         response = result;
-                    } else if (MessageLiteOrBuilder.class.isAssignableFrom(result.getClass())) {
-                        // NOTE：只有在使用 Protobuf 协议时，才支持返回值不是完整的 ProtoPacket 对象，
-                        response = ProtoUtils.wrap(result);
-                    } else if (result instanceof BaseError) {
+                    }
+                    // 如果是 Protobuf 协议格式，返回值可能有以下几种形式:
+                    // 1. 完整的协议结构体，但类型分两种：ProtoPacket、ProtoPacket.Builder
+                    // 2. 协议结构的 Payload 部分：1. ByteString; 2. MessageLiteOrBuilder
+                    else if (result instanceof MessageLiteOrBuilder) {
                         response = result;
-                    } else if (result instanceof MessageHandlerException) {
-                        response = MessageUtils.errorOf((MessageHandlerException) result);
-                    } else if (result instanceof MessageHandler.Error) {
-                        List<Object> errors = ((Error) result).getErrors();
-                        response = MessageUtils.errorOf(BaseError.HANDLER_MULTI_RESULT.getCode(), errors.toString());
+                    }
+                    // else if (MessageLiteOrBuilder.class.isAssignableFrom(result.getClass())) {
+                    //     // NOTE：只有在使用 Protobuf 协议时，才支持返回值不是完整的 ProtoPacket 对象，
+                    //     response = ProtoUtils.wrapPacket(result);
+                    // }
+                    else if (result instanceof BaseError) {
+                        response = result;
+                    } else if (result instanceof Throwable) {
+                        response = resolveException((Throwable) result);
+                    } else if (result instanceof MessageHandler.BindingResult) {
+                        List<Object> errors = ((BindingResult) result).getErrors();
+                        response = errorOf(BaseError.HANDLER_MULTI_RESULT.getCode(), errors.toString());
                     } else {
-                        // 其他不支持的返回类型
-                        response = MessageUtils.errorOf(BaseError.UNKNOWN_HANDLER_RESULT);
+                        // 不能识别的返回类型
+                        response = errorOf(BaseError.UNRECOGNIZED_HANDLE_RESULT.msg(result.getClass().getSimpleName(), true));
                     }
                 } catch (Exception e) {
-                    if (e instanceof MessageHandlerException) {
-                        response = MessageUtils.errorOf((MessageHandlerException) e);
-                    } else {
-                        response = MessageUtils.errorOf(BaseError.SERVER_INTERNAL_ERROR);
-                    }
+                    response = resolveException(e);
                 }
                 // 返回处理结果给客户端
                 if (response != null) {
@@ -221,6 +228,15 @@ public final class DefaultMessageDispatcher implements MessageDispatcher {
                 postHandle(session, request, startTime);
             }
         });
+    }
+
+    private Object resolveException(Throwable e) {
+        log.error("Handler exception:", e);
+        if (e instanceof MessageHandlerException) {
+            return errorOf((MessageHandlerException) e);
+        } else {
+            return errorOf(SERVER_INTERNAL_ERROR).msg(e, true);
+        }
     }
 
     protected static class RequestTask implements Runnable {
@@ -351,8 +367,9 @@ public final class DefaultMessageDispatcher implements MessageDispatcher {
             pumpExec.shutdownNow();
             try {
                 log.info("TCP - Waiting pumping loop terminated.");
-                // TODO magic number
-                if (!pumpExec.awaitTermination(60, TimeUnit.SECONDS)) {
+                // TODO 仔细思考一下停不下来的情况会造成什么影响？
+                // TODO kill -9 ,-8 force
+                if (!pumpExec.awaitTermination(properties.getPumperWaitTermination(), TimeUnit.SECONDS)) {
                     log.error("TCP - Waiting for pumping loop terminated timeout");
                 }
             } catch (InterruptedException e) {

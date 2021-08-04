@@ -5,9 +5,9 @@
 package com.codedog.rainbow.tcp.session;
 
 import com.codedog.rainbow.tcp.TcpProperties;
+import com.codedog.rainbow.util.Assert;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
@@ -29,41 +29,41 @@ public class DefaultSession extends AbstractSession {
         this.id = peerInfo.getAddressString();
     }
 
-    @SneakyThrows
     @Override
     public CompletableFuture<Session> write(Object message, boolean flush) {
-        message = beforeWrite(message);
-        if (message != null) {
-            CompletableFuture<Session> future = new CompletableFuture<>();
-            ChannelFutureListener channelFutureListener = f -> future.complete(this);
-            log.debug("TCP - Writing: {} -> {}", message, this);
-            if (isClosed()) {
-                log.warn("TCP - You are writing message to a closed session: message={}, session={}", message, this);
-            }
-            if (flush) {
-                Thread.sleep(3000);
-                delegate.writeAndFlush(message).addListener(channelFutureListener);
-            } else {
-                delegate.write(message);
-            }
-            return future;
-        } else {
+        if (message == null) {
             return CompletableFuture.completedFuture(this);
         }
+        message = beforeWrite(message);
+        CompletableFuture<Session> future = new CompletableFuture<>();
+        ChannelFutureListener channelFutureListener = f -> future.complete(this);
+        log.debug("TCP - Writing: {} -> {}", message, this);
+        if (isClosed()) {
+            log.warn("TCP - You are writing message to a closed session: message={}, session={}", message, this);
+        }
+        (flush ? delegate.writeAndFlush(message)
+                : delegate.write(message)).addListener(channelFutureListener);
+        return future;
     }
 
     @Override
-    public CompletableFuture<Void> close() {
+    public CompletableFuture<Session> close() {
+        final Session session = this;
+        CompletableFuture<Session> future = new CompletableFuture<>();
         // Double-checked locking
         if (!isClosed()) {
             synchronized (this) {
                 if (!isClosed()) {
-                    delegate.flush().close().addListener(f -> closeTimeMillis = System.currentTimeMillis());
+                    delegate.flush().close().addListener(f -> {
+                        closeTimeMillis = System.currentTimeMillis();
+                        future.complete(session);
+                    });
                 }
             }
+        } else {
+            future.complete(this);
         }
-        // TODO FIX IT
-        return new CompletableFuture<>();
+        return future;
     }
 
     /**
@@ -83,6 +83,7 @@ public class DefaultSession extends AbstractSession {
 
     @Override
     protected Object beforeWrite(Object message) {
+        Assert.notNull(message, "message");
         return message;
     }
 }

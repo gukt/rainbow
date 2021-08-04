@@ -17,30 +17,29 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Json类型的数据交互格式
- * TODO sn不能设置为负数（使用lombok）
+ * 协议数据结构（JSON）
  *
  * @author https://github.com/gukt
  */
 @Builder
 @Data
-// @NoArgsConstructor // TODO remove?
 @ToString
-// @AllArgsConstructor // TODO remove?
 public class JsonPacket {
 
-    private final static String ERROR = "Error";
-
     /**
-     * 包序号，递增，默认从0开始，客户端和服务器各自维护
+     * 统一错误消息的名称（用来设置 {@link #type} 属性）
+     */
+    private final static String ERROR = "Error";
+    /**
+     * 包序号，递增，客户端和服务器各自维护。
      */
     private int sn;
     /**
-     * 确认序号，表示确认端期望接收到的下一个序号，该字段值为成功接收到的消息序号 + 1
+     * 确认序号，表示确认端期望接收到的下一个序号，该字段值为成功接收到的消息序号 + 1。
      */
     private int ack;
     /**
-     * 同步标记，供客户端使用，当客户端需要同步等待服务器响应时，客户端界面阻塞，直到收到带有该标记位的响应
+     * 同步标记，供客户端使用，当客户端需要同步等待服务器响应时，客户端界面阻塞，直到收到带有该标记位的响应。
      */
     private Integer sync;
     /**
@@ -136,7 +135,7 @@ public class JsonPacket {
      */
     public static JsonPacket errorOf(MessageHandlerException ex) {
         Assert.notNull(ex, "ex");
-        return errorOf(ex.getErrorCode(), ex.getErrorMessage());
+        return errorOf(ex.getCode(), ex.getMsg());
     }
 
     /**

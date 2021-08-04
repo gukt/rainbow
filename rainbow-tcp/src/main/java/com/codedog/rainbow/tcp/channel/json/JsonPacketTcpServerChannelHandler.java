@@ -4,11 +4,13 @@
 
 package com.codedog.rainbow.tcp.channel.json;
 
-import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
+import com.codedog.rainbow.tcp.message.JsonPacket;
+import com.codedog.rainbow.tcp.message.MessageHandlerException;
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
+import com.codedog.rainbow.tcp.util.BaseError;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,10 +31,17 @@ public final class JsonPacketTcpServerChannelHandler extends TcpServerChannelHan
         return new DefaultSession(delegate, properties) {
             @Override
             public Object beforeWrite(Object message) {
-                if (message == null) return false;
+                message = super.beforeWrite(message);
+                // 将 “错误或异常” 转换一下
+                if (message instanceof BaseError) {
+                    message = JsonPacket.errorOf((BaseError) message);
+                } else if (message instanceof MessageHandlerException) {
+                    message = JsonPacket.errorOf((MessageHandlerException) message);
+                }
                 if (!(message instanceof JsonPacket)) {
-                    log.warn("Unsupported message type: {} (expected: {}), message={}", message.getClass(), JsonPacket.class, message);
-                    return false;
+                    log.warn("Ignored - Unable to write the message: {}, Type mismatch (expected: JsonPacket, actual: {})",
+                            message, message.getClass().getName());
+                    return null;
                 }
                 JsonPacket msg = (JsonPacket) message;
                 int sn = store.incrSequenceNumberAndGet();
@@ -42,7 +51,7 @@ public final class JsonPacketTcpServerChannelHandler extends TcpServerChannelHan
                 msg.setTime(System.currentTimeMillis());
                 // 缓存起来
                 store.cacheResponse(sn, message);
-                return true;
+                return msg;
             }
         };
     }

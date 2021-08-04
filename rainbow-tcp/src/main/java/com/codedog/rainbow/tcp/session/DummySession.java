@@ -42,8 +42,8 @@ public class DummySession extends AbstractSession {
     }
 
     @Override
-    public CompletableFuture<Void> close() {
+    public CompletableFuture<Session> close() {
         closeTimeMillis = System.currentTimeMillis();
-        return CompletableFuture.completedFuture(null);
+        return CompletableFuture.completedFuture(this);
     }
 }

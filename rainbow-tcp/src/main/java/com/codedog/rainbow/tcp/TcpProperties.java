@@ -6,6 +6,7 @@ package com.codedog.rainbow.tcp;
 
 import com.codedog.rainbow.tcp.message.MessageProtocol;
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
 import java.time.Duration;
 
@@ -26,7 +27,7 @@ public class TcpProperties {
     /**
      * TCP 传输协议的类型：Socket/WebSocket
      */
-    private String type = "WebSocket";
+    private String type = "Socket";
     /**
      * 消息的协议类型
      */
@@ -34,6 +35,7 @@ public class TcpProperties {
     /**
      * 服务端口号
      */
+    @Range(min = 5000, max = 50000)
     private Integer port = 5000;
     /**
      * 心跳超时时间，单位：秒
@@ -53,6 +55,7 @@ public class TcpProperties {
     private String pumperExecThreadPattern = "message-pumper";
     private Integer pumperWaitMillisOnIdle = 300;
     private Integer pumperWaitMillisOnRejected = 300;
+    private Integer pumperWaitTermination= 300; // Seconds
 
     private SessionProperties session = new SessionProperties();
     private ExecutorProperties executor = new ExecutorProperties();

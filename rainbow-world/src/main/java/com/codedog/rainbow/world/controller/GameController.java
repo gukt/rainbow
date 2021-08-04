@@ -10,11 +10,12 @@ import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.session.Session.State;
+import com.codedog.rainbow.tcp.util.Payload;
 import com.codedog.rainbow.util.RandomUtils;
 import com.codedog.rainbow.world.SessionService;
+import com.codedog.rainbow.world.generated.CommonProto.Echo;
 import com.codedog.rainbow.world.generated.GameEnterRequest;
 import com.codedog.rainbow.world.generated.GameEnterResponse;
-import com.codedog.rainbow.tcp.util.Payload;
 import com.codedog.rainbow.world.service.LoggingService;
 import com.codedog.rainbow.world.service.RedisService;
 import com.codedog.rainbow.world.service.RoleService;
@@ -45,6 +46,16 @@ public class GameController {
         this.roleService = roleService;
         this.redisService = redisService;
         this.loggingService = loggingService;
+    }
+
+    /**
+     * 进入游戏
+     */
+    @HandlerMapping(value = "Echo")
+    public Object echo(Session session, Echo request) {
+        log.info("handling echo: {}", request);
+        Echo echo =  Echo.newBuilder().setText("hello").build();
+        return echo.toByteString();
     }
 
     /**
@@ -96,7 +107,7 @@ public class GameController {
     /**
      * 进入游戏
      */
-    @HandlerMapping(value = "GameEnterRequest")
+    // @HandlerMapping(value = "GameEnterRequest")
     public Object gameEnter2(Session session, Map<String, Object> payload) {
         String openId = (String) payload.get("openId");
         Role role = roleService.findByOpenIdOrCreate2(openId, payload);

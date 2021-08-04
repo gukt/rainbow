@@ -6,6 +6,7 @@ package com.codedog.rainbow;
 
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.util.JsonUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -18,6 +19,7 @@ public class ApplicationIndependentTests {
 
     @Test
     void test111() {
+        Assertions.assertAll();
         User user = new User();
         user.setName("foo");
         user.setPassword("111");

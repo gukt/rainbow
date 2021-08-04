@@ -75,7 +75,7 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
         Object[] args = resolveArgs(session, message);
         Object result = methodAccess.invoke(delegate, methodIndex, args);
         // 如果有错误直接返回错误，反之返回 result 值
-        Optional<MessageHandler.Error> error = getError(args);
+        Optional<BindingResult> error = getError(args);
         if (error.isPresent()) {
             return error.get();
         }
@@ -89,8 +89,8 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
             Class<?> paramType = parameterTypes[i];
             if (Session.class.isAssignableFrom(paramType)) {
                 args[i] = session;
-            } else if (paramType.equals(Error.class)) {
-                args[i] = Error.EMPTY;
+            } else if (paramType.equals(BindingResult.class)) {
+                args[i] = BindingResult.EMPTY;
             } else {
                 try {
                     args[i] = MessageUtils.resolveArgs(packet, paramType);
@@ -103,13 +103,13 @@ public class MessageHandlerAdapter<T> implements MessageHandler<T> {
         return args;
     }
 
-    private Optional<MessageHandler.Error> getError(Object[] args) {
-        MessageHandler.Error error = null;
-        if (args[args.length - 1] instanceof MessageHandler.Error) {
-            error = (MessageHandler.Error) args[args.length - 1];
+    private Optional<BindingResult> getError(Object[] args) {
+        BindingResult result = null;
+        if (args[args.length - 1] instanceof MessageHandler.BindingResult) {
+            result = (BindingResult) args[args.length - 1];
         }
-        if (error != null && !error.isEmpty()) {
-            return Optional.of(error);
+        if (result != null && !result.isEmpty()) {
+            return Optional.of(result);
         } else {
             return Optional.empty();
         }

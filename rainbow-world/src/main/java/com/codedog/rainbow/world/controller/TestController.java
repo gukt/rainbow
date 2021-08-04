@@ -5,20 +5,12 @@
 package com.codedog.rainbow.world.controller;
 
 import com.codedog.rainbow.tcp.message.HandlerMapping;
-import com.codedog.rainbow.tcp.message.JsonPacket;
-import com.codedog.rainbow.tcp.message.MessageHandler.Error;
-import com.codedog.rainbow.tcp.message.MessageHandlerException;
 import com.codedog.rainbow.tcp.session.Session;
-import com.codedog.rainbow.world.generated.GameEnterRequest;
-import com.codedog.rainbow.tcp.util.Payload;
 import com.codedog.rainbow.world.service.LoggingService;
 import com.codedog.rainbow.world.service.RedisService;
 import com.codedog.rainbow.world.service.RoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * RoleController
@@ -37,32 +29,20 @@ public class TestController {
         this.loggingService = loggingService;
     }
 
-    @HandlerMapping(value = "A")
-    public Object A(Session session) {
-        // MessageLite
-        // MessageLite.Builder
-        // MessageLiteOrBuilder
-        // ProtoPacket -> ProtoPacketOrBuilder -> Message, Message.Builder - MessageLite, MessageLite.Builder -> MessageLiteOrBuilder
-        //
-        GameEnterRequest.getDefaultInstance();
-        Payload payload = Payload.of("k1", "v1");
-        session.write(payload);
-        session.write(JsonPacket.of("A1", payload));
-        return null;
-    }
-
-    @HandlerMapping(value = "B")
-    public Object B(Session session) {
-        return new MessageHandlerException(1, "aaa");
-    }
-
-    @HandlerMapping(value = "C")
-    public Object C(Session session, Error error) {
-        List<String> list = Arrays.asList("a", "B");
-        List<String> list2 = Arrays.asList("c", "d");
-        error.add(list);
-        error.add(list2);
-        // throw new RuntimeException("aaa");
+    @HandlerMapping(value = "GameEnterRequest")
+    public Object gameEnterRequest(Session session) throws Exception {
+        if (true) {
+            // return BaseError.BAD_REQUEST;
+            // return BaseError.BAD_REQUEST.text("xxx");
+            // return Payload.EMPTY;
+            // return JsonPacket.of("Foo");
+            // return new Object();
+            // return new MessageHandlerException(1,"error1");
+            // throw new MessageHandlerException(2, "error2");
+            return new RuntimeException("This is a runtime exception (return directly)");
+            // throw new RuntimeException("This is a runtime exception");
+            // throw new Exception("This is a checked exception");
+        }
         return null;
     }
 }

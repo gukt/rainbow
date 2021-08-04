@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static com.codedog.rainbow.tcp.util.ProtoUtils.wrap;
+import static com.codedog.rainbow.tcp.util.ProtoUtils.wrapPacket;
 
 /**
  * MessageUtilsTests class
@@ -167,26 +167,26 @@ public class MessageUtilsTests {
     void test3() {
         // Wrap Message.Builder
         Object msg1 = Echo.newBuilder().setText("xxx");
-        System.out.println(wrap(msg1));
+        System.out.println(ProtoUtils.wrapPacket(msg1));
 
-        ProtoPacketOrBuilder message = ProtoUtils.wrap(msg1);
+        ProtoPacketOrBuilder message = ProtoUtils.wrapPacket(msg1);
         System.out.println(message);
 
         // Wrap Message
         Object msg2 = Echo.newBuilder().setText("xxx").build();
-        System.out.println(wrap(msg2));
+        System.out.println(ProtoUtils.wrapPacket(msg2));
 
         // Wrap Message
         Object msg3 = Echo.newBuilder().setText("xxx").buildPartial();
-        System.out.println(wrap(msg3));
+        System.out.println(ProtoUtils.wrapPacket(msg3));
 
         Message.Builder msg4 = ProtoPacket.newBuilder()
                 .setType(MsgType.Echo)
                 .setPayload(Echo.newBuilder().setText("foo").build().toByteString());
         // Wrap ProtoPacket.Builder
-        System.out.println(wrap(msg4));
+        System.out.println(ProtoUtils.wrapPacket(msg4));
         // Wrap ProtoPacket
-        Assertions.assertEquals(ProtoPacket.class, wrap(msg4.build()).getClass());
+        Assertions.assertEquals(ProtoPacket.class, ProtoUtils.wrapPacket(msg4.build()).getClass());
         System.out.println();
 
     }

@@ -62,7 +62,7 @@ public interface Session extends AttributeAware {
      *
      * @return 返回 {@link CompletableFuture } 对象，便于监听完成事件并处理回调逻辑
      */
-    CompletableFuture<Void> close();
+    CompletableFuture<Session> close();
 
     /**
      * 该连接是否已关闭，这里的'关闭'指的是物理连接已断开。

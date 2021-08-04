@@ -36,7 +36,7 @@ public interface MessageHandler<T> {
      * <p>1. 如果处理完成后，没有消息需要返回给客户端，则返回 null。
      * <p>2. 如果需要返回错误，可返回 {@link com.codedog.rainbow.tcp.util.BaseError} 对象。
      * <p>3. 如果需要返回错误，也可以抛出 {@link MessageHandlerException} 异常。
-     * <p>4. 如果一次有多个错误需要返回，可以新增 {@link MessageHandler.Error} 参数，将多个错误填充进该参数。
+     * <p>4. 如果一次有多个错误需要返回，可以新增 {@link BindingResult} 参数，将多个错误填充进该参数。
      * <p>5. 可以返回完整的 *Packet 对象（比如：{@link ProtoPacket ProtoPacket}、{@link JsonPacket JsonPacket}），
      * 也可以只返回它们的 {@link JsonPacket#getPayload() Payload} 字段值。
      *
@@ -50,9 +50,9 @@ public interface MessageHandler<T> {
         throw new NotImplementedException();
     }
 
-    class Error {
+    class BindingResult {
 
-        public final static Error EMPTY = new Error();
+        public final static BindingResult EMPTY = new BindingResult();
 
         private final List<Object> errors = new ArrayList<>();
 
@@ -61,14 +61,14 @@ public interface MessageHandler<T> {
         }
 
         /** Prevents to construct an instance. */
-        private Error() {}
+        private BindingResult() {}
 
         // public static Error of() {
         //     return new Error();
         // }
 
-        public static Error of(Object... errors) {
-            Error instance = new Error();
+        public static BindingResult of(Object... errors) {
+            BindingResult instance = new BindingResult();
             if (errors != null && errors.length > 0) {
                 instance.errors.addAll(Arrays.asList(errors));
             }
@@ -82,5 +82,24 @@ public interface MessageHandler<T> {
         public boolean isEmpty() {
             return errors.isEmpty();
         }
+    }
+
+    /**
+     * 表示处理过程中的发生的错误。可以是错误代码，也可以是异常
+     *
+     * @see com.codedog.rainbow.tcp.util.BaseError BaseError
+     * @see MessageHandlerException MessageHandlerException
+     */
+    interface Error {
+
+        /**
+         * 错误代码
+         */
+        int getCode();
+
+        /**
+         * 错误描述
+         */
+        String getMsg();
     }
 }

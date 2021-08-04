@@ -24,7 +24,7 @@ public class ProtobufEncoder extends MessageToMessageEncoder<MessageLiteOrBuilde
     @Override
     protected void encode(ChannelHandlerContext ctx, MessageLiteOrBuilder msg, List<Object> out) throws Exception {
         try {
-            ProtoPacketOrBuilder packet = ProtoUtils.wrap(msg);
+            ProtoPacketOrBuilder packet = ProtoUtils.wrapPacket(msg);
             if (packet != null) {
                 ByteBuf buf = Unpooled.wrappedBuffer(ProtoUtils.buildIfPossible(packet).toByteArray());
                 out.add(buf);

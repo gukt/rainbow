@@ -12,7 +12,6 @@ import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
 import com.codedog.rainbow.tcp.channel.json.JsonPacketTcpServerChannelHandler;
 import com.codedog.rainbow.tcp.channel.protobuf.ProtoPacketTcpServerChannelHandler;
 import com.codedog.rainbow.tcp.interceptor.MessageInterceptor;
-import com.codedog.rainbow.tcp.interceptor.json.JsonKeepAliveMessageInterceptor;
 import com.codedog.rainbow.tcp.message.DefaultMessageDispatcher;
 import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.message.MessageDispatcher;
@@ -25,6 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +78,7 @@ public class TcpServerAutoConfiguration {
 
         @Bean
         @ConfigurationProperties(prefix = "app.tcp")
+        @Validated
         public TcpProperties tcpProperties() {
             return new TcpProperties();
         }
@@ -109,7 +110,7 @@ public class TcpServerAutoConfiguration {
     private List<MessageInterceptor<?>> messageInterceptors(TcpProperties properties) {
         List<MessageInterceptor<?>> interceptors = new ArrayList<>();
         // TODO 要根据消息类型选择性添加
-        interceptors.add(new JsonKeepAliveMessageInterceptor());
+        // interceptors.add(new JsonKeepAliveMessageInterceptor());
         return interceptors;
     }
 }

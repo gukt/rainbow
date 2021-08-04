@@ -13,6 +13,8 @@ import java.util.Map;
 /**
  * SessionAttributes class
  *
+ * TODO Add more convenient method, such as: ifPresent、ifPresent, hasAttribute, putIfAbsent...
+ *
  * @author https://github.com/gukt
  */
 public class AttributeSupport implements AttributeAware {
@@ -37,8 +39,4 @@ public class AttributeSupport implements AttributeAware {
         attrs.put(key, value);
         return this;
     }
-
-    // TODO ifPresent, ifAbsent
-    // TODO has(Object key)
-    // TODO putIfAbsent
 }

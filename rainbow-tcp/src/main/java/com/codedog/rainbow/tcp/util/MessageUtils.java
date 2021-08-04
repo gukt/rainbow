@@ -107,16 +107,32 @@ public class MessageUtils {
         return "unknown";
     }
 
+    // public static void assertAnyInstanceOf(Class<?> type, Class<?>... superTypes) {
+    //     Assert.notNull(type, "type");
+    //     Assert.notEmpty()
+    //     Assert.notNull(superTypes, "superTypes");
+    //     Assert.isTrue(superTypes.length > 0, "superTypes");
+    //     boolean matched = false;
+    //     for (Class<?> type : targetTypes) {
+    //
+    //     }
+    //     if( msg instanceof MessageHandler.Error || msg instanceof MessageLiteOrBuilder);
+    //     throw new TypeMismatchException(message, MessageHandler.Error.class, MessageHandlerException.class);
+    // }
+
+    // TODO
     public static BaseError errorOf(BaseError error) {
         return errorOf(error.getCode(), error.getMsg());
     }
 
+    // TODO
     public static BaseError errorOf(int code, String msg) {
         return BaseError.of(code, msg);
     }
 
+    // TODO
     public static BaseError errorOf(MessageHandlerException e) {
-        return errorOf(e.getErrorCode(), e.getErrorMessage());
+        return errorOf(e.getCode(), e.getMsg());
     }
 
     // @SuppressWarnings("unchecked")

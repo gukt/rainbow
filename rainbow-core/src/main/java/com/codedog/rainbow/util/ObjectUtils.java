@@ -4,7 +4,6 @@
 
 package com.codedog.rainbow.util;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -32,15 +31,17 @@ public final class ObjectUtils {
      * @param defaultValue 默认值，不能为 null
      * @return 如果给定的对象不为 null 则返回自身；反之返回指定的默认值
      */
-    public static <E> E nullToDefault(E obj, @Nonnull E defaultValue) {
-        requireNonNull(defaultValue, "defaultValue");
+    public static <E> E nullToDefault(E obj, E defaultValue) {
+        Assert.notNull(defaultValue, "defaultValue");
         return obj == null ? defaultValue : obj;
     }
 
     public static <T extends Iterable<E>, E> T nullToDefault(T obj, T defaultValue) {
-        requireNonNull(defaultValue, "defaultValue");
+        Assert.notNull(defaultValue, "defaultValue");
         return obj == null ? defaultValue : obj;
     }
+
+    // TODO nullToEmpty: String, List, Set, Map, LinkedMap, Object[], Array 等
 
     // requireNonNull
 
@@ -66,8 +67,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static <E extends Map<?, ?>> E requireNonEmpty(E map, String name) {
-        requireNonNull(map, name);
-        Assert.isTrue(!map.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
+        Assert.notEmpty(map, name);
         return map;
     }
 
@@ -81,8 +81,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static <E extends Collection<?>> E requireNonEmpty(E collection, String name) {
-        requireNonNull(collection, name);
-        Assert.isTrue(!collection.isEmpty(), "%s.isEmpty(): true (expected: false)", name);
+        Assert.notEmpty(collection, name);
         return collection;
     }
 
@@ -96,9 +95,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static <E extends Iterable<?>> E requireNonEmpty(E iterable, String name) {
-        Assert.notNull(iterable, name);
-        Assert.isTrue(iterable.iterator().hasNext(),
-                "%s.iterator().hasNext(): false (expected: true)", name);
+        Assert.notEmpty(iterable, name);
         return iterable;
     }
 
@@ -112,8 +109,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static <E extends CharSequence> E requireNonEmpty(E chars, String name) {
-        requireNonNull(chars, name);
-        requirePositive(chars.length(), name + ".length");
+        Assert.notEmpty(chars, name);
         return chars;
     }
 
@@ -127,8 +123,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static <E> E[] requireNonEmpty(E[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -141,8 +136,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static byte[] requireNonEmpty(byte[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -155,8 +149,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static short[] requireNonEmpty(short[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -169,8 +162,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static int[] requireNonEmpty(int[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -183,8 +175,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static long[] requireNonEmpty(long[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -197,8 +188,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static float[] requireNonEmpty(float[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -211,8 +201,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static double[] requireNonEmpty(double[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -225,8 +214,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static boolean[] requireNonEmpty(boolean[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -239,8 +227,7 @@ public final class ObjectUtils {
      * @apiNote 该方法设计主要用于在方法或构造器中作参数检测用。
      */
     public static char[] requireNonEmpty(char[] arr, String name) {
-        requireNonNull(arr, name);
-        requirePositive(arr.length, name + ".length");
+        Assert.notEmpty(arr, name);
         return arr;
     }
 
@@ -433,13 +420,7 @@ public final class ObjectUtils {
     // Number validations
 
     public static <E extends Comparable<E>> E requireBetween(E i, E start, E end, String name) {
-        requireNonNull(i, "i");
-        requireNonNull(start, "start");
-        requireNonNull(end, "end");
-        requireNonNull(name, "name");
-        Assert.isTrue(start.compareTo(end) <= 0, "start must be less than or equal to end");
-        Assert.isTrue(i.compareTo(start) >= 0 && i.compareTo(end) <= 0,
-                "%s: %s (expected: in [%s, %s])", name, i, start, end);
+        Assert.between(i, start,end,name);
         return i;
     }
 
@@ -450,18 +431,19 @@ public final class ObjectUtils {
     /**
      * Checks that the specified {@code i} is positive (> 0). this method is designed primarily for
      * argument checking in methods and constructors.
+     * TODO byte, short, int, long ,double, float
      *
      * @param i    the number to test
      * @param name the name of {@code i}
      * @return {@code i}
      */
+    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requirePositive(E i, String name) {
-        requireNonNull(i, "i");
-        requireNonNull(name, "name");
-        Assert.isTrue(i.intValue() > 0, "%s: %s (expected: > 0)", name, i);
+        Assert.positive(i ,name);
         return i;
     }
 
+    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requirePositive(E i) {
         return requirePositive(i, "actual");
     }
@@ -469,18 +451,16 @@ public final class ObjectUtils {
     /**
      * Checks that the specified {@code i} is non positive (<= 0). this method is designed primarily
      * for argument checking in methods and constructors.
-     *
+     * // TODO char, byte, short, int, long ,double, float
      * @param i    the number to test
      * @param name the name of {@code i}
      * @return {@code i}
      */
     public static <E extends Number> E requireNonPositive(E i, String name) {
-        requireNonNull(i, "i");
-        requireNonNull(name, "name");
-        Assert.isTrue(i.intValue() <= 0, "%s: %s (expected: <= 0)", name, i);
+        Assert.notPositive(i, name);
         return i;
     }
-
+    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requireNonPositive(E i) {
         return requireNonPositive(i, "actual");
     }
@@ -488,18 +468,16 @@ public final class ObjectUtils {
     /**
      * Checks that the specified {@code i} is negative (< 0). this method is designed primarily for
      * argument checking in methods and constructors.
-     *
+     * // TODO char, byte, short, int, long ,double, float
      * @param i    the number to test
      * @param name the name of {@code i}
      * @return {@code i}
      */
     public static <E extends Number> E requireNegative(E i, String name) {
-        requireNonNull(i, "i");
-        requireNonNull(name, "name");
-        Assert.isTrue(i.intValue() < 0, "%s: %s (expected: < 0)", name, i);
+        Assert.negative(i, name);
         return i;
     }
-
+    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requireNegative(E i) {
         return requireNegative(i, "actual");
     }
@@ -507,34 +485,32 @@ public final class ObjectUtils {
     /**
      * Checks that the specified {@code i} is non negative (>= 0). this method is designed primarily
      * for argument checking in methods and constructors.
-     *
+     * // TODO byte, short, int, long ,double, float
      * @param i    the number to test
      * @param name the name of {@code i}
      * @return {@code i}
      */
     public static <E extends Number> E requireNonNegative(E i, String name) {
-        requireNonNull(i, "i");
-        requireNonNull(name, "name");
-        Assert.isTrue(i.intValue() >= 0, "%s: %s (expected: >= 0)", name, i);
+        Assert.notNegative(i, name);
         return i;
     }
-
+    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requireNonNegative(E i) {
         return requireNonNegative(i, "actual");
     }
 
+    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requireZero(E i, String name) {
-        requireNonNull(i, "i");
-        requireNonNull(name, "name");
-        Assert.isTrue(i.intValue() == 0, "%s: %s (expected: = 0)", name, i);
+        Assert.zero(i, name);
         return i;
     }
 
+    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requireZero(E i) {
         return requireZero(i, "actual");
     }
 
-    // Method references for {@link Predicate predicate}
+    // Method references for lambda
 
     public static boolean isNull(Object obj) {
         return obj == null;
@@ -669,6 +645,7 @@ public final class ObjectUtils {
      * @return {@code true} if the provided number is non positive (<=0) otherwise {@code false}
      * @apiNote This method exists to be used as a {@link java.util.function.Predicate}, {@code
      * filter(Numbers::nonPositive)}
+     * // TODO 注意看看这里的描述
      * @see java.util.function.Predicate
      * @since 1.8
      */

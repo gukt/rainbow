@@ -4,17 +4,19 @@
 
 package com.codedog.rainbow.tcp.channel.protobuf;
 
+import com.codedog.rainbow.lang.TypeMismatchException;
 import com.codedog.rainbow.tcp.TcpProperties;
 import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
+import com.codedog.rainbow.tcp.message.MessageHandler;
+import com.codedog.rainbow.tcp.message.MessageHandler.Error;
+import com.codedog.rainbow.tcp.message.MessageHandlerException;
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.util.ProtoUtils;
 import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket;
-import com.codedog.rainbow.world.generated.CommonProto.ProtoPacket.Builder;
-import com.google.protobuf.ByteString;
+import com.codedog.rainbow.world.generated.CommonProto.ProtoPacketOrBuilder;
 import com.google.protobuf.MessageLiteOrBuilder;
 import io.netty.channel.ChannelHandlerContext;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -34,47 +36,35 @@ public final class ProtoPacketTcpServerChannelHandler extends TcpServerChannelHa
     protected Session newSession(ChannelHandlerContext delegate) {
         return new DefaultSession(delegate, properties) {
             @Override
-            public Object beforeWrite(@NonNull Object message) {
-                /**
-                 * 可以直接进返回 GameEnterResponse 这种已经 build 过了的对象，类型为 Message
-                 */
-                // MessageLite
-                // MessageLite.Builder
-                // MessageLiteOrBuilder
-                // ProtoPacket -> ProtoPacketOrBuilder -> Message, Message.Builder - MessageLite, MessageLite.Builder -> MessageLiteOrBuilder
-                // 1. FooResponse
-                // 2. FooResponse.Builder
-                // 3. ProtoPacket
-                // 4. ProtoPacket.Builder
-                // 5. 比如直接将 Payload 返回，因为 Payload 是直接
-                if (!(message instanceof ProtoPacket)) {
-                    if (message instanceof ByteString) {
-                        // 转成 Message Or Builder
-                        // message = xxx
-                    }
-                    if (!(message instanceof MessageLiteOrBuilder)) {
-                        log.warn("Unsupported message: {}", message);
-                        return false;
-                    }
-                    message = ProtoUtils.wrap((MessageLiteOrBuilder) message);
+            public Object beforeWrite(Object message) {
+                message = super.beforeWrite(message);
+                if (!isTypeSupported(message)) {
+                    throw new TypeMismatchException(message, MessageHandler.Error.class, MessageHandlerException.class);
                 }
-                ProtoPacket.Builder builder;
-                if (message instanceof ProtoPacket) {
-                    builder = ((ProtoPacket) message).toBuilder();
-                } else {
-                    builder = ((Builder) message);
+                // 将 “错误或异常” 转换一下
+                if (message instanceof MessageHandler.Error) {
+                    message = ProtoUtils.errorOf((Error) message);
                 }
-                int seq = store.incrSequenceNumberAndGet();
-                long now = System.currentTimeMillis();
-                builder.setSn(seq);
-                builder.setTime(now);
-                builder.setSync(((ProtoPacket) processingRequest).getSync());
-                builder.setRtd(((ProtoPacket) processingRequest).getRtd());
-                // TODO 将该消息压缩后缓存起来
-                // store.getCachedResponses().write(new Object[]{seq, EncryptionUtils.zip(message)});
-                return true;
+                MessageLiteOrBuilder msg = ProtoUtils.requireMessageLiteOrBuilder(message, "message");
+                if (!(msg instanceof ProtoPacketOrBuilder)) {
+                    msg = ProtoUtils.wrapPacket(msg);
+                }
+                ProtoPacket.Builder builder = ProtoUtils.safeGetBuilder(msg);
+                int sn = store.incrSequenceNumberAndGet();
+                builder.setSn(sn);
+                builder.setTime(System.currentTimeMillis());
+                if (processingRequest != null) {
+                    builder.setSync(((ProtoPacket) processingRequest).getSync());
+                    builder.setRtd(((ProtoPacket) processingRequest).getRtd());
+                }
+                // 缓存起来
+                store.cacheResponse(sn, message);
+                return msg;
             }
         };
     }
 
+    private boolean isTypeSupported(Object msg) {
+        return msg != null && (msg instanceof MessageHandler.Error || msg instanceof MessageLiteOrBuilder);
+    }
 }

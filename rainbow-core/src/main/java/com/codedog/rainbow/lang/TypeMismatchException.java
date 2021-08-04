@@ -4,7 +4,9 @@
 
 package com.codedog.rainbow.lang;
 
-import static java.util.Objects.requireNonNull;
+import com.codedog.rainbow.util.ObjectUtils;
+
+import java.util.Arrays;
 
 /**
  * ObjectCastException class
@@ -17,8 +19,12 @@ public class TypeMismatchException extends RuntimeException {
         this(obj, targetType, null);
     }
 
-    public TypeMismatchException(Object obj, Class<?> targetType, Throwable cause) {
-        super("Type mismatch: " + requireNonNull(obj).getClass() + " (expected: " + requireNonNull(targetType) + ")", cause);
+    public TypeMismatchException(Object obj, Class<?>... targetTypes) {
+        this(obj, targetTypes, null);
     }
 
+    public TypeMismatchException(Object obj, Class<?>[] targetTypes, Throwable cause) {
+        super("Type mismatch: " + ObjectUtils.requireNonNull(obj, "name").getClass()
+                + " (expected: " + Arrays.toString(ObjectUtils.requireNonEmpty(targetTypes, "targetTypes.length > 0")) + ")", cause);
+    }
 }

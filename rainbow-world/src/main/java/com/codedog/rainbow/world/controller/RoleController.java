@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.world.controller;
 
-import com.codedog.rainbow.tcp.message.MessageHandler;
+import com.codedog.rainbow.tcp.message.MessageHandler.BindingResult;
 import com.codedog.rainbow.tcp.session.DefaultSession;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.world.generated.CommonProto;
@@ -40,9 +40,9 @@ public class RoleController {
                             List<Object> list,
                             Set<String> set1,
                             Map<String,Object> payload2,
-                            MessageHandler.Error error) {
+                            BindingResult result) {
         // 灵活的参数绑定
-        error.add("出错了");
+        result.add("出错了");
         return null;
 
         // System.out.println(session);

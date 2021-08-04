@@ -47,14 +47,14 @@ app:
   # TCP Server properties
   tcp:
     enabled: true
-    type: WebSocket
+    type: Socket
     websocket:
       path: /ws
       ssl-enabled: false
       max-frame-size: 40960
       max-content-len: 65536
-    port: 50001
-    message-protocol: json
+    port: 5000
+    message-protocol: protobuf
     keep-alive-timeout: 3m
     max-connections: 30000
     seq-check-enabled: false
