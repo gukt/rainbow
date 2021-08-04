@@ -23,27 +23,17 @@ public enum JsonMsgType {
     RECONNECT_REQUEST(103, "RECONNECT_REQUEST"),
     RECONNECT_RESPONSE(104, "RECONNECT_RESPONSE"),
 
-    // write more
-    ;
+    // ============================
+    // You can add more types here.
+    // ============================
 
-    @Getter
-    private final int value;
-    // TODO 改成 text()
-    @Getter
-    private final String text;
+    UNRECOGNIZED(-1, "UNRECOGNIZED");
+
+    @Getter private final int value;
+    @Getter private final String text;
 
     JsonMsgType(int value, String text) {
         this.value = value;
         this.text = text;
     }
-
-    // JsonPacket toJsonPacket() {
-    //     return JsonPacket.of(text);
-    // }
-    //
-    // public JsonPacket toJsonPacket(Object payload) {
-    //     JsonPacket packet = JsonPacket.of(text);
-    //     packet.setPayload(payload);
-    //     return packet;
-    // }
 }
