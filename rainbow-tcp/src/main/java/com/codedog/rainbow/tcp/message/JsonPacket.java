@@ -65,11 +65,6 @@ public class JsonPacket {
     @ToString.Exclude
     private byte[] checksum;
 
-    public JsonPacket withRtd(Object ext) {
-        this.rtd = ext;
-        return this;
-    }
-
     /**
      * 创建一个 {@link JsonPacket JsonPacket} 实例，该方法是 builder() 链式调用的便利方式。
      *
