@@ -44,9 +44,9 @@ public final class Assert {
         }
     }
 
-    public static void isTrue(boolean expected, String message) {
+    public static void isTrue(boolean expected, String name) {
         if (!expected) {
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(name + ": false (expected: true)");
         }
     }
 
