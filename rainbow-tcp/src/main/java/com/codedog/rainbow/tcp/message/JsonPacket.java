@@ -7,7 +7,9 @@ package com.codedog.rainbow.tcp.message;
 import com.codedog.rainbow.tcp.session.Session;
 import com.codedog.rainbow.tcp.util.BaseError;
 import com.codedog.rainbow.util.Assert;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -22,10 +24,12 @@ import java.util.concurrent.CompletableFuture;
  */
 @Builder
 @Data
-@NoArgsConstructor
-@ToString(exclude = {"checksum"})
-@AllArgsConstructor
+// @NoArgsConstructor // TODO remove?
+@ToString
+// @AllArgsConstructor // TODO remove?
 public class JsonPacket {
+
+    private final static String ERROR = "Error";
 
     /**
      * 包序号，递增，默认从0开始，客户端和服务器各自维护
@@ -58,6 +62,7 @@ public class JsonPacket {
     /**
      * 校验和，防篡改
      */
+    @ToString.Exclude
     private byte[] checksum;
 
     public JsonPacket withRtd(Object ext) {
@@ -65,40 +70,77 @@ public class JsonPacket {
         return this;
     }
 
+    /**
+     * 创建一个 {@link JsonPacket JsonPacket} 实例，该方法是 builder() 链式调用的便利方式。
+     *
+     * @param type 消息类型，不能为 null
+     * @return JsonPacket 实例
+     */
     public static JsonPacket of(String type) {
-        return of(type, new HashMap<>());
+        Assert.notNull(type, "type");
+        return JsonPacket.builder().type(type).build();
     }
 
+    /**
+     * 创建一个 {@link JsonPacket JsonPacket} 实例，该方法是 builder() 链式调用的便利方式。
+     *
+     * @param type    消息类型，不能为 null
+     * @param payload 消息内容，可以为 null
+     * @return JsonPacket 实例
+     */
     public static JsonPacket of(String type, Object payload) {
-        return of(type, payload, 0, null);
+        Assert.notNull(type, "type");
+        return JsonPacket.builder().type(type).payload(payload).build();
     }
 
+    /**
+     * 创建一个 {@link JsonPacket JsonPacket} 实例，该方法是 builder() 链式调用的便利方式。
+     *
+     * @param type    消息类型，不能为 null
+     * @param payload 消息内容，可以为 null
+     * @param sn      消息序号，不能小于 0
+     * @return JsonPacket 实例
+     */
     public static JsonPacket of(String type, Object payload, int sn) {
-        return of(type, payload, sn, null);
+        Assert.notNull(type, "type");
+        Assert.isTrue(sn > 0, "sn > 0");
+        return JsonPacket.builder().type(type).payload(payload).sn(sn).build();
     }
 
-    // TODO 有没有必要新建JsonPacket时指定ext，如果不需要，考虑发送返回包时将透传信息带上
-    public static JsonPacket of(String type, Object payload, int sn, String ext) {
-        return JsonPacket.builder()
-                .type(type)
-                .sn(sn)
-                .payload(payload)
-                .rtd(ext)
-                .build();
-    }
-
+    /**
+     * 创建一个“表示统一错误的” {@link JsonPacket JsonPacket 实例}，该实例的 type = Error（由 {@link #ERROR} 变量指定的）。
+     *
+     * @param code 错误代码
+     * @param msg  错误描述
+     * @return 表示统一错误的 JsonPacket 实例
+     */
     public static JsonPacket errorOf(Serializable code, Object msg) {
         Assert.notNull(code, "code");
         Map<String, Object> payload = new HashMap<>();
         payload.put("code", code);
         payload.put("msg", msg);
-        return JsonPacket.of("Error", payload);
+        return JsonPacket.of(ERROR, payload);
     }
 
+    /**
+     * 创建一个“表示统一错误的” {@link JsonPacket JsonPacket 实例}，该实例的 type = Error（由 {@link #ERROR} 变量指定的）。
+     *
+     * @param error Error 对象， 不能为 null
+     * @return 表示统一错误的 JsonPacket 实例
+     */
     public static JsonPacket errorOf(BaseError error) {
+        Assert.notNull(error, "error");
         return errorOf(error.getCode(), error.getMsg());
     }
+
+    /**
+     * 创建一个“表示统一错误的” {@link JsonPacket JsonPacket 实例}，该实例的 type = Error（由 {@link #ERROR} 变量指定的）。
+     *
+     * @param ex MessageHandlerException 对象，不能为 null
+     * @return 表示统一错误的 JsonPacket 实例
+     */
     public static JsonPacket errorOf(MessageHandlerException ex) {
+        Assert.notNull(ex, "ex");
         return errorOf(ex.getErrorCode(), ex.getErrorMessage());
     }
 
@@ -121,6 +163,7 @@ public class JsonPacket {
      * @param session 表示消息被发送到的目标连接，不能为 null
      * @param flush   是否需要立即发送
      * @return {@link CompletableFuture}，表示异步完成的结果
+     * @throws IllegalArgumentException 如果 session 为 null
      * @see #writeTo(Session)
      * @see Session#write(Object)
      * @see Session#write(Object, boolean)
@@ -128,10 +171,5 @@ public class JsonPacket {
     public CompletableFuture<Session> writeTo(Session session, boolean flush) {
         Assert.notNull(session, "session");
         return session.write(this, flush);
-    }
-
-    @Deprecated
-    public String toCompactString() {
-        return String.format("JsonPacket#%d-%s-%s", sn, type, payload);
     }
 }
