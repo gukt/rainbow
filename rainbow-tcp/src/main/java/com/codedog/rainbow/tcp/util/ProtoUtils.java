@@ -68,12 +68,26 @@ public class ProtoUtils {
         return forceBuild ? builder.build() : builder;
     }
 
-    public static ErrorOrBuilder errorOf(int code, String msg) {
-        return Error.newBuilder().setCode(ErrorCode.forNumber(code)).setMsg(msg);
+    public static ErrorOrBuilder errorOf(int code, String msg, boolean build) {
+        ErrorCode errorCode = ErrorCode.forNumber(code);
+        if (errorCode == null) {
+            log.error("Cannot convert ErrorCode from code: {}, msg={}", code, msg);
+            errorCode = ErrorCode.UNKNOWN;
+        }
+        Error.Builder builder = Error.newBuilder().setCode(errorCode).setMsg(msg);
+        return build ? builder.build() : builder;
     }
 
-    public static <V extends MessageHandler.Error> ErrorOrBuilder errorOf(V error) {
-        return errorOf(error.getCode(), error.getMsg());
+    public static Error errorOf(int code, String msg) {
+        return (Error) errorOf(code, msg, true);
+    }
+
+    public static <V extends MessageHandler.Error> ErrorOrBuilder errorOf(V error, boolean build) {
+        return errorOf(error.getCode(), error.getMsg(), build);
+    }
+
+    public static <V extends MessageHandler.Error> Error errorOf(V error) {
+        return (Error) errorOf(error, true);
     }
 
     /**
