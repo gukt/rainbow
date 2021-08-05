@@ -4,6 +4,9 @@
 
 package com.codedog.rainbow.util;
 
+import com.codedog.rainbow.lang.TypeMismatchException;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -451,6 +454,53 @@ public final class Assert {
     public static void isTrue(boolean expected, String format, Object... args) {
         if (!expected) {
             throw new IllegalArgumentException(String.format(format, args));
+        }
+    }
+
+    /**
+     * 判断指定的对象是否是“任意一个“指定类型的实例
+     *
+     * @param obj           被检测的对象，不能为 null
+     * @param expectedTypes 父类（或接口）类型数组，至少有一个元素
+     * @see #isAssignableFrom(Class, Class[]) isAssignableFrom
+     * @see #isAssignableFromAny(Class, Class[]) isAssignableFromAny
+     */
+    public static void isInstanceOfAny(Object obj, Class<?>... expectedTypes) {
+        Assert.notNull(obj, "obj");
+        Assert.isAssignableFromAny(obj.getClass(), expectedTypes);
+    }
+
+    /**
+     * 判断“指定的类型”是否实现了指定的“所有”父类（或接口）类型。如果要判断“任意一个”接口，请使用 {@link #isAssignableFromAny(Class, Class[])} 方法。
+     *
+     * @param type       被检测的类型，不可为 null
+     * @param superTypes 父类（或接口）类型数组，至少有一个元素
+     * @see #isAssignableFromAny(Class, Class[]) isAssignableFromAny
+     * @see #isInstanceOfAny(Object, Class[]) isInstanceOfAny
+     */
+    public static void isAssignableFrom(Class<?> type, Class<?>... superTypes) {
+        Assert.notNull(type, "type");
+        Assert.notEmpty(superTypes, "superTypes");
+        boolean matched = Arrays.stream(superTypes).allMatch(superType -> superType.isAssignableFrom(type));
+        if (!matched) {
+            throw new TypeMismatchException(type, superTypes);
+        }
+    }
+
+    /**
+     * 判断“指定的类型”是否实现了指定的"任意一个"父类（或接口）类型。如果要判断“所有”类型，请使用 {@link #isAssignableFrom(Class, Class[])} 方法。
+     *
+     * @param type       被检测的类型，不可为 null
+     * @param superTypes 父类（或接口）类型数组，至少有一个元素
+     * @see #isAssignableFrom(Class, Class[]) isAssignableFrom
+     * @see #isInstanceOfAny(Object, Class[]) isInstanceOfAny
+     */
+    public static void isAssignableFromAny(Class<?> type, Class<?>... superTypes) {
+        Assert.notNull(type, "type");
+        Assert.notEmpty(superTypes, "superTypes");
+        boolean matched = Arrays.stream(superTypes).anyMatch(superType -> superType.isAssignableFrom(type));
+        if (!matched) {
+            throw new TypeMismatchException(type, superTypes);
         }
     }
 
