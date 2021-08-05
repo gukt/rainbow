@@ -50,10 +50,9 @@ message ProtoPacket {
 message Error {
   ErrorCode code = 1;
   string msg = 2;
-  bytes rtd = 5;
 
   enum ErrorCode {
-    Unknown = 0;
+    UNKNOWN = 0;
 
     // Add more...
   }
