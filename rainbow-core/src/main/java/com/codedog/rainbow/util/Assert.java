@@ -24,12 +24,61 @@ public final class Assert {
         throw new AssertionError("No Assert instances for you!");
     }
 
-    // state
-    public static void state(boolean expected) {
+    // Assert.isTrue
 
+    public static void isTrue(boolean expected) {
+        if (!expected) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public static void isTrue(boolean expected, String name) {
+        if (!expected) {
+            throw new IllegalArgumentException(name + ": false (expected: true)");
+        }
+    }
+
+    public static void isTrue(boolean expression, Supplier<String> messageSupplier) {
+        if (!expression) {
+            throw new IllegalArgumentException(nullSafeGet(messageSupplier));
+        }
+    }
+
+    public static void isTrue(boolean expected, String format, Object... args) {
+        if (!expected) {
+            throw new IllegalArgumentException(String.format(format, args));
+        }
+    }
+
+    // Assert.state
+
+    public static void state(boolean expected) {
+        Assert.state(expected, "actual");
+    }
+
+    public static void state(boolean expected, String name) {
+        if (!expected) {
+            throw new IllegalStateException(name + ": false (expected: true)");
+        }
+    }
+
+    public static void state(Object obj, Supplier<String> supplier) {
+        if (obj == null) {
+            throw new IllegalStateException(nullSafeGet(supplier));
+        }
+    }
+
+    public static void state(boolean expected, String format, Object... args) {
+        if (!expected) {
+            throw new IllegalStateException(String.format(format, args));
+        }
     }
 
     // Assert.notNull
+
+    public static void notNull(Object obj) {
+        Assert.notNull(obj, "actual");
+    }
 
     public static void notNull(Object obj, String name) {
         if (obj == null) {
@@ -40,6 +89,12 @@ public final class Assert {
     public static void notNull(Object obj, Supplier<String> supplier) {
         if (obj == null) {
             throw new IllegalArgumentException(nullSafeGet(supplier));
+        }
+    }
+
+    public static void notNull(boolean expected, String format, Object... args) {
+        if (!expected) {
+            throw new IllegalStateException(String.format(format, args));
         }
     }
 
@@ -210,25 +265,19 @@ public final class Assert {
         Assert.positive(arr.length, name + ".length");
     }
 
-    // Number
-
-    public static <E extends Comparable<E>> void between(E i, E start, E end, String name) {
-        Assert.notNull(i, "i");
-        Assert.notNull(start, "start");
-        Assert.notNull(end, "end");
-        Assert.notNull(name, "name");
-        Assert.isTrue(start.compareTo(end) <= 0, () -> "start > end (expected: start <= end)");
-        Assert.isTrue(i.compareTo(start) >= 0 && i.compareTo(end) <= 0,
-                "%s: %s (expected: in [%s, %s])", name, i, start, end);
-    }
-
-    public static <E extends Comparable<E>> void between(E i, E start, E end) {
-        between(i, start, end, "actual");
-    }
+    // Number - Assert.positive
 
     public static <E extends Number> void positive(E i, String name) {
         Assert.notNull(i, "i");
         Assert.isTrue(i.intValue() > 0, "%s: %s (expected: > 0)", name, i);
+    }
+
+    public static void positive(byte i, String name) {
+        Assert.isTrue(i > 0, "%s: %s (expected: > 0)", name, i);
+    }
+
+    public static void positive(short i, String name) {
+        Assert.isTrue(i > 0, "%s: %s (expected: > 0)", name, i);
     }
 
     public static void positive(int i, String name) {
@@ -251,6 +300,14 @@ public final class Assert {
         positive(i, "actual");
     }
 
+    public static void positive(byte i) {
+        positive(i, "actual");
+    }
+
+    public static void positive(short i) {
+        positive(i, "actual");
+    }
+
     public static void positive(int i) {
         positive(i, "actual");
     }
@@ -267,9 +324,19 @@ public final class Assert {
         positive(i, "actual");
     }
 
+    // Number - Assert.notPositive
+
     public static <E extends Number> void notPositive(E i, String name) {
         Assert.notNull(i, "i");
         Assert.isTrue(i.intValue() <= 0, "%s: %s (expected: <= 0)", name, i);
+    }
+
+    public static void notPositive(byte i, String name) {
+        Assert.isTrue(i <= 0, "%s: %s (expected: <= 0)", name, i);
+    }
+
+    public static void notPositive(short i, String name) {
+        Assert.isTrue(i <= 0, "%s: %s (expected: <= 0)", name, i);
     }
 
     public static void notPositive(int i, String name) {
@@ -292,6 +359,14 @@ public final class Assert {
         notPositive(i, "actual");
     }
 
+    public static void notPositive(byte i) {
+        notPositive(i, "actual");
+    }
+
+    public static void notPositive(short i) {
+        notPositive(i, "actual");
+    }
+
     public static void notPositive(int i) {
         notPositive(i, "actual");
     }
@@ -308,9 +383,19 @@ public final class Assert {
         notPositive(i, "actual");
     }
 
+    // Number - Assert.negative
+
     public static <E extends Number> void negative(E i, String name) {
         Assert.notNull(i, "i");
         Assert.isTrue(i.intValue() < 0, "%s: %s (expected: < 0)", name, i);
+    }
+
+    public static void negative(byte i, String name) {
+        Assert.isTrue(i < 0, "%s: %s (expected: < 0)", name, i);
+    }
+
+    public static void negative(short i, String name) {
+        Assert.isTrue(i < 0, "%s: %s (expected: < 0)", name, i);
     }
 
     public static void negative(int i, String name) {
@@ -333,6 +418,14 @@ public final class Assert {
         negative(i, "actual");
     }
 
+    public static void negative(byte i) {
+        negative(i, "actual");
+    }
+
+    public static void negative(short i) {
+        negative(i, "actual");
+    }
+
     public static void negative(int i) {
         negative(i, "actual");
     }
@@ -349,9 +442,19 @@ public final class Assert {
         negative(i, "actual");
     }
 
+    // Number - Assert.notNegative
+
     public static <E extends Number> void notNegative(E i, String name) {
         Assert.notNull(i, "i");
         Assert.isTrue(i.intValue() >= 0, "%s: %s (expected: >= 0)", name, i);
+    }
+
+    public static void notNegative(byte i, String name) {
+        Assert.isTrue(i >= 0, "%s: %s (expected: >= 0)", name, i);
+    }
+
+    public static void notNegative(short i, String name) {
+        Assert.isTrue(i >= 0, "%s: %s (expected: >= 0)", name, i);
     }
 
     public static void notNegative(int i, String name) {
@@ -374,6 +477,14 @@ public final class Assert {
         notNegative(i, "actual");
     }
 
+    public static void notNegative(byte i) {
+        notNegative(i, "actual");
+    }
+
+    public static void notNegative(short i) {
+        notNegative(i, "actual");
+    }
+
     public static void notNegative(int i) {
         notNegative(i, "actual");
     }
@@ -390,9 +501,19 @@ public final class Assert {
         notNegative(i, "actual");
     }
 
+    // Number - Assert.zero
+
     public static <E extends Number> void zero(E i, String name) {
         Assert.notNull(i, "i");
         Assert.isTrue(i.intValue() == 0, "%s: %s (expected: = 0)", name, i);
+    }
+
+    public static void zero(byte i, String name) {
+        Assert.isTrue(i == 0, "%s: %s (expected: = 0)", name, i);
+    }
+
+    public static void zero(short i, String name) {
+        Assert.isTrue(i == 0, "%s: %s (expected: = 0)", name, i);
     }
 
     public static void zero(int i, String name) {
@@ -415,6 +536,14 @@ public final class Assert {
         zero(i, "actual");
     }
 
+    public static void zero(byte i) {
+        zero(i, "actual");
+    }
+
+    public static void zero(short i) {
+        zero(i, "actual");
+    }
+
     public static void zero(int i) {
         zero(i, "actual");
     }
@@ -431,31 +560,23 @@ public final class Assert {
         zero(i, "actual");
     }
 
-    // isTrue
+    // Number - Assert.between
 
-    public static void isTrue(boolean expected) {
-        if (!expected) {
-            throw new IllegalArgumentException();
-        }
+    public static <E extends Comparable<E>> void between(E i, E start, E end, String name) {
+        Assert.notNull(i, "i");
+        Assert.notNull(start, "start");
+        Assert.notNull(end, "end");
+        Assert.notNull(name, "name");
+        Assert.isTrue(start.compareTo(end) <= 0, () -> "start > end (expected: start <= end)");
+        Assert.isTrue(i.compareTo(start) >= 0 && i.compareTo(end) <= 0,
+                "%s: %s (expected: in [%s, %s])", name, i, start, end);
     }
 
-    public static void isTrue(boolean expected, String name) {
-        if (!expected) {
-            throw new IllegalArgumentException(name + ": false (expected: true)");
-        }
+    public static <E extends Comparable<E>> void between(E i, E start, E end) {
+        between(i, start, end, "actual");
     }
 
-    public static void isTrue(boolean expression, Supplier<String> messageSupplier) {
-        if (!expression) {
-            throw new IllegalArgumentException(nullSafeGet(messageSupplier));
-        }
-    }
-
-    public static void isTrue(boolean expected, String format, Object... args) {
-        if (!expected) {
-            throw new IllegalArgumentException(String.format(format, args));
-        }
-    }
+    // Types - isInstanceOfAny / isAssignableFrom*
 
     /**
      * 判断指定的对象是否是“任意一个“指定类型的实例
@@ -504,6 +625,8 @@ public final class Assert {
         }
     }
 
+    // Internal helper methods
+
     private static <V> V nullSafeGet(Supplier<V> supplier) {
         return supplier != null ? supplier.get() : null;
     }
@@ -511,6 +634,4 @@ public final class Assert {
     private static <V> V nullSafeGet(Map<?, V> map, Object key) {
         return map != null ? map.get(key) : null;
     }
-
-    // Internal helper methods
 }
