@@ -420,7 +420,7 @@ public final class ObjectUtils {
     // Number validations
 
     public static <E extends Comparable<E>> E requireBetween(E i, E start, E end, String name) {
-        Assert.between(i, start,end,name);
+        Assert.between(i, start, end, name);
         return i;
     }
 
@@ -428,84 +428,47 @@ public final class ObjectUtils {
         return requireBetween(i, start, end, "actual");
     }
 
-    /**
-     * Checks that the specified {@code i} is positive (> 0). this method is designed primarily for
-     * argument checking in methods and constructors.
-     * TODO byte, short, int, long ,double, float
-     *
-     * @param i    the number to test
-     * @param name the name of {@code i}
-     * @return {@code i}
-     */
-    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requirePositive(E i, String name) {
-        Assert.positive(i ,name);
+        Assert.positive(i, name);
         return i;
     }
 
-    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requirePositive(E i) {
         return requirePositive(i, "actual");
     }
 
-    /**
-     * Checks that the specified {@code i} is non positive (<= 0). this method is designed primarily
-     * for argument checking in methods and constructors.
-     * // TODO char, byte, short, int, long ,double, float
-     * @param i    the number to test
-     * @param name the name of {@code i}
-     * @return {@code i}
-     */
     public static <E extends Number> E requireNonPositive(E i, String name) {
         Assert.notPositive(i, name);
         return i;
     }
-    // TODO char, byte, short, int, long ,double, float
+
     public static <E extends Number> E requireNonPositive(E i) {
         return requireNonPositive(i, "actual");
     }
 
-    /**
-     * Checks that the specified {@code i} is negative (< 0). this method is designed primarily for
-     * argument checking in methods and constructors.
-     * // TODO char, byte, short, int, long ,double, float
-     * @param i    the number to test
-     * @param name the name of {@code i}
-     * @return {@code i}
-     */
     public static <E extends Number> E requireNegative(E i, String name) {
         Assert.negative(i, name);
         return i;
     }
-    // TODO char, byte, short, int, long ,double, float
+
     public static <E extends Number> E requireNegative(E i) {
         return requireNegative(i, "actual");
     }
 
-    /**
-     * Checks that the specified {@code i} is non negative (>= 0). this method is designed primarily
-     * for argument checking in methods and constructors.
-     * // TODO byte, short, int, long ,double, float
-     * @param i    the number to test
-     * @param name the name of {@code i}
-     * @return {@code i}
-     */
     public static <E extends Number> E requireNonNegative(E i, String name) {
         Assert.notNegative(i, name);
         return i;
     }
-    // TODO char, byte, short, int, long ,double, float
+
     public static <E extends Number> E requireNonNegative(E i) {
         return requireNonNegative(i, "actual");
     }
 
-    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requireZero(E i, String name) {
         Assert.zero(i, name);
         return i;
     }
 
-    // TODO char, byte, short, int, long ,double, float
     public static <E extends Number> E requireZero(E i) {
         return requireZero(i, "actual");
     }
@@ -628,8 +591,6 @@ public final class ObjectUtils {
         return !isEmpty(arr);
     }
 
-    // Number predications
-
     public static <E extends Number> boolean isPositive(E i) {
         return i.intValue() > 0;
     }
@@ -638,31 +599,10 @@ public final class ObjectUtils {
         return !isPositive(i);
     }
 
-    /**
-     * Returns {@code true} if the provided number is non positive (<=0) otherwise {@code false}
-     *
-     * @param i the number to test
-     * @return {@code true} if the provided number is non positive (<=0) otherwise {@code false}
-     * @apiNote This method exists to be used as a {@link java.util.function.Predicate}, {@code
-     * filter(Numbers::nonPositive)}
-     * // TODO 注意看看这里的描述
-     * @see java.util.function.Predicate
-     * @since 1.8
-     */
     public static <E extends Number> boolean nonPositive(E i) {
         return i.intValue() <= 0;
     }
 
-    /**
-     * Returns {@code true} if the provided number is non negative (>=0) otherwise {@code false}
-     *
-     * @param i the number to test
-     * @return {@code true} if the provided number is non negative (>=0) otherwise {@code false}
-     * @apiNote This method exists to be used as a {@link java.util.function.Predicate}, {@code
-     * filter(Numbers::nonNegative)}
-     * @see java.util.function.Predicate
-     * @since 1.8
-     */
     public static <E extends Number> boolean nonNegative(E i) {
         requireNonNull(i, "i");
         return i.intValue() >= 0;
@@ -689,25 +629,6 @@ public final class ObjectUtils {
         return !isBetween(i, start, end);
     }
 
-//    // checkArgument
-//
-//    public static void checkArgument(boolean expected, String errMessage) {
-//        if (!expected) {
-//            throw new IllegalArgumentException(errMessage);
-//        }
-//    }
-//
-//    public static void checkArgument(boolean expected) {
-//        if (!expected) {
-//            throw new IllegalArgumentException();
-//        }
-//    }
-//
-//    public static void checkArgument(boolean expected, String format, Object... args) {
-//        if (!expected) {
-//            throw new IllegalArgumentException(String.format(format, args));
-//        }
-//    }
 
     // Misc
 
