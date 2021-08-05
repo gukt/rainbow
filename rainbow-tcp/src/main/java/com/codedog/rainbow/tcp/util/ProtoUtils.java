@@ -132,8 +132,20 @@ public class ProtoUtils {
         }
     }
 
+    /**
+     * 从一个 {@link MessageLiteOrBuilder MessageLiteOrBuilder} 类型的对象中安全地返回 {@link MessageLite.Builder MessageLite.Builder} 实例。
+     * 如果对象已经是 {@link MessageLite.Builder MessageLite.Builder} 类型，则直接返回；
+     * 反之，调用对象的 {@link MessageLite#toBuilder() toBuilder()} 方法返回一个 MessageLite.Builder 实例
+     *
+     * @param message 目标对象，不能为 null
+     * @param <V>     返回值类型，继承自 {@link MessageLite.Builder}
+     * @param <E>     目标对象的类型，继承自 {@link MessageLiteOrBuilder MessageLiteOrBuilder}
+     * @return 继承自 {@link MessageLite.Builder MessageLite.Builder} 的对象实例。
+     * @see #safeGetBuilder(Object)
+     */
     @SuppressWarnings("unchecked")
     public static <V extends MessageLite.Builder, E extends MessageLiteOrBuilder> V safeGetBuilder(E message) {
+        Assert.notNull(message, "message");
         if (message instanceof MessageLite.Builder) {
             return (V) message;
         } else {
@@ -147,8 +159,7 @@ public class ProtoUtils {
 
     public static MessageLiteOrBuilder requireMessageLiteOrBuilder(Object message, String name) {
         Assert.notNull(message, name);
-        Assert.isTrue(message instanceof MessageLiteOrBuilder, () -> name + ".getClass(): "
-                + message.getClass().getSimpleName() + " (expected: MessageLiteOrBuilder)");
+        Assert.isAssignableFrom(message.getClass(), MessageLiteOrBuilder.class);
         return (MessageLiteOrBuilder) message;
     }
 }
