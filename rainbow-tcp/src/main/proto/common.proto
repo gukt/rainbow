@@ -53,8 +53,12 @@ message Error {
 
   enum ErrorCode {
     UNKNOWN = 0;
+    ROLE_CREATION_FAILED = 1;
 
-    // Add more...
+    // ======================
+    // You can add more here.
+    // ======================
+    ;
   }
 }
 

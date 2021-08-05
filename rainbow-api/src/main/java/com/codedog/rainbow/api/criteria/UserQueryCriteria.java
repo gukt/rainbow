@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.api.criteria;
 
-import com.codedog.rainbow.util.ObjectUtils;
+import com.codedog.rainbow.util.Assert;
 import lombok.Data;
 
 import java.util.Date;
@@ -33,7 +33,7 @@ public class UserQueryCriteria implements
     private Date blockEnd;
 
     public static UserQueryCriteria of(Set<Long> ids) {
-        ObjectUtils.requireNonEmpty(ids, "ids");
+        Assert.notEmpty(ids, "ids");
         UserQueryCriteria instance = new UserQueryCriteria();
         instance.ids = ids;
         return instance;

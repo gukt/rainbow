@@ -104,38 +104,37 @@ public class GameController {
 
     // JSON
 
-    /**
-     * 进入游戏
-     */
-    // @HandlerMapping(value = "GameEnterRequest")
-    public Object gameEnter2(Session session, Map<String, Object> payload) {
-        String openId = (String) payload.get("openId");
-        Role role = roleService.findByOpenIdOrCreate2(openId, payload);
-        // 阻塞直到数据同步完成
-        waitIfDataSyncRequired();
-        session.put("role", role);
-        // SessionService.add(session);
-        session.setState(State.ACTIVE);
-
-        // TODO 记录玩家所在服务器
-        // TODO 下线逻辑处，存档完成后，移除玩家-服务器对应消息
-
-        // TODO 这里要保存什么？
-        roleService.save(role);
-
-        // TODO 发送事件 GameEnteringEvent
-
-        // 处理完毕，返回响应
-        return GameEnterResponse.newBuilder()
-                .setRoleId(role.getId())
-                .setUid(role.getUid())
-                .setOpenId(Strings.nullToEmpty(role.getOpenId()))
-                .setNick(Strings.nullToEmpty(role.getNick()))
-                .setServerTime(System.currentTimeMillis())
-                .setCreatedAt(role.getCreatedAt().getTime())
-                .build();
-    }
-
+    // /**
+    //  * 进入游戏
+    //  */
+    // // @HandlerMapping(value = "GameEnterRequest")
+    // public Object gameEnter2(Session session, Map<String, Object> payload) {
+    //     String openId = (String) payload.get("openId");
+    //     Role role = roleService.findByOpenIdOrCreate2(openId, payload);
+    //     // 阻塞直到数据同步完成
+    //     waitIfDataSyncRequired();
+    //     session.put("role", role);
+    //     // SessionService.add(session);
+    //     session.setState(State.ACTIVE);
+    //
+    //     // TODO 记录玩家所在服务器
+    //     // TODO 下线逻辑处，存档完成后，移除玩家-服务器对应消息
+    //
+    //     // TODO 这里要保存什么？
+    //     roleService.save(role);
+    //
+    //     // TODO 发送事件 GameEnteringEvent
+    //
+    //     // 处理完毕，返回响应
+    //     return GameEnterResponse.newBuilder()
+    //             .setRoleId(role.getId())
+    //             .setUid(role.getUid())
+    //             .setOpenId(Strings.nullToEmpty(role.getOpenId()))
+    //             .setNick(Strings.nullToEmpty(role.getNick()))
+    //             .setServerTime(System.currentTimeMillis())
+    //             .setCreatedAt(role.getCreatedAt().getTime())
+    //             .build();
+    // }
 
     @HandlerMapping("ReconnectRequest")
     public Object reconnect2(DefaultSession session, Map<?, ?> payload) {

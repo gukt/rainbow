@@ -8,6 +8,7 @@ import com.codedog.rainbow.api.criteria.Predicates;
 import com.codedog.rainbow.api.criteria.UserQueryCriteria;
 import com.codedog.rainbow.domain.User;
 import com.codedog.rainbow.repository.UserRepository;
+import com.codedog.rainbow.util.Assert;
 import com.codedog.rainbow.util.BeanUtils;
 import com.codedog.rainbow.util.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -160,7 +161,7 @@ public class UserService {
 //    }
 
     public int removeByIds(Set<Long> ids, boolean force) {
-        ObjectUtils.requireNonEmpty(ids, "ids");
+        Assert.notEmpty(ids, "ids");
         if (force) {
             // 物理删除
             return userRepository.deleteAllByIdIn(ids);

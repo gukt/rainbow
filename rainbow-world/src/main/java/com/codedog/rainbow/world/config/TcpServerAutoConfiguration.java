@@ -12,6 +12,10 @@ import com.codedog.rainbow.tcp.channel.TcpServerChannelHandler;
 import com.codedog.rainbow.tcp.channel.json.JsonPacketTcpServerChannelHandler;
 import com.codedog.rainbow.tcp.channel.protobuf.ProtoPacketTcpServerChannelHandler;
 import com.codedog.rainbow.tcp.interceptor.MessageInterceptor;
+import com.codedog.rainbow.tcp.interceptor.json.JsonKeepAliveMessageInterceptor;
+import com.codedog.rainbow.tcp.interceptor.json.JsonTcpSecurityMessageInterceptor;
+import com.codedog.rainbow.tcp.interceptor.protobuf.ProtoKeepAliveMessageInterceptor;
+import com.codedog.rainbow.tcp.interceptor.protobuf.ProtoTcpSecurityMessageInterceptor;
 import com.codedog.rainbow.tcp.message.DefaultMessageDispatcher;
 import com.codedog.rainbow.tcp.message.JsonPacket;
 import com.codedog.rainbow.tcp.message.MessageDispatcher;
@@ -109,8 +113,15 @@ public class TcpServerAutoConfiguration {
 
     private List<MessageInterceptor<?>> messageInterceptors(TcpProperties properties) {
         List<MessageInterceptor<?>> interceptors = new ArrayList<>();
-        // TODO 要根据消息类型选择性添加
-        // interceptors.add(new JsonKeepAliveMessageInterceptor());
+        // 根据消息类型选择性添加
+        if (properties.getMessageProtocol() == MessageProtocol.PROTOBUF) {
+            interceptors.add(new ProtoKeepAliveMessageInterceptor());
+            interceptors.add(new ProtoTcpSecurityMessageInterceptor(properties));
+        }
+        if (properties.getMessageProtocol() == MessageProtocol.JSON) {
+            interceptors.add(new JsonKeepAliveMessageInterceptor());
+            interceptors.add(new JsonTcpSecurityMessageInterceptor(properties));
+        }
         return interceptors;
     }
 }

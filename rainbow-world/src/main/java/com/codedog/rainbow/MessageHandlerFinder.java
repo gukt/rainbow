@@ -6,6 +6,7 @@ package com.codedog.rainbow;
 import com.codedog.rainbow.tcp.message.HandlerMapping;
 import com.codedog.rainbow.tcp.message.MessageHandler;
 import com.codedog.rainbow.tcp.message.MessageHandlerAdapter;
+import com.codedog.rainbow.util.Assert;
 import com.codedog.rainbow.util.ObjectUtils;
 import com.codedog.rainbow.util.ReflectionUtils;
 import com.esotericsoftware.reflectasm.MethodAccess;
@@ -61,7 +62,7 @@ public class MessageHandlerFinder {
     }
 
     private String toString(List<?> handlers) {
-        ObjectUtils.requireNonEmpty(handlers, "handlers");
+        Assert.notEmpty(handlers, "handlers");
         StringBuilder sb = new StringBuilder("\n");
         handlers.forEach(h -> sb.append(h.toString()).append("\n"));
         return sb.toString();

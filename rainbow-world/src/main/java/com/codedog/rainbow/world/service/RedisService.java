@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.world.service;
 
+import com.codedog.rainbow.lang.NotImplementedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,6 @@ import java.io.Serializable;
 public class RedisService {
 
      void updateRole(Serializable roleId, String key, Object value) {
-         // TODO Code goes here
+          throw new NotImplementedException();
      }
 }

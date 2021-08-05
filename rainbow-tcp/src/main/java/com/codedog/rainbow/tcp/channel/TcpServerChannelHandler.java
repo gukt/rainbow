@@ -113,10 +113,10 @@ public abstract class TcpServerChannelHandler<T> extends SimpleChannelInboundHan
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         log.debug("TCP - New client connected: {}", channel);
-        Attribute<Session> sessionAttribute = channel.attr(Session.KEY);
-        sessionAttribute.setIfAbsent(newSession(ctx));
+        Attribute<Session> attr = channel.attr(Session.KEY);
+        attr.setIfAbsent(newSession(ctx));
         super.channelActive(ctx);
-        TcpServer.addSession(sessionAttribute.get());
+        TcpServer.addSession(attr.get());
     }
 
     protected abstract Session newSession(ChannelHandlerContext delegate);

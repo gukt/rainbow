@@ -6,10 +6,12 @@ package com.codedog.rainbow.world.service;
 
 import com.codedog.rainbow.domain.Role;
 import com.codedog.rainbow.repository.RoleRepository;
+import com.codedog.rainbow.tcp.message.MessageHandlerException;
 import com.codedog.rainbow.util.Assert;
 import com.codedog.rainbow.util.IdGenerator;
-import com.codedog.rainbow.world.generated.Number;
 import com.codedog.rainbow.world.generated.*;
+import com.codedog.rainbow.world.generated.Number;
+import com.codedog.rainbow.world.generated.CommonProto.Error.ErrorCode;
 import com.codedog.rainbow.world.generated.RoleInfo.Builder;
 import com.codedog.rainbow.world.generated.RoleServiceGrpc.RoleServiceImplBase;
 import com.google.common.base.Strings;
@@ -69,30 +71,24 @@ public class RoleService extends RoleServiceImplBase {
     public Role findByOpenIdOrCreate(String openId, GameEnterRequest request) {
         Assert.notNull(request, "request");
         Role role = findByOpenId(openId);
-        if(role == null) {
-            role = create(request);
-            log.info("已成功创建角色: {}", role);
+        if (role == null) {
+            try {
+                role = create(request);
+                log.info("成功创建角色: {}", role);
+            } catch (Exception e) {
+                log.error("创建角色失败", e);
+                throw new MessageHandlerException(ErrorCode.ROLE_CREATION_FAILED_VALUE, "创建角色失败，请稍后重试");
+            }
         }
-        // Role role = findByOpenId(openId);
-        // if (role == null) {
-        //     // TODO 这里抛出异常是不是可以去掉？
-        //     try {
-        //         role = create(request);
-        //     } catch (Exception e) {
-        //         log.error("创建角色失败，请稍后重试", e);
-        //         throw new RuntimeException("YYY");
-        //         // throw new ExecutionException(ErrorCode.CreateRoleFaild, "创建角色失败，请稍后重试");
-        //         // }
-        //     }
         return role;
     }
 
-    public Role findByOpenIdOrCreate2(String openId, Map<String,Object> payload) {
+    public Role findByOpenIdOrCreate2(String openId, Map<String, Object> payload) {
         Assert.notNull(payload, "payload");
         Role role = findByOpenId(openId);
-        if(role == null) {
+        if (role == null) {
             role = create2(payload);
-            log.info("已成功创建角色: {}", role);
+            log.info("成功创建角色: {}", role);
         }
         return role;
     }
@@ -115,7 +111,7 @@ public class RoleService extends RoleServiceImplBase {
         return roleRepository.save(role);
     }
 
-    public Role create2(Map<String,Object> payload) {
+    public Role create2(Map<String, Object> payload) {
         Date now = new Date();
         Role role = new Role();
         role.setId(IdGenerator.nextId());
