@@ -43,16 +43,16 @@ public abstract class TcpServerChannelHandler<T> extends SimpleChannelInboundHan
     protected final TcpProperties properties;
 
     /**
-     * 消息拦截器列表,供外部调用，动态添加interceptors用的
-     * TODO 初始化完成后，需要是不可变的？？？ 可以动态添加是不是更好？考虑一下
+     * 拦截器链,供外部初始化时使用。不用担心拦截器链在运行时会被动态更改。
+     * <p>它们只会在 {@link #getInterceptors()} 中初始化一次，并被保存到 {@link #interceptors} 变量。
      */
     @Getter private final List<MessageInterceptor<?>> interceptorList = new ArrayList<>();
     /**
-     * 活跃状态，一旦设置为 true，就表示可以接受请求了。
+     * 活跃状态，一旦设置为 <code>true</code>，就表示可以接受请求了。
      */
     @Setter protected volatile boolean active;
     /**
-     * 消息拦截器列表，内部循环使用的
+     * 拦截器链，{@link #getInterceptors() 第一次初始化} 之后就不会再改变了。
      */
     private MessageInterceptor<T>[] interceptors;
 
