@@ -4,44 +4,39 @@
 
 package com.codedog.rainbow.domain;
 
-import com.codedog.rainbow.domain.base.TimeAwareEntity;
+import com.codedog.rainbow.domain.base.RoleAwareEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
+ * 道具
+ *
  * @author https://github.com/gukt
  */
 
 @Entity
-@Table(name = "t_servers")
-@RequiredArgsConstructor
+@Table(name = "t_items")
 @Getter
 @Setter
 @ToString
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Server extends TimeAwareEntity {
+public class Item extends RoleAwareEntity {
 
     /**
-     * 类型，0: pre-publish, 1: backup, 2: published
+     * 名称，不多于 15 个字符。
      */
-    private Integer type;
-    /**
-     * 名称
-     */
+    @Column(nullable = false, columnDefinition = "varchar(15) default ''")
     private String name;
+
     /**
-     * 上线服务时间
+     * 数量
      */
-    private Date servedAt;
-    /**
-     * 状态，-1: deleted, 0: offline, 1: online, 2: trouble
-     */
-    private Integer state;
+    @Column(nullable = false, columnDefinition = "mediumint default 0")
+    private Integer num;
 }

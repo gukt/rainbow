@@ -5,12 +5,10 @@
 package com.codedog.rainbow.domain;
 
 import com.codedog.rainbow.JsonViews.UserLoginView;
-import com.codedog.rainbow.core.rest.ApiResultView.IdOnly;
+import com.codedog.rainbow.domain.base.TimeAwareEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,13 +28,13 @@ import java.util.Date;
 @Setter
 @ToString
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class User {
+public class User extends TimeAwareEntity {
 
-    /** 主键，由程序提供，需保证全局唯一 */
-    @Id
-    @JsonView(IdOnly.class)
-    @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
+    // /** 主键，由程序提供，需保证全局唯一 */
+    // @Id
+    // @JsonView(IdOnly.class)
+    // @JsonSerialize(using= ToStringSerializer.class)
+    // private Long id;
 
     /** 用户名，仅用于内部账号系统 */
     @Column(nullable = false, length = 50)
@@ -57,9 +55,6 @@ public class User {
     @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean inactive;
 
-//    @Column(nullable = false, columnDefinition = "tinyint default 1")
-//    private Integer state;
-
     @Temporal(TemporalType.TIMESTAMP)
     private Date blockedUntil;
 
@@ -69,6 +64,14 @@ public class User {
     @Column(nullable = false, columnDefinition = "varchar(50) default ''")
     private String loginIp;
 
+    // @Column(nullable = false)
+    // @JsonView(UserLoginView.class)
+    // private Date createdAt;
+    //
+    // @Column(nullable = false)
+    // @JsonView(UserLoginView.class)
+    // private Date updatedAt;
+
     /**
      * 创建时间, NOTE: MYSQL 的日期类型中，只有 timestamp 支持设置默认值，其他如: datetime, date, time, year 都不支持。
      * <pre>
@@ -76,11 +79,8 @@ public class User {
      * 2. ts TIMESTAMP NOT NULL default CURRENT_TIMESTAMP()
      * </pre>
      */
-    @Column(nullable = false)
     @JsonView(UserLoginView.class)
-    private Date createdAt;
-
-    @Column(nullable = false)
-    @JsonView(UserLoginView.class)
-    private Date updatedAt;
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 }

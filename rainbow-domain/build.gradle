@@ -25,6 +25,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
+    implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.9.13'
 }
 //
 //test {

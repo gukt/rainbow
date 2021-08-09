@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.domain;
 
+import com.codedog.rainbow.domain.base.StateAwareEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +23,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Role {
-
-    /**
-     * 主键，由程序提供，需保证全局唯一
-     */
-    @Id
-    private Long id;
+public class Role extends StateAwareEntity {
 
     /** User id */
     @Column(nullable = false)
@@ -64,14 +59,6 @@ public class Role {
     @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean inactive = false;
 
-    @Column(nullable = false, columnDefinition = "tinyint default 0")
-    private Integer state;
-
     @Column(nullable = false)
     private Date loginTime;
-
-    @Column(nullable = false)
-    private Date createdAt;
-
-    private Date updatedAt;
 }

@@ -18,7 +18,7 @@ import java.util.Set;
  * @author https://github.com/gukt
  */
 @Repository
-public interface ServerRepository extends JpaRepository<Server, Integer>,
+public interface ServerRepository extends    JpaRepository<Server, Integer>,
         JpaSpecificationExecutor<Server> {
 
     @Query("DELETE FROM Server WHERE id = ?1")

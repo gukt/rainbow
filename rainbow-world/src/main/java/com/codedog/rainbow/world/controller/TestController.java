@@ -11,6 +11,7 @@ import com.codedog.rainbow.world.service.RedisService;
 import com.codedog.rainbow.world.service.RoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * RoleController
@@ -27,6 +28,16 @@ public class TestController {
     public TestController(RoleService roleService, RedisService redisService, LoggingService loggingService) {
         this.roleService = roleService;
         this.loggingService = loggingService;
+    }
+
+    @GetMapping("/first")
+    public Object first() {
+        return "first controller";
+    }
+
+    @GetMapping("/doError")
+    public Object error() {
+        return 1 / 0;
     }
 
     @HandlerMapping(value = "GameEnterRequest")

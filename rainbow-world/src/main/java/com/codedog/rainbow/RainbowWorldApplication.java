@@ -4,17 +4,18 @@
 
 package com.codedog.rainbow;
 
-import com.codedog.rainbow.tcp.TcpServer;
 import com.codedog.rainbow.world.GameWorld;
 import com.codedog.rainbow.world.net.EnableRpcServer;
 import com.codedog.rainbow.world.net.EnableTcpServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 @EnableTcpServer
 @EnableRpcServer
+@EnableCaching
 public class RainbowWorldApplication {
 
     public static void main(String[] args) {

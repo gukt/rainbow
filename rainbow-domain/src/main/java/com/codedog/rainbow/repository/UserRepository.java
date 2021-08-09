@@ -16,8 +16,7 @@ import java.util.Set;
  * @author https://github.com/gukt
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>,
-        JpaSpecificationExecutor<User> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     Optional<User> findByName(String name);
 

@@ -17,9 +17,9 @@ import com.codedog.rainbow.world.generated.RoleServiceGrpc.RoleServiceImplBase;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.grpc.stub.StreamObserver;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -36,11 +36,9 @@ import java.util.stream.Collectors;
  * @author https://github.com/gukt
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class RoleService extends RoleServiceImplBase {
 
-    @NonNull
     private final RoleRepository roleRepository;
 
     /**
@@ -51,6 +49,10 @@ public class RoleService extends RoleServiceImplBase {
             .setCreateTime(r.getCreatedAt().getTime())
             .build();
 
+    public RoleService(RoleRepository roleRepository) {this.roleRepository = roleRepository;}
+
+
+    @CachePut(cacheNames = "cache:roles", key = "#entity.id")
     public Role save(Role entity) {
         if (entity.getId() == null) {
             entity.setId(IdGenerator.nextId());
@@ -62,6 +64,12 @@ public class RoleService extends RoleServiceImplBase {
         return entity;
     }
 
+    @Cacheable(cacheNames = "cache:roles", key = "")
+    public List<Role> top10() {
+        return new ArrayList<>();
+    }
+
+    @CachePut(cacheNames = "cache:roles", key = "#result.id")
     @Nullable
     public Role findByOpenId(String openId) {
         Assert.notNull(openId, "openId");
@@ -123,8 +131,9 @@ public class RoleService extends RoleServiceImplBase {
         return roleRepository.save(role);
     }
 
-    public Role getOne(Long id) {
-        return roleRepository.getOne(id);
+    @Cacheable(cacheNames = "cache:roles", key = "#id")
+    public Role getById(Long id) {
+        return roleRepository.getById(id);
     }
 
     /**

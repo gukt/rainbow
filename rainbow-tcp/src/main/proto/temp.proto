@@ -1,0 +1,14 @@
+syntax = "proto3";
+option java_package = "com.codedog.rainbow.world.generated";
+option java_outer_classname = "TempProto";
+option optimize_for = SPEED;
+
+message Foo {
+
+}
+
+message SearchRequest {
+  string query = 1;
+  int32 page_number = 2;
+  int32 result_per_page = 3;
+}

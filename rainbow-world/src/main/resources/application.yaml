@@ -21,9 +21,14 @@ spring:
         format_sql: false
         hbm2ddl:
           auto: update
-    show-sql: false
+    show-sql: true
   main:
     web-application-type: none
+  cache:
+    type: caffeine
+#    cache-names: cache:roles, cache:mails, cache:items
+#    caffeine:
+#      spec: maximumSize=500,expireAfterAccess=600s
 logging:
   level:
     root: info
