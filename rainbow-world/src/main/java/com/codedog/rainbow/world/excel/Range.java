@@ -7,5 +7,5 @@ package com.codedog.rainbow.world.excel;
 /**
  * @author https://github.com/gukt
  */
-public class Range {
+public class Range<T extends Number> {
 }

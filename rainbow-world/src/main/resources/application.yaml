@@ -18,14 +18,14 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-        format_sql: false
+        format_sql: true
         hbm2ddl:
           auto: update
     show-sql: true
   main:
     web-application-type: none
-  cache:
-    type: caffeine
+#  cache:
+#    type: caffeine
 #    cache-names: cache:roles, cache:mails, cache:items
 #    caffeine:
 #      spec: maximumSize=500,expireAfterAccess=600s

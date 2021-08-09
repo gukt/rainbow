@@ -4,6 +4,7 @@
 
 package com.codedog.rainbow.util;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -631,6 +632,19 @@ public final class ObjectUtils {
 
 
     // Misc
+
+    public static <V extends Annotation> V requireAnnotation(Class<?> type, Class<V> annotationType) {
+        Assert.isAnnotationPresent(type, annotationType);
+        return type.getAnnotation(annotationType);
+    }
+
+    public static int safeGetSize(Collection<?> collection) {
+        return collection == null ? 0 : collection.size();
+    }
+
+    public static int safeGetSize(Map<?, ?> map) {
+        return map == null ? 0 : map.size();
+    }
 
     // TODO 重命名为 getRequired(map, key)
 //    @SuppressWarnings("unchecked")

@@ -50,8 +50,8 @@ public class GameAppConfiguration {
         return ExcelParser.builder().baseDir(opts.getExcelPath())
                 .mutableCheck(true)
                 .nullable(true)
-                .primitiveCheck(true)
-                .persist(true)
+                .persistEnabled(true)
+                .persistSuffix(".dat")
                 .namingRowIndex(1)
                 .build();
     }

@@ -17,4 +17,6 @@ public @interface ExcelMapping {
     String file();
 
     String sheet();
+
+    boolean required() default false;
 }

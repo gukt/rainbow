@@ -6,6 +6,7 @@ package com.codedog.rainbow.util;
 
 import com.codedog.rainbow.lang.TypeMismatchException;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -622,6 +623,13 @@ public final class Assert {
         boolean matched = Arrays.stream(superTypes).anyMatch(superType -> superType.isAssignableFrom(type));
         if (!matched) {
             throw new TypeMismatchException(type, superTypes);
+        }
+    }
+
+    public static void isAnnotationPresent(Class<?> type, Class<? extends Annotation> annotationType) {
+        Annotation annotation = type.getAnnotation(annotationType);
+        if (annotation == null) {
+            throw new RuntimeException("Requires the " + annotationType + " annotation on the " + type.getSimpleName());
         }
     }
 

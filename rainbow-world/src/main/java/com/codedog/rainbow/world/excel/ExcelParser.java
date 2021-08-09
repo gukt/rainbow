@@ -8,6 +8,8 @@ import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.codedog.rainbow.util.Assert;
+import com.codedog.rainbow.util.ObjectUtils;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -29,31 +31,27 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author https://github.com/gukt
  */
 @Builder
-@SuppressWarnings("restriction") // TODO 移除这里
 @Slf4j
 public class ExcelParser {
 
     private static final ObjectMapper OBJECT_MAPPER;
-    private static final String PATH_SEPARATOR = "/";
 
     static {
         OBJECT_MAPPER = new ObjectMapper();
         // TODO Fix it ASAP
-//        OBJECT_MAPPER.registerModule(new GuavaModule());
+        // OBJECT_MAPPER.registerModule(new GuavaModule());
     }
 
     private final Map<Class<?>, Map<String, Integer>> propertyMappingByType = new HashMap<>();
     private final Kryo kryo = new Kryo();
     private final String baseDir;
-    /**
-     * 是否启动对被解析对象字段的primitive类型检查
-     */
-    private final boolean primitiveCheck;
     /**
      * 是否启动对被解析对象字段的是否可变检查
      */
@@ -63,89 +61,94 @@ public class ExcelParser {
      */
     private final boolean nullable;
     /**
-     * 是否将解析结果持久化到磁盘，以便下次在被解析对象类型没有改变的情况下从持久化的二进制文件中反序列化对象
+     * 是否需要将解析结果持久化保存到文件中。默认为 {@code true }，这样会更高效。
      */
-    private final boolean persist;
-    private final String persistFileSuffix = ".dat";
-    private final SimpleDateFormat[] DEFAULT_DATE_FORMATS = new SimpleDateFormat[]{
+    @Builder.Default
+    private final boolean persistEnabled = true;
+    /**
+     * 持久化文件名后缀
+     */
+    @Builder.Default
+    private final String persistSuffix = ".dat";
+    /**
+     * 支持的日期格式
+     */
+    @Builder.Default
+    private final SimpleDateFormat[] supportedDateFormats = new SimpleDateFormat[]{
             new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"),
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     };
-    private final int namingRowIndex;
-    private final int dataRowIndex;
+    /**
+     * 命名行索引（以 0 为基数），必须大于或等于 0。
+     */
+    @Builder.Default
+    private final int namingRowIndex = 0;
+    /**
+     * 数据化起始索引（以 0 为基数），表示从哪一行开始是数据行。必须大于 {@link #namingRowIndex}。
+     */
+    @Builder.Default
+    private final int dataRowIndex = 2;
 
     @Nullable
-    public <V> List<V> parse(Class<V> clazz) {
-        if (primitiveCheck) {
-            // 将所有包装类型找出来并打印
-            checkPrimitiveAndPrint(clazz);
-        }
+    public <V> List<V> parse(Class<V> targetType) {
+        Assert.notNull(targetType, "targetType");
+        Assert.isAnnotationPresent(targetType, ExcelMapping.class);
+        Assert.isTrue(dataRowIndex >= 0, "dataRowIndex >= 0");
+        Assert.isTrue(dataRowIndex > namingRowIndex, "dataRowIndex > namingRowIndex");
+
+        checkingPrimitiveFields(targetType);
         // 如果持久化开关是开启的，则尝试先从持久化文件中解析（这样会很高效）
-        // 但存在两种情况会导致回退到从文件解析：
-        // 1. 序列化文件不存在（首次调用或序列化文件被手动删除）
-        // 2. 自上次保存序列化文件后，excel内容被修改过，此时序列化文件作失效处理，需要从文件重新解析
-        List<V> retList = null;
-        if (persist) {
-            boolean exist = true;
+        if (persistEnabled) {
             try {
-                retList = readAndDeserialize(clazz);
-            } catch (FileNotFoundException e) {
-                exist = false;
-                log.debug("序列化文件未找到: {}", e.getMessage());
-            } finally {
-                // fall back
-                if (retList == null) {
-                    log.debug("从序列化文件中解析失败,即将回退到从文件解析，原因: {}", exist ? "序列化文件已失效" : "文件未找到");
-                    // parse from file
-                    retList = parseFromExcel(clazz);
-                    // persist
-                    serializeAndSave(clazz, retList);
-                }
+                return parseFromSerializedFile(targetType);
+            } catch (ExcelParseException e) {
+                // 存在两种情况会导致回退到从文件解析：
+                // 1. 序列化文件不存在（首次调用或序列化文件被手动删除）
+                // 2. 自上次保存序列化文件后，excel内容被修改过，此时序列化文件内容就是陈旧的需要丢弃。
+                log.debug("Excel - Failed to parse serialized file", e);
             }
-        } else {
-            retList = parseFromExcel(clazz);
         }
-        return retList;
+        return parseFromExcel(targetType);
     }
 
-    private <V> List<V> parseFromExcel(Class<V> clazz) {
-        List<V> retList = new ArrayList<>();
-        int row = -1;
-        List<List<String>> rows = parseRaw(getMappedFilename(clazz));
-        for (List<String> rowData : rows) {
-            row++;
-            // 解析命名行，将列名和列索引映射关系保存起来
-            if (row == namingRowIndex) {
-                propertyMappingByType.put(clazz, buildColumnMapping(clazz, rowData));
-                continue;
-            }
-            // 解析数据行
-            if (row >= dataRowIndex) {
-                try {
-                    retList.add(resolveBean(rowData, clazz));
-                } catch (IllegalAccessException e) {
-                    fail("给字段赋值时发生异常", e);
-                } catch (InstantiationException e) {
-                    fail("初始化对象" + clazz.getSimpleName() + "时发生异常", e);
-                }
-            }
+    /**
+     * 从 Excel 文件中逐行解析数据为指定类型的对象。
+     *
+     * @param targetType 集合元素类型
+     * @param <V>        集合元素类型
+     * @return 成功解析的对象集合
+     */
+    private <V> List<V> parseFromExcel(Class<V> targetType) {
+        List<List<String>> rows = parseRaw(getMappingFilename(targetType));
+        // 解析命名行，将列名和列索引映射关系保存起来
+        resolveFieldPosition(targetType, rows.get(namingRowIndex));
+        // 逐行解析数据
+        List<V> result = IntStream.range(dataRowIndex, rows.size())
+                .mapToObj(row -> resolveBean(rows.get(row), targetType))
+                .collect(Collectors.toList());
+        if (persistEnabled) {
+            serializeAndSave(targetType, result);
         }
-        return retList;
+        return result;
     }
 
-    private <V> V resolveBean(List<String> row, Class<V> beanType)
-            throws InstantiationException, IllegalAccessException {
-        V bean = beanType.newInstance();
-        for (Field field : beanType.getDeclaredFields()) {
-            Integer columnIndex = getColumnIndex(beanType, field.getName());
-            if (columnIndex != null) {
-                String v = row.get(columnIndex);
-                doAssignField(bean, field, v);
-            } else {
-                fail("Column not found: " + field.getName());
+    private <V> V resolveBean(List<String> row, Class<V> beanType) {
+        try {
+            V instance = beanType.newInstance();
+            for (Field field : beanType.getDeclaredFields()) {
+                Integer columnIndex = getColumnIndex(beanType, field.getName());
+                if (columnIndex != null) {
+                    String v = row.get(columnIndex);
+                    setFieldValue(instance, field, v);
+                } else {
+                    fail("Column not found: " + field.getName());
+                }
             }
+            return instance;
+        } catch (IllegalAccessException | InstantiationException e) {
+            fail("Cannot initialize the " + beanType.getName());
         }
-        return bean;
+        return null;
     }
 
     @Nullable
@@ -159,54 +162,46 @@ public class ExcelParser {
      *
      * @param bean  被赋值字段所属的对象
      * @param field 被赋值字段
-     * @param v     原始的字符串值
+     * @param value 原始的字符串值
      * @throws ExcelParseException if file to parse
      */
-    private void doAssignField(Object bean, Field field, String v) {
+    private void setFieldValue(Object bean, Field field, String value) {
         field.setAccessible(true);
         Class<?> fieldType = field.getType();
         // 根据字段类型对原始数据格式进行转换，以便可以顺利的解析
-        v = transform(fieldType, v);
+        value = transform(fieldType, value);
         try {
-            // 转换并给字段赋值
-            field.set(bean, convert(field, v));
+            field.set(bean, convert(field, value));
         } catch (IllegalAccessException e) {
-            fail(String.format("给类型%s的字段%s赋值时发生异常: value: %s", bean.getClass().getSimpleName(), field.getName(), v), e);
+            fail(String.format("字段赋值异常: [class=%s, field=%s, value=%s]", bean.getClass().getSimpleName(), field.getName(), value), e);
         }
         field.setAccessible(false);
     }
 
     /**
-     * 检查指定类型中所有WrapperType类型的字段，收集并打印
+     * 查找所有的 Wrapper Type 字段并提示。
      *
-     * @param clazz object type
+     * @param target 被检测的对象，不能为 null
      */
-    private void checkPrimitiveAndPrint(Class<?> clazz) {
+    private void checkingPrimitiveFields(Class<?> target) {
+        Assert.notNull(target, "target");
         Map<String, String> wrapperTypeFields = new HashMap<>(8);
-        ExcelColumn anno;
-        for (Field field : clazz.getDeclaredFields()) {
-            anno = field.getAnnotation(ExcelColumn.class);
-            if (anno != null && anno.ignore()) {
+        ExcelProperty excelProperty;
+        // 遍历所有的 fields
+        for (Field field : target.getDeclaredFields()) {
+            excelProperty = field.getAnnotation(ExcelProperty.class);
+            // 需要忽略该字段的解析吗？
+            if (excelProperty != null && excelProperty.ignored()) {
                 continue;
             }
+            // 字段类型是包装类型吗？
             if (Primitives.isWrapperType(field.getType())) {
                 wrapperTypeFields.put(field.getName(), field.getType().getSimpleName());
             }
         }
         if (!wrapperTypeFields.isEmpty()) {
-            log.warn("检测到类型{}存在以下包装类型字段，建议使用primitive类型代替: {}",
-                    clazz.getSimpleName(), wrapperTypeFields);
-        }
-    }
-
-    private void checkMutable(Class<?> clazz) {
-        Map<String, Class<?>> mutableFields = new HashMap<>(8);
-        for (Field field : clazz.getDeclaredFields()) {
-            // TODO fix it ASAP
-        }
-        if (!mutableFields.isEmpty()) {
-            log.warn("检测到类型{}存在以下非Immutable集合类型字段，建议使用Immutable集合类型代替Mutable集合类型: {}",
-                    clazz.getSimpleName(), mutableFields);
+            log.warn("Excel - Found {} wrapper type of fields in {}: {}",
+                    wrapperTypeFields.size(), target.getSimpleName(), wrapperTypeFields);
         }
     }
 
@@ -216,7 +211,7 @@ public class ExcelParser {
         if (!exists && !binDir.mkdir()) {
             throw new RuntimeException("创建目录失败: " + binDir);
         }
-        String binFilename = binDir.getPath() + "/" + clazz.getSimpleName() + persistFileSuffix;
+        String binFilename = binDir.getPath() + "/" + clazz.getSimpleName() + persistSuffix;
         File binaryFile = new File(binFilename);
         try (Output output = new Output(new FileOutputStream(binaryFile))) {
             kryo.writeClassAndObject(output, object);
@@ -241,47 +236,68 @@ public class ExcelParser {
     }
 
     private long getExcelLastModified(Class<?> clazz) {
-        String excelFilename = getMappedFilename(clazz);
+        String excelFilename = getMappingFilename(clazz);
         File excelFile = new File(baseDir + excelFilename);
         return excelFile.lastModified();
     }
 
-    @SuppressWarnings("unchecked")
-    @Nullable
-    private <V> List<V> readAndDeserialize(Class<?> clazz) throws FileNotFoundException {
-        List<V> retList = null;
-        String binFilename = baseDir + "bin/" + clazz.getSimpleName() + persistFileSuffix;
-        File file = new File(binFilename);
-        if (!file.exists()) {
-            throw new FileNotFoundException(binFilename);
-        }
-        // 如果excel文件在此序列化文件上次保存之后被更改过，则直接返回null
-        if (file.lastModified() < getExcelLastModified(clazz)) {
-            return null;
-        }
-        // 读取文件并反序列
-        try (Input input = new Input(new FileInputStream(binFilename))) {
-            long t1 = System.currentTimeMillis();
-            retList = (List<V>) kryo.readClassAndObject(input);
-            long elapsed = System.currentTimeMillis() - t1;
-            log.debug("从序列化文件中解析成功: {}: rows:{}, elapsed: {} millis, from: {}", clazz.getSimpleName(),
-                    (retList == null ? 0 : retList.size()), elapsed, binFilename);
-        } catch (Exception e) {
-            log.warn("从序列化文件中解析失败: file:{}, cause:{}", binFilename, e.getMessage());
-        }
-        return retList;
+    private File getSerializedFilename(Class<?> targetType) {
+        String filename = baseDir + "bin/" + targetType.getSimpleName() + persistSuffix;
+        return new File(filename);
+    }
+
+    private boolean isSerializedFileStaled(File file, Class<?> targetType) {
+        return file.lastModified() < getExcelLastModified(targetType);
     }
 
     /**
-     * 将字符串转换为Field定义的类型值
+     * 从已保存的序列化文件中解析。
      *
-     * @param field field of object
-     * @param s     raw string value
-     * @return return converted value according to field type
-     * @throws ExcelParseException if fail in any case.
+     * @param targetType 被映射的目标对象类型，不能为 null
+     * @param <V>        目标对象类型
+     * @return 从文件中反序列化成功的对象集合，可能为 null
+     * @throws ExcelParseException 解析错误
+     * @see #parseFromExcel(Class)
+     */
+    @Nullable
+    private <V> List<V> parseFromSerializedFile(Class<V> targetType) {
+        Assert.notNull(targetType, "targetType");
+        File file = getSerializedFilename(targetType);
+        String filename = file.getName();
+        if (!file.exists()) {
+            throw new ExcelParseException("File not exists: " + filename);
+        }
+        if (isSerializedFileStaled(file, targetType)) {
+            throw new ExcelParseException("Serialized file is staled: " + filename);
+        }
+        // 读取文件并反序列
+        try (Input input = new Input(new FileInputStream(filename))) {
+            long t1 = System.currentTimeMillis();
+            @SuppressWarnings("unchecked")
+            List<V> list = (List<V>) kryo.readClassAndObject(input);
+            long elapsedMillis = System.currentTimeMillis() - t1;
+            log.debug("Excel - Successfully deserialized {} {} from {}: it took {} millis",
+                    ObjectUtils.safeGetSize(list),
+                    targetType.getSimpleName(),
+                    filename,
+                    elapsedMillis);
+            return list;
+        } catch (Exception e) {
+            throw new ExcelParseException("Failed to deserialize from " + filename, e);
+        }
+    }
+
+    /**
+     * 序列化字符串值为指定类型的对象。
+     *
+     * @param field 对象的字段，不能为 null
+     * @param s     原始填写的字符串值，可以为 null，为 null 时，对象值用 null 表示; primitive 类型值用它们的默认值。
+     * @return 序列化成功的对象
+     * @throws ExcelParseException 如果解析过程中有任何失败
      */
     @Nullable
     private Object convert(Field field, @Nullable String s) {
+        Assert.notNull(field, "field");
         Class<?> fieldType = field.getType();
         // 对于常见类型，直接通过相应的解析方法进行解析
         if (String.class.equals(fieldType)) {
@@ -292,9 +308,6 @@ public class ExcelParser {
             }
             return s.charAt(0);
         } else if (Date.class.equals(fieldType)) {
-            if (s == null) {
-                fail("Invalid value of Date type: " + s);
-            }
             return parseDate(s);
         } else if (Boolean.class.equals(fieldType) || boolean.class.equals(fieldType)) {
             if (s == null) {
@@ -331,23 +344,22 @@ public class ExcelParser {
     /**
      * 解析指定的字符串为日期类型
      *
-     * @param s string by default date format
-     * @return return date
-     * @throws IncorrectFormatException if format not supported
+     * @param s 被解析的日期字符串
+     * @return 日期对象，如果参数 s 为 null，则返回 null
+     * @throws ExcelParseException 如果解析失败
      */
-    private Date parseDate(String s) {
-        Date date = null;
-        for (SimpleDateFormat dateFormat : DEFAULT_DATE_FORMATS) {
+    @Nullable
+    private Date parseDate(@Nullable String s) {
+        if (s == null) return null;
+        for (SimpleDateFormat dateFormat : supportedDateFormats) {
             try {
-                date = dateFormat.parse(s);
-                break;
+                return dateFormat.parse(s);
             } catch (ParseException ignore) {
+                // Ignored, continue...
             }
         }
-        if (date == null) {
-            throw new IncorrectFormatException("解析字符串为日期类型时出错：" + s);
-        }
-        return date;
+        throw new ExcelParseException("Unable to convert to Date：" + s + ", Supported formats: "
+                + Arrays.toString(supportedDateFormats));
     }
 
     /**
@@ -386,7 +398,7 @@ public class ExcelParser {
         if (Map.class.isAssignableFrom(fieldType)) {
             return Transformer.MAP_LIKE.apply(s);
         }
-        ExcelColumn anno = fieldType.getAnnotation(ExcelColumn.class);
+        ExcelProperty anno = fieldType.getAnnotation(ExcelProperty.class);
         if (anno != null) {
             // TODO fix it ASAP
             // return anno.transformer().apply(s);
@@ -395,104 +407,72 @@ public class ExcelParser {
     }
 
     /**
-     * 查找指定列的索引位置
+     * 从列命名行读取所有列，组织成"列名->列索引位置"的映射。
      *
-     * @param targetName  目标列名
-     * @param columnNames 所有列名
-     * @return 返回指定列的索引位置
+     * @param type        目标对象类型，不能为 null
+     * @param columnNames Excel 文件中的命名行配置的列名集合，不能为 null
+     * @return 列名对应到 Excel 文件中列索引的映射关系
+     * @throws ExcelParseException 如果 excel 文件中缺失列名
      */
-    private int getColumnIndexByName(String targetName, List<String> columnNames) {
-        int index = 0;
-        for (String name : columnNames) {
-            if (targetName.equals(name)) {
-                return index;
-            }
-            index++;
-        }
-        return -1;
-    }
+    private Map<String, Integer> resolveFieldPosition(Class<?> type, List<String> columnNames) {
+        Assert.notNull(type, "type");
+        Assert.notNull(columnNames, "columnNames");
 
-    /**
-     * 从列命名行读取所有列，组织成"列名->列索引位置"的映射
-     *
-     * @param clazz       类型
-     * @param columnNames 命名行
-     * @return 返回"列名->列索引位置"的映射
-     * @throws ExcelParseException 如果excel文件中有缺失的列名
-     */
-    private Map<String, Integer> buildColumnMapping(Class<?> clazz, List<String> columnNames) {
-        Map<String, Integer> columnMapping = new HashMap<>(columnNames.size());
-        Set<String> missFields = new HashSet<>();
-        ExcelColumn anno;
-        for (Field field : clazz.getDeclaredFields()) {
-            // 找出字段上的ExcelColumn注解
-            anno = field.getAnnotation(ExcelColumn.class);
-            if (anno != null && anno.ignore()) {
-                continue;
-            }
-            String fileName = field.getName();
-            if (anno != null && !anno.alias().isEmpty()) {
-                fileName = anno.alias();
-            }
-            int index = getColumnIndexByName(fileName, columnNames);
-            if (index == -1) {
-                missFields.add(fileName);
-            } else {
-                columnMapping.put(fileName, index);
+        Map<String, Integer> positionByFieldName = new HashMap<>(columnNames.size());
+        Set<String> missingFields = new HashSet<>();
+        for (Field field : type.getDeclaredFields()) {
+            String targetColumnName = getMappingColumnName(field);
+            if (targetColumnName != null) {
+                int index = columnNames.indexOf(targetColumnName);
+                if (index != -1) {
+                    positionByFieldName.put(targetColumnName, index);
+                } else {
+                    missingFields.add(targetColumnName);
+                }
             }
         }
-        if (!missFields.isEmpty()) {
-            fail(String.format("The file %s is missing some columns for %s class: %s",
-                    getMappedFilename(clazz), clazz.getSimpleName(), missFields));
+        // 及时失败，并打印出 excel 文件中缺失的列
+        if (!missingFields.isEmpty()) {
+            fail(String.format("Excel - Cannot found the following columns in %s for %s: %s",
+                    getMappingFilename(type), type.getSimpleName(), missingFields));
         }
-        return columnMapping;
+        propertyMappingByType.put(type, positionByFieldName);
+        return positionByFieldName;
     }
 
-    /**
-     * 获取指定类要映射到哪个excel文件
-     *
-     * @param clazz type of object
-     * @return return excel file name
-     * @throws ExcelParseException if annotation ExcelMapping absent
-     */
-    private String getMappedFilename(Class<?> clazz) {
-        return getExcelMapping(clazz).file();
-    }
-
-    /**
-     * 获取指定类要映射到的excel文件中的哪个sheet
-     *
-     * @param clazz type of object
-     * @return return excel sheet name
-     * @throws ExcelParseException if annotation ExcelMapping absent
-     */
-    @SuppressWarnings("unused")
-    private String getMappedSheetName(Class<?> clazz) {
-        return getExcelMapping(clazz).sheet();
-    }
-
-    /**
-     * 在指定的类型上找到ExcelMapping注解并放回
-     *
-     * @return return ExcelMapping annotation if present
-     * @throws ExcelParseException if annotation ExcelMapping absent
-     */
-    private ExcelMapping getExcelMapping(Class<?> clazz) {
-        ExcelMapping anno = clazz.getAnnotation(ExcelMapping.class);
-        if (anno == null) {
-            fail("Cannot find @ExcelMapping on " + clazz.getSimpleName() + " class");
+    @Nullable
+    private String getMappingColumnName(Field field) {
+        Assert.notNull(field, "field");
+        ExcelProperty excelProperty = field.getAnnotation(ExcelProperty.class);
+        if (excelProperty != null && excelProperty.ignored()) {
+            return null;
         }
-        return anno;
+        String fieldName = field.getName();
+        if (excelProperty != null && !excelProperty.value().isEmpty()) {
+            fieldName = excelProperty.value();
+        }
+        return fieldName;
+    }
+
+    private String getMappingFilename(Class<?> type) {
+        Assert.notNull(type, "type");
+        return ObjectUtils.requireAnnotation(type, ExcelMapping.class).file();
+    }
+
+    private String getMappingSheetName(Class<?> type) {
+        Assert.notNull(type, "type");
+        return ObjectUtils.requireAnnotation(type, ExcelMapping.class).sheet();
     }
 
     /**
-     * Parsing specified excel file.
+     * 解析指定的 Excel 文件
      *
-     * @param filename excel filename
+     * @param filename Excel 文件名。不能为 null
      * @return return parsed rows
      * @throws ExcelParseException if failed to close input stream
      */
     private List<List<String>> parseRaw(String filename) {
+        Assert.notNull(filename, "filename");
         List<List<String>> rows = new ArrayList<>();
         try {
             // try (InputStream stream = getClass().getResourceAsStream(baseDir + filename)) {
