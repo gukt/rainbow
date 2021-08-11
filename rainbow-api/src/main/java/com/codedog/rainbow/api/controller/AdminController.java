@@ -4,7 +4,7 @@
 
 package com.codedog.rainbow.api.controller;
 
-import com.codedog.rainbow.util.EncryptionUtils;
+import com.codedog.rainbow.util.HashUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +56,7 @@ public class AdminController {
                 && "1234+aaaa".equalsIgnoreCase(password);
         if (match) {
             Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("token", EncryptionUtils.sha256(password));
+            resultMap.put("token", HashUtils.sha256(password));
             return success(resultMap);
         } else {
             return failed(1, "用户名或密码不正确");
