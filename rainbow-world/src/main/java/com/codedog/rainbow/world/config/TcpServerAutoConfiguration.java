@@ -38,7 +38,7 @@ import java.util.List;
  *
  * @author https://github.com/gukt
  */
-@Configuration
+// @Configuration
 @ConditionalOnClass(TcpServer.class)
 @Slf4j
 public class TcpServerAutoConfiguration {

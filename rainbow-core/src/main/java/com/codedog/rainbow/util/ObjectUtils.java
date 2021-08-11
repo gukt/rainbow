@@ -42,6 +42,15 @@ public final class ObjectUtils {
         return obj == null ? defaultValue : obj;
     }
 
+    /**
+     * 判断指定的字符串是否为 {@code null}，如果是，返回空字符串({@link String ""})；反之返回被检测对象自身。
+     * @param obj 被检测的字符串对象，可以为 null
+     * @return 如果被检测对象为 null，返回空字符串；反之返回被检测对象
+     */
+    public static String nullToEmpty(String obj) {
+        return obj == null ? "" : obj;
+    }
+
     // TODO nullToEmpty: String, List, Set, Map, LinkedMap, Object[], Array 等
 
     // requireNonNull

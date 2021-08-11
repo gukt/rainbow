@@ -6,13 +6,7 @@ package com.codedog.rainbow.util;
 
 import com.google.common.collect.Sets;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static com.codedog.rainbow.util.ObjectUtils.nullToDefault;
+import java.util.*;
 
 /**
  * Map utilities
@@ -61,4 +55,17 @@ public final class MapUtils {
         return retMap;
     }
 
+    public static String toString(Map<?, ?> map, final String delimiter, boolean reverse) {
+        // Assert.notNull(map, "map");
+        // StringBuilder sb = new StringBuilder();
+        // map.entrySet().forEach((Consumer<Entry<?, ?>>) entry -> sb.append(entry.getKey()).append(delimiter).append(entry.getValue()));
+        // return new StringJoiner(", ", "{" + sb.toString(), "}").toString();
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", MapUtils.class.getSimpleName() + "[", "]")
+                .toString();
+    }
 }

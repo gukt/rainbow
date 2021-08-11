@@ -47,7 +47,8 @@ public class GameAppConfiguration {
 
     @Bean
     public ExcelParser excelParser(AppProperties opts) {
-        return ExcelParser.builder().baseDir(opts.getExcelPath())
+        return ExcelParser.builder()
+                .basePath(opts.getExcelPath())
                 .mutableCheck(true)
                 .nullable(true)
                 .persistEnabled(true)

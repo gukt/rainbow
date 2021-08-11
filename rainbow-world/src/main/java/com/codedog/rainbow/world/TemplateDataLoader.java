@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  *
  * @author https://github.com/gukt
  */
-@Component
+// @Component
 @Order(0)
 @Slf4j
 public class TemplateDataLoader implements ApplicationRunner {

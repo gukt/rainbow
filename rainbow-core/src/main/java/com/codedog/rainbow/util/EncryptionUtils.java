@@ -58,11 +58,4 @@ public class EncryptionUtils {
         }
         return new String(resultBytes);
     }
-
-    @SuppressWarnings("UnstableApiUsage")
-    public static String sha256(String s) {
-        HashFunction fn = Hashing.sha256();
-        HashCode hashCode = fn.newHasher().putString(s, Charsets.UTF_8).hash();
-        return hashCode.toString();
-    }
 }

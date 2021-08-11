@@ -12,6 +12,7 @@ import com.google.common.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
  * @author https://github.com/gukt
  */
 @Component
-@SuppressWarnings("unused")
 @Slf4j
 public class TemplateManager {
 
@@ -30,27 +30,26 @@ public class TemplateManager {
         this.cache = CacheBuilder.newBuilder()
                 .concurrencyLevel(1)
                 .build(new CacheLoader<Class<?>, List<?>>() {
-                    @SuppressWarnings("NullableProblems")
                     @Override
-                    public List<?> load(Class<?> key) {
+                    public List<?> load(@Nullable Class<?> key) {
                         return parser.parse(key);
                     }
                 });
     }
 
     @SuppressWarnings("unchecked")
-    public <V> List<V> find(Class<V> clazz) {
-        return (List<V>) cache.getUnchecked(clazz);
+    public <V> List<V> findAll(Class<V> type) {
+        return (List<V>) cache.getUnchecked(type);
     }
 
-    public <V> List<V> find(Class<V> clazz, Predicate<V> predicate) {
-        return find(clazz).stream()
+    public <V> List<V> findAll(Class<V> type, Predicate<V> predicate) {
+        return findAll(type).stream()
                 .filter(predicate)
                 .collect(Collectors.toList());
     }
 
     public <V> Optional<V> findOne(Class<V> clazz, Predicate<V> predicate) {
-        return find(clazz).stream().filter(predicate).findFirst();
+        return findAll(clazz).stream().filter(predicate).findFirst();
     }
 
     private void invalidate(Class<?> clazz) {
@@ -86,4 +85,10 @@ public class TemplateManager {
     public Set<Class<?>> allTypes() {
         return new HashSet<>();
     }
+
+    // private static class TemplateManagerHolder {
+    //
+    //     // 采用默认配置的 ExcelParser 实例化一个 TemplateManager 对象
+    //     private static final TemplateManager INSTANCE = new TemplateManager(ExcelParser.builder().build());
+    // }
 }

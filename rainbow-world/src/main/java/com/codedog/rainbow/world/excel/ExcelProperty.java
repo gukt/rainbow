@@ -26,6 +26,10 @@ public @interface ExcelProperty {
      */
     boolean required() default false;
 
+    String defaultValue() default "";
+
+    boolean normalizeRequired() default false;
+
     /**
      * 是否忽略该字段的解析。
      */

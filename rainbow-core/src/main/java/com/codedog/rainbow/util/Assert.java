@@ -93,8 +93,8 @@ public final class Assert {
         }
     }
 
-    public static void notNull(boolean expected, String format, Object... args) {
-        if (!expected) {
+    public static void notNull(Object obj, String format, Object... args) {
+        if (obj == null) {
             throw new IllegalStateException(String.format(format, args));
         }
     }
@@ -629,7 +629,7 @@ public final class Assert {
     public static void isAnnotationPresent(Class<?> type, Class<? extends Annotation> annotationType) {
         Annotation annotation = type.getAnnotation(annotationType);
         if (annotation == null) {
-            throw new RuntimeException("Requires the " + annotationType + " annotation on the " + type.getSimpleName());
+            throw new RuntimeException("The annotation @" + annotationType.getSimpleName() + " is not present on the class [" + type.getName() + "]");
         }
     }
 

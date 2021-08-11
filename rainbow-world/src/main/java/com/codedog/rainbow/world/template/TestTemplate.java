@@ -5,36 +5,33 @@
 package com.codedog.rainbow.world.template;
 
 import com.codedog.rainbow.world.excel.ExcelMapping;
-import com.codedog.rainbow.world.excel.Range;
-import com.codedog.rainbow.world.excel.Weight;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * TODO 指定sheet
  *
  * @author https://github.com/gukt
  */
-@ExcelMapping(file = "test.xlsx", sheet = "TODO", required=true)
+@ExcelMapping(file = "test.xlsx", sheet = "list")
 @Getter
 @ToString
 public class TestTemplate {
 
-    private char char1;
-    private Character char2;
-    private char[] charArray1;
-    private Character[] charArray2;
-
-    private byte byte1;
-    private Byte byte2;
-    // private byte[] char1;
-    // private Byte[] char2;
+    // private char char1;
+    // private Character char2;
+    // private char[] charArray1;
+    // private Character[] charArray2;
+    // //
+    // private byte byte1;
+    // private Byte byte2;
+    // private byte[] byteArray1;
+    // private Byte[] byteArray2;
     //
     // private short byte1;
     // private Short byte2;
@@ -61,33 +58,35 @@ public class TestTemplate {
     // private char[] char1;
     // private Character[] char2;
 
-    private BigDecimal bigDecimal1;
-    private BigInteger bigInteger;
-    private Currency currency;
-
-    private String string1;
-    private Date date1;
-    private LocalDate localDate1;
-    private LocalDateTime localDateTime1;
-
-    private List<Integer> intList1;
-    private LinkedList<Integer> linkedList1;
-    private Set<Integer> intSet1;
-    private LinkedHashSet<Integer> linkedHashSet1;
+    // private BigDecimal bigDecimal1;
+    // private BigInteger bigInteger;
+    // private Currency currency;
+    //
+    // private String string1;
+    // private Date date1;
+    // private LocalDate localDate1;
+    // private LocalDateTime localDateTime1;
+    //
+    // private List<Integer> intList1;
+    // private LinkedList<Integer> linkedList1;
+    // private Set<Integer> intSet1;
+    // private LinkedHashSet<Integer> linkedHashSet1;
 
     // List 嵌套
     // 默认情况下，required = true， ignore=false
     // 如果 required=true，ignore=true 同时指定，ignore 优先于 requried
     // @FieldMapping(required=false, ignore=true, alias="xxx")
-    private List<List<Integer>> nestedList1;
+    // private List<List<Integer>> nestedList1;
+    //
 
     private Map<Long, Map<Long, Integer>> map1 = new HashMap<>();
-    private SortedMap<Integer, Integer> sortedMap1;
-    private LinkedHashMap<Integer, Integer> linkedMap1;
+    // private SortedMap<Integer, Integer> sortedMap1;
+    // private LinkedHashMap<Integer, Integer> linkedMap1;
+
 
     // 表示范围
-    private Range<Integer> intRange1;
-    private Range<Long> longRange1;
-    private Weight weight1;
-    // private Possible<Integer> proable1;
+    // private Range<Integer> intRange1;
+    // private Range<Long> longRange1;
+    // private Weight weight1;
+    // private Possible<Integer> possible1;
 }
